@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --tertiary: 227.6 11.6% 48.8%;
+    --tertiary-foreground: 213 27% 84%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --error-bg-light: rgba(220, 38, 38, 0.1);
+
+    --warning: 32.1 94.6% 43.7%; /* amber-600 */
+    --warning-foreground: 36 100% 97.1%; /* amber-50 */
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72.2% 50.6%; /* red-600 */
+    --destructive-foreground: 0 85.7% 97.3%; /* red-50 */
+    --error-bg-light: rgba(220, 38, 38, 0.1);
+
+    --warning: 40.6 96.1% 40.4%; /* yellow-600 */
+    --warning-foreground: 54.5 91.7% 95.3%; /* yellow-50 */
+
+    --success: 142.1 76.2% 36.3%; /* green-600 */
+    --success-foreground: 138.5 76.5% 96.7%; /* green-50 */
+
+    --border: 215.3 25% 26.7%;
+    --input: 215.3 25% 26.7%;
+    --ring: 212.7 26.8% 83.9%;
+
+    --slate-elevation-1: 228 45% 9%;
+    --slate-elevation-2: 228 37% 10.6%;
+    --slate-elevation-3: 227 30% 12%;
+    --slate-elevation-4: 231 26% 14%;
+    --slate-elevation-5: 230 22% 16%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+body,
+#root {
+  min-height: 100vh;
+}
+
+/* CodeMirror override styles */
+
+.cm-editor {
+  @apply rounded-md;
+}
+
+.cm-gutters {
+  @apply rounded-md;
+}
+
+.cm-search.cm-panel {
+  @apply text-sm;
+}
+
+.no-select-global * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}

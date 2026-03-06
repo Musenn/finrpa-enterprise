@@ -1,0 +1,17 @@
+There is a screenshot from a part of a web HTML page. Help me confirm if it is an open dropdown menu.
+
+An open dropdown menu can be defined as:
+  - At least one option is visible in the screenshot.
+  - A calendar view could be considered as an open dropdown menu. But DO NOT consider an calendar icon as the dropdown menu.
+  - If the screenshot contains multiple input fields for selecting quantities, consider as the dropdown menu.
+  - Do not consider it an open dropdown menu if the only visible option displays a message like "No results" or "No match".
+  - Do not consider it an open dropdown menu if the only visible element displays a placeholder like "Please select", "-", or "Select...".
+  - It can be a selection dropdown or a date picker. But DO NOT consider it an open dropdown if it's a popup modal window.
+
+MAKE SURE YOU OUTPUT VALID JSON. No text before or after JSON, no trailing commas, no comments (//), no unnecessary quotes, etc.
+
+Reply in JSON format with the following keys:
+{
+    "reasoning": str, // the reason why it's a dropdown menu or not a dropdown menu
+    "is_opened_dropdown_menu": bool, // true if it's a opened dropdown menu, otherwise false.
+}

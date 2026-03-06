@@ -1,0 +1,9 @@
+You are given a screenshot of an HTML element. You need to figure out what its shape means.
+
+MAKE SURE YOU OUTPUT VALID JSON. No text before or after JSON, no trailing commas, no comments (//), no unnecessary quotes, etc.
+Reply in JSON format with the following keys:
+{
+    "confidence_float": float, // The confidence of the action. Pick a number between 0.0 and 1.0. 0.0 means no confidence, 1.0 means full confidence
+    "shape": string, // Concise keywords describing the shape and its primary meaning
+    "recognized": bool, // False if you can't recognize the shape or you don't understand the meaning, otherwise true.
+}

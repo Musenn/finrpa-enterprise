@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Testing & Quality
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node.js (skyvern-frontend)
+node_modules/
+skyvern-frontend/dist/
+
+# Docker & Runtime Artifacts
+artifacts/
+videos/
+har/
+log/
+*.log
+.streamlit/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

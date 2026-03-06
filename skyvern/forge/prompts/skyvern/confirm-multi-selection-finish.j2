@@ -1,0 +1,43 @@
+Confirm if the user has finished the mini goal in the current opened dropdown selection based on the screenshot, user details, the HTML elements and select history provided in the list.
+
+NOTE:
+- Only consider the mini goal is achieved when there is(are) one(several) valid options selected in the dropdown.
+- Sometimes it's a multi-level selection dropdown, you need to select multiple times to pick a valid option(sub-option).
+
+Reply in JSON format with the following keys:
+{
+    "page_info": str, // Think step by step. Describe the page information you parsed from the HTML elements and the screenshot. Your decision should be based on the current page information.
+    "think": str, // Think step by step. Describe how you think the user has finished the mini goal in the current opened dropdown selection.
+    "is_multiple_selection": bool, // True if it's a multi-level selection, otherwise False.
+    "is_mini_goal_finished": bool, // True if the user has finished the mini goal in the current opened dropdown selection, False otherwise.
+}
+
+Mini Goal:
+```
+Select an option for "{{ mini_goal }}"
+```
+
+User goal:
+```
+{{ navigation_goal }}
+```
+
+User details:
+```
+{{ navigation_payload_str }}
+```
+
+HTML elements:
+```
+{{ elements }}
+```
+
+Select History:
+```
+{{ select_history }}
+```
+
+Current datetime, ISO format:
+```
+{{ local_datetime }}
+```
