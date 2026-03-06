@@ -1,46 +1,44 @@
 # Day 1 — 项目初始化
 
-## 今天干了什么
+## 今日改动
 
-把整个项目骨架搭好了。说白了就是三件事：
+完成项目骨架搭建，核心工作分三部分：
 
-1. 把 Skyvern 的源码拉下来放进项目里，作为我们的底座
-2. 在旁边建了一个 `enterprise/` 目录，后续所有金融场景的扩展代码全部放这里面，不动 Skyvern 的核心
-3. 写好了 Docker Compose，PostgreSQL、Redis、MinIO、Skyvern、前端 UI 五个容器一把拉起来，`make dev` 搞定
+1. **Skyvern 底座集成**：将 Skyvern 源码（skyvern/、alembic/、skyvern-frontend/、Dockerfile）直接拷贝到项目中，作为二次开发的起点
+2. **Enterprise 扩展层**：在项目根目录创建独立的 `enterprise/` 包，内含 7 个功能子模块（auth、tenant、approval、audit、dashboard、llm、workflows），后续所有金融场景的定制代码均落在此目录下，不侵入 Skyvern 核心
+3. **容器化开发环境**：编写 docker-compose.yml，包含 PostgreSQL 14、Redis 7、MinIO、Skyvern、Skyvern-UI 五个服务，配置完整的 healthcheck 与依赖启动顺序，`make dev` 一键拉起
 
-另外配套的东西也一并到位了：`.env.example`（配置模板）、`pyproject.toml`（依赖管理）、`Makefile`（常用命令封装）、测试目录结构。
+配套产出：`.env.example`（全量配置模板）、`pyproject.toml`（依赖管理，新增 minio、passlib、redis、python-jose）、`Makefile`（dev/test/lint/migrate/seed 等常用命令）、`.gitignore`、tests 目录结构及 conftest.py。
 
-## 几个关键决策，说说为什么
+## 设计决策
 
-### 为什么直接拷贝 Skyvern 源码，而不用 Git Submodule？
+### Skyvern 集成方式：直接拷贝 vs Git Submodule
 
-这个问题我纠结过。submodule 看上去更"优雅"，但实际操作下来有几个坑：
+最终选择直接拷贝源码。对比考虑如下：
 
-第一，submodule 要求别人 clone 的时候加 `--recurse-submodules`，不加就缺文件。对于一个想让人快速上手看的项目来说，多一步就多一个劝退点。
+- **clone 门槛**：submodule 要求使用者 clone 时附加 `--recurse-submodules`，遗漏则缺少文件，增加上手成本
+- **后续改动需求**：Day 8 需要在 Skyvern 的 action 执行链路中植入审计钩子，Day 9 需要扩展任务状态枚举——这些改动发生在 Skyvern 内部。若使用 submodule，需先 fork 上游仓库再修改，引入额外的仓库管理成本
+- **项目定位**：本项目是基于 Skyvern 的企业级二次开发，不需要持续同步上游更新，直接拷贝更为简洁
 
-第二，我们后面 Day 8 做审计的时候要在 Skyvern 的 action 执行链路里加钩子，Day 9 要扩展任务状态枚举——这些都需要改 Skyvern 内部代码。如果用 submodule，改人家的代码得先 fork 一份上游仓库，管两个仓库，没必要。
+### Docker 卷策略：Named Volume vs Bind Mount
 
-第三，这个项目的定位是"基于 Skyvern 的企业级二次开发"，不需要持续跟踪上游的 commit。直接拷贝一份，后面在上面改就行了。
+选择 named volume。在 Windows 开发环境下，bind mount（如 `./postgres-data`）存在文件权限不兼容的问题，PostgreSQL 容器启动时容易出现 permission denied 错误。Named volume 由 Docker 引擎管理，规避了宿主机与容器的权限模型差异，且 `docker compose down -v` 即可完成清理。
 
-### Docker 为什么用 Named Volume 而不是 Bind Mount？
+### Redis 持久化配置
 
-在 Windows 上踩过一次坑。用 `./postgres-data` 这种 bind mount 的方式，PostgreSQL 启动的时候经常报权限错误，因为 Windows 文件系统的权限模型和 Linux 容器里的不一样。换成 named volume 就没这个问题了，Docker 自己管理存储，`docker compose down -v` 一把删干净。
+开启 AOF 持久化（`appendonly yes`）并设置 256MB 内存上限。Day 6 的审批引擎依赖 Redis Pub/Sub 传递审批消息，若使用纯内存模式，开发过程中 Redis 容器意外重启将导致进行中的审批状态丢失。AOF 持久化在开发阶段提供了基本的数据安全保障。
 
-### Redis 为什么开 AOF 持久化？
+## 金融企业场景下的工程意义
 
-后面 Day 6 要做审批引擎，审批消息走 Redis Pub/Sub。如果 Redis 是纯内存模式，开发的时候不小心重启一下容器，正在等审批的任务就全丢了。开了 `appendonly yes` 加个 256MB 的内存上限，开发体验好很多，不怕数据丢。
+项目初始化看似基础，但在银行、保险等金融机构的技术团队中，这一阶段的决策直接影响后续数月的开发效率和系统可维护性。
 
-## 这些东西在银行实际项目里解决什么问题
+**环境一致性**：多人协作时，开发环境不一致是常见的效率杀手——PostgreSQL 小版本差异、Redis 配置不同步等问题往往在集成阶段才暴露。Docker Compose + `.env.example` 将完整的运行环境固化为代码，团队成员获得一致的开发环境。
 
-搭项目骨架这件事听起来很基础，但在银行的技术团队里，这恰恰是很多项目后期混乱的根源。
+**模块化边界**：金融 RPA 系统涉及权限、审批、审计等多个交叉领域，若不在早期规划清晰的目录结构，代码膨胀后模块边界模糊，定位和修改特定功能的成本急剧上升。`enterprise/` 按功能域划分子模块，各模块职责明确，支持团队并行开发。
 
-**环境不统一的问题**：我见过好几个团队，开发到中后期发现"在我电脑上能跑在你那跑不了"，排查半天发现是 PostgreSQL 版本差了一个小版本、Redis 没开持久化之类的破事。Docker Compose + `.env.example` 从第一天就把环境锁死，所有人的开发环境一模一样。
+**底座与扩展解耦**：在开源项目上做企业级扩展时，若将定制逻辑与原始代码混编，后续的维护和溯源成本很高。将扩展代码隔离到独立目录、对 Skyvern 核心仅做最小改动，是保持长期可维护性的基本原则。
 
-**代码散乱的问题**：没有提前规划目录结构的项目，三四个人同时开发一个月以后，权限相关的代码散落在五六个目录里，谁也说不清楚完整的逻辑在哪。`enterprise/` 下面按功能域划分子模块（auth、tenant、approval……），每个人负责自己的模块，互相不踩脚。
+## 踩坑记录
 
-**底座和扩展混在一起的问题**：直接在 Skyvern 的代码上大刀阔斧地改，短期看是快了，但以后想升级 Skyvern 修 bug 的时候就会发现自己的改动和上游的改动搅在一起，根本理不清。把企业扩展放在独立的 `enterprise/` 目录，Skyvern 核心只做必要的最小改动，这个架构边界后面会一直受益。
-
-## 踩坑
-
-1. **conda 清华镜像挂了**：`.condarc` 里配的清华源全线 403，创建虚拟环境的时候死活拉不到包。解决办法是指定官方源 `https://conda.anaconda.org/conda-forge` 并加 `--override-channels` 绕过本地配置
-2. **Windows 下 `.env.*` 通配符太贪婪**：`.git/info/exclude` 里写 `.env.*` 会把 `.env.example` 也排除掉，导致这个文件死活不出现在 `git status` 里。加一行 `!.env.example` 取消排除就好了
+1. **conda 清华镜像 403**：`.condarc` 中配置的清华 Anaconda 镜像全线返回 HTTP 403。解决方案：在 `conda create` 时指定官方源 `https://conda.anaconda.org/conda-forge` 并附加 `--override-channels` 参数，绕过本地镜像配置
+2. **`.env.*` 通配符误伤**：`.git/info/exclude` 中的 `.env.*` 规则将 `.env.example` 一并排除，导致该文件无法被 git 追踪。修复方式：追加 `!.env.example` 取消对该文件的排除
