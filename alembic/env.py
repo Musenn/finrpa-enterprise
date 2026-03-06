@@ -21,6 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from skyvern.forge.sdk.db import models
+import enterprise.auth.models  # noqa: F401 - register enterprise models with Base.metadata
 
 target_metadata = models.Base.metadata
 
