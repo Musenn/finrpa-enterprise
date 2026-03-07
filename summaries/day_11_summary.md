@@ -9,7 +9,7 @@
 3. **统计 API**：`enterprise/dashboard/routes.py` 提供 7 个端点——概览、趋势（可配置天数 1-90）、错误分布、业务线对比、审批响应时间、成本估算（均要求 operator 角色），以及 CSV 导出（要求 admin 角色）。每个端点先查缓存，miss 时计算并回写缓存
 4. **CSV 导出**：`GET /enterprise/dashboard/export` 返回包含概览指标和近 30 天趋势数据的 CSV 文件，文件名包含组织 ID 和导出日期
 
-在 `skyvern/forge/api_app.py` 中注册路由。新增测试 27 个（Day 11），累计 467 个，全部通过。
+在 `skyvern/forge/api_app.py` 中注册路由。新增测试 27 个（Day 11），累计 526 个，全部通过。
 
 ## 设计决策
 
