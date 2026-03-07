@@ -14,7 +14,7 @@
 
 5. **路由注册**：在 `skyvern/forge/api_app.py` 中注册缓存管理路由
 
-新增测试 35 个（Day 13），累计 502 个，全部通过。模型路由已在 Day 9 实现（`enterprise/llm/model_router.py`），Day 13 的缓存统计与 Day 11 的成本估算端点已通过 `model_calls` 数据结构中的 `cache_hit` 字段对接。
+新增测试 35 个（Day 13），累计 561 个，全部通过。模型路由已在 Day 9 实现（`enterprise/llm/model_router.py`），Day 13 的缓存统计与 Day 11 的成本估算端点已通过 `model_calls` 数据结构中的 `cache_hit` 字段对接。
 
 ## 设计决策
 
