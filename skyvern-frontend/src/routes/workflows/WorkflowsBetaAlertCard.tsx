@@ -8,25 +8,16 @@ function WorkflowsBetaAlertCard() {
       </header>
       <div>Workflows through UI are currently under construction.</div>
       <div>
-        Today, you can create and run workflows through the Skyvern API.
+        Today, you can create and run workflows through the API.
       </div>
       <div className="flex gap-4 py-4">
         <Button variant="secondary" asChild>
           <a
-            href="https://www.skyvern.com/docs/workflows/creating-workflows"
+            href="https://github.com/Musenn/finrpa-enterprise"
             target="_blank"
             rel="noopener noreferrer"
           >
-            See the workflow docs
-          </a>
-        </Button>
-        <Button asChild>
-          <a
-            href="https://meetings.hubspot.com/skyvern/demo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Book a demo
+            View on GitHub
           </a>
         </Button>
       </div>
