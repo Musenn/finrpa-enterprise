@@ -27,7 +27,7 @@
 
 7. **ECharts 集成**：安装 `echarts` + `echarts-for-react`，Dashboard 页面三个图表统一透明背景，轴线颜色 #E5E7EB，数据线使用深海蓝/红/金/紫配色
 
-新增前端测试 37 个（Icon 7 / GlassCard 5 / StatusBadge 10 / RiskBadge 6 / Timeline 5 / ScreenshotDiff 4），后端测试 467 个不变。`npm run build` 无报错。
+新增前端测试 37 个（Icon 7 / GlassCard 5 / StatusBadge 10 / RiskBadge 6 / Timeline 5 / ScreenshotDiff 4），后端测试 526 个不变。`npm run build` 无报错。
 
 ## 设计决策
 
