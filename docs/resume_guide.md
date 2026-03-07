@@ -27,6 +27,10 @@
   构建完整操作时间线；实现 LLM 三层容错体系，失败后转 NEEDS_HUMAN 状态并设计
   完整人工接管流程
 
+• 设计 Planner + Executor 双 Agent 协作架构，将复杂金融流程拆解为子任务序列，
+  四种差异化失败策略（retry/skip/abort/replan），支持断点续跑；封装 7 个可组合
+  Skill（登录/表单/表格提取等），6 个金融工作流模板通过 Skill 组合实现标准化
+
 • 基于 React + ECharts 改造前端 UI 为白色毛玻璃风格，手工实现 20+ 个 SVG
   线描图标组件，新增审批中心、审计日志、运营大屏、权限管理四个企业专属页面
 
@@ -57,6 +61,18 @@ AI 工程核心工作：
   Prompt 层：系统 Prompt 强制 JSON 输出 + Schema 示例嵌入；
   解析层：Pydantic v2 结构校验 + 清理 markdown 标记 + 指数退避重试（最多 3 次）；
   任务层：超出重试后转 NEEDS_HUMAN 状态，设计截图查看 + 三种处置方式的完整接管流程
+
+• 设计 Planner + Executor 双 Agent 协作架构
+  将「理解目标」和「执行操作」解耦为两个 Agent：Planner 通过 LLM 将导航目标拆解
+  为子任务序列（含完成条件和失败策略），Executor 逐步执行并返回结构化结果。
+  四种失败策略（retry/skip/abort/replan）覆盖不同子任务的失败影响差异，
+  replan 时请求 Planner 重新规划而非终止任务，子任务状态持久化支持断点续跑
+
+• 构建可组合 Skill 库（7 个基础 Skill）
+  将登录、表单填写、表格提取等共用操作封装为独立 Skill（统一接口：Pydantic 参数
+  模型 + async execute + 错误策略），通过 Pipeline 执行器按序组合。6 个金融工作流
+  模板通过 SkillStepDefinition 声明 Skill 序列，参数映射支持引用和字面量两种模式。
+  Skill 粒度的审计回调（密码字段自动掩码）满足监管对操作可追溯性的要求
 
 • 实现页面复杂度评分与模型智能路由
   基于 DOM 元素数量、iframe 嵌套、动态内容三特征评分，路由至三档模型，
@@ -103,8 +119,12 @@ AI 工程核心工作：
   （数据不出内网），敏感字段自动脱敏（卡号保留后四位，密码完全掩码），审计日志
   支持按业务线/部门/时间范围/风险等级多维检索，满足事后追溯要求
 
-• 内置六个金融场景工作流模板（银行/保险/证券各两个），敏感参数 Fernet 加密存储，
-  实现毛玻璃风格前端改造及审批中心、审计日志查询、运营大屏等企业专属页面
+• 设计 Planner + Executor 双 Agent 协作架构实现复杂金融流程的子任务拆解与
+  断点续跑，封装 7 个可组合 Skill（登录/表单/表格提取等）构建标准化工作流，
+  6 个金融场景模板（银行/保险/证券各两个）通过 Skill 组合降低 IT 开发介入门槛
+
+• 敏感参数 Fernet 加密存储，实现毛玻璃风格前端改造及审批中心、审计日志查询、
+  运营大屏等企业专属页面
 
 技术栈：Python / FastAPI / SQLAlchemy / PostgreSQL / Redis / Playwright /
         React / ECharts / MinIO / JWT-RBAC / Docker / Alembic
