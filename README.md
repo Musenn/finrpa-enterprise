@@ -48,6 +48,18 @@ Skyvern 原版是一个技术上很先进的底座，但它被设计为单机、
 
 LLM 不是 100% 可靠的，但 LLM 失败不应该等同于任务失败。本项目实现了三层容错（Prompt 强制格式约束 → Pydantic 校验重试 → 超出重试转 NEEDS_HUMAN），同时为 NEEDS_HUMAN 状态设计了完整的人工接管流程：查看卡住步骤的截图和 LLM 原始输出，选择跳过/手动执行/终止三种处置方式。
 
+### Planner + Executor 双 Agent 协作
+
+原始 Skyvern 是单一 Agent 循环执行，遇到复杂金融流程（跨多个页面、多个系统跳转）时，一旦中间某步失败，整个任务从头重来。本项目将「规划」和「执行」解耦为两个独立 Agent：Planner 接收导航目标，通过 LLM 拆解为有序子任务列表（每个子任务包含目标描述、完成条件、最大重试次数、失败策略）；Executor 逐步执行子任务并返回结构化结果；Coordinator 编排两者的通信，维护整体任务状态。
+
+四种差异化失败策略：retry（瞬态错误重试）、skip（非关键步骤跳过）、abort（关键前置步骤失败终止）、replan（路径阻塞时请求 Planner 重新规划剩余步骤）。重规划次数超过上限（默认 3 次）后自动转入 NEEDS_HUMAN 状态。子任务状态通过 Pydantic 模型持久化，支持断点续跑——银行日终批处理中途中断后可从上一个成功子任务继续执行。
+
+### 可组合 Skill 库
+
+将「登录」「表单填写」「表格提取」等共用操作从自然语言导航目标中剥离，封装为 7 个独立的 Skill 类（统一接口：Pydantic 参数模型 + async execute + 错误策略 + 审计输出）：认证类（LoginSkill、SessionKeepAliveSkill）、交互类（FormFillSkill、SearchAndSelectSkill、PaginationSkill）、提取类（TableExtractSkill、FileDownloadSkill）。
+
+6 个金融场景工作流模板通过 SkillStepDefinition 组合 Skill 序列，参数映射支持引用模式（从工作流参数取值）和字面量模式（模板预设值）。Pipeline 执行器按序执行 Skill 列表，每步独立处理错误策略，审计回调自动记录脱敏后的参数和执行结果。所有银行场景共享同一个 LoginSkill，登录页面变化时只需修改一处。
+
 ### Action 缓存与模型路由
 
 相同页面结构的重复执行跳过 LLM 调用，直接复用缓存的决策结果。缓存 key 由 DOM 结构哈希（剥除动态内容）+ 导航目标哈希组成，TTL 24 小时。模型路由根据页面复杂度评分自动选择轻量/标准/重型模型，降低约 60% LLM 调用成本。
