@@ -289,4 +289,4 @@ make lint          # ruff + mypy 静态检查
 
 ## License
 
-MIT License，Skyvern 原始代码遵循其原始 License。
+MIT License © 2026 Xuelin Xu (Musenn)，Skyvern 原始代码遵循其原始 License。
