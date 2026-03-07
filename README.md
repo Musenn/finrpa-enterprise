@@ -5,7 +5,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110-green)](https://fastapi.tiangolo.com)
 [![License](https://img.shields.io/badge/License-MIT-orange)](LICENSE)
 [![Based on Skyvern](https://img.shields.io/badge/Based%20on-Skyvern-purple)](https://github.com/Skyvern-AI/skyvern)
-[![Tests](https://img.shields.io/badge/Tests-542%20passed-brightgreen)]()
+[![Tests](https://img.shields.io/badge/Tests-601%20passed-brightgreen)]()
 [![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)]()
 
 ---
@@ -82,15 +82,17 @@ finrpa-enterprise/
 │   ├── audit/                       # 全链路审计 + 脱敏 + MinIO 存储
 │   ├── dashboard/                   # 运营统计 API + Redis 缓存
 │   ├── llm/                         # 三层容错 + Action 缓存 + 模型路由
+│   ├── agent/                       # Planner + Executor 双 Agent 协作
+│   ├── skills/                      # 7 个可组合 Skill（登录/表单/提取等）
 │   ├── notification/                # 企业微信/钉钉通知
-│   └── workflows/                   # 金融场景工作流模板 + Skill 库
+│   └── workflows/                   # 金融场景工作流模板（基于 Skill 组合）
 ├── skyvern-frontend/                # React 前端（毛玻璃风格改造）
 │   ├── src/components/Icon/         # 手写 SVG 图标组件（21 个图标）
 │   ├── src/components/enterprise/   # 企业通用组件
 │   ├── src/routes/enterprise/       # 企业专属页面
 │   └── src/styles/                  # CSS 设计 token + 毛玻璃样式
 ├── tests/
-│   ├── unit/                        # 502 单元测试
+│   ├── unit/                        # 561 单元测试
 │   ├── integration/                 # 40 端到端集成测试
 │   └── fixtures/                    # SQL 模拟数据
 ├── nginx/                           # Nginx 反向代理配置
@@ -192,7 +194,7 @@ make lint          # ruff + mypy 静态检查
 ```
 
 当前指标：
-- **542 个测试**全部通过（502 后端 + 40 端到端集成）
+- **601 个测试**全部通过（561 后端 + 40 端到端集成）
 - **85% 代码覆盖率**（enterprise 包，目标 ≥ 70%）
 - **37 个前端测试**通过（Icon、GlassCard、StatusBadge、RiskBadge、Timeline、ScreenshotDiff）
 
