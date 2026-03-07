@@ -10,7 +10,6 @@ Covers:
   task continues from step 3
 """
 
-import asyncio
 import json
 import unittest
 from unittest.mock import AsyncMock
@@ -78,17 +77,15 @@ class TestTaskPlan(unittest.TestCase):
 # PlannerAgent tests
 # ============================================================
 
-class TestPlannerAgent(unittest.TestCase):
-    def test_fallback_plan_without_llm(self):
+class TestPlannerAgent(unittest.IsolatedAsyncioTestCase):
+    async def test_fallback_plan_without_llm(self):
         planner = PlannerAgent(llm_callable=None)
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.create_plan("Download bank statements")
-        )
+        plan = await planner.create_plan("Download bank statements")
         assert len(plan.subtasks) == 1
         assert plan.subtasks[0].goal == "Download bank statements"
         assert plan.subtasks[0].failure_strategy == FailureStrategy.ABORT
 
-    def test_plan_with_llm(self):
+    async def test_plan_with_llm(self):
         llm_response = json.dumps({
             "steps": [
                 {"goal": "Login to e-banking", "completion_condition": "URL has /home", "failure_strategy": "abort", "max_retries": 3},
@@ -101,9 +98,7 @@ class TestPlannerAgent(unittest.TestCase):
             return llm_response
 
         planner = PlannerAgent(llm_callable=mock_llm)
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.create_plan("Download bank statements for Q1 2026")
-        )
+        plan = await planner.create_plan("Download bank statements for Q1 2026")
         assert len(plan.subtasks) == 3
         assert plan.subtasks[0].goal == "Login to e-banking"
         assert plan.subtasks[0].failure_strategy == FailureStrategy.ABORT
@@ -111,7 +106,7 @@ class TestPlannerAgent(unittest.TestCase):
         assert plan.subtasks[1].failure_strategy == FailureStrategy.REPLAN
         assert plan.subtasks[2].failure_strategy == FailureStrategy.RETRY
 
-    def test_plan_with_llm_markdown_wrapped(self):
+    async def test_plan_with_llm_markdown_wrapped(self):
         """LLM sometimes wraps JSON in markdown code fences."""
         llm_response = "```json\n" + json.dumps({
             "steps": [{"goal": "Do something", "completion_condition": "Done"}]
@@ -121,23 +116,19 @@ class TestPlannerAgent(unittest.TestCase):
             return llm_response
 
         planner = PlannerAgent(llm_callable=mock_llm)
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.create_plan("Test goal")
-        )
+        plan = await planner.create_plan("Test goal")
         assert len(plan.subtasks) == 1
 
-    def test_plan_llm_failure_falls_back(self):
+    async def test_plan_llm_failure_falls_back(self):
         async def failing_llm(prompt):
             raise RuntimeError("LLM service unavailable")
 
         planner = PlannerAgent(llm_callable=failing_llm)
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.create_plan("Test goal")
-        )
+        plan = await planner.create_plan("Test goal")
         # Should fall back to single-step plan
         assert len(plan.subtasks) == 1
 
-    def test_replan_with_llm(self):
+    async def test_replan_with_llm(self):
         replan_response = json.dumps({
             "steps": [
                 {"goal": "Try alternative navigation", "completion_condition": "Page found", "failure_strategy": "abort"},
@@ -155,30 +146,26 @@ class TestPlannerAgent(unittest.TestCase):
         failed = SubTask(index=1, goal="Navigate to page", completion_condition="Page shown")
         failed.status = SubTaskStatus.FAILED
 
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.replan(
-                original_goal="Download statements",
-                completed_subtasks=completed,
-                failed_subtask=failed,
-                failure_reason="Button not found on page",
-            )
+        plan = await planner.replan(
+            original_goal="Download statements",
+            completed_subtasks=completed,
+            failed_subtask=failed,
+            failure_reason="Button not found on page",
         )
         assert plan.is_replan is True
         assert len(plan.subtasks) == 2
         assert plan.subtasks[0].index == 1  # continues from where we left off
 
-    def test_replan_without_llm(self):
+    async def test_replan_without_llm(self):
         planner = PlannerAgent(llm_callable=None)
         completed = [SubTask(index=0, goal="Login", completion_condition="")]
         failed = SubTask(index=1, goal="Navigate", completion_condition="")
 
-        plan = asyncio.get_event_loop().run_until_complete(
-            planner.replan(
-                original_goal="Test goal",
-                completed_subtasks=completed,
-                failed_subtask=failed,
-                failure_reason="Something went wrong",
-            )
+        plan = await planner.replan(
+            original_goal="Test goal",
+            completed_subtasks=completed,
+            failed_subtask=failed,
+            failure_reason="Something went wrong",
         )
         assert plan.is_replan is True
         assert plan.replan_reason == "Something went wrong"
@@ -188,47 +175,41 @@ class TestPlannerAgent(unittest.TestCase):
 # ExecutorAgent tests
 # ============================================================
 
-class TestExecutorAgent(unittest.TestCase):
-    def test_execute_with_simulation(self):
+class TestExecutorAgent(unittest.IsolatedAsyncioTestCase):
+    async def test_execute_with_simulation(self):
         """Without action_handler, executor simulates success."""
         executor = ExecutorAgent(action_handler=None)
         subtask = SubTask(index=0, goal="Login", completion_condition="")
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is True
         assert subtask.status == SubTaskStatus.COMPLETED
         assert subtask.completed_at is not None
 
-    def test_execute_with_handler_success(self):
+    async def test_execute_with_handler_success(self):
         async def handler(goal, context):
             return {"success": True, "data": {"page": "dashboard"}}
 
         executor = ExecutorAgent(action_handler=handler)
         subtask = SubTask(index=0, goal="Login", completion_condition="", max_retries=1)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is True
         assert result.result_data["page"] == "dashboard"
 
-    def test_execute_with_handler_failure(self):
+    async def test_execute_with_handler_failure(self):
         async def handler(goal, context):
             return {"success": False, "error": "Element not found"}
 
         executor = ExecutorAgent(action_handler=handler)
         subtask = SubTask(index=0, goal="Click button", completion_condition="", max_retries=1)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is False
         assert result.error_message == "Element not found"
         assert subtask.status == SubTaskStatus.FAILED
 
-    def test_execute_retries_then_succeeds(self):
+    async def test_execute_retries_then_succeeds(self):
         call_count = 0
 
         async def handler(goal, context):
@@ -241,35 +222,29 @@ class TestExecutorAgent(unittest.TestCase):
         executor = ExecutorAgent(action_handler=handler)
         subtask = SubTask(index=0, goal="Load page", completion_condition="", max_retries=2)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is True
         assert call_count == 2
 
-    def test_execute_retries_exhausted(self):
+    async def test_execute_retries_exhausted(self):
         async def handler(goal, context):
             return {"success": False, "error": "Always fails"}
 
         executor = ExecutorAgent(action_handler=handler)
         subtask = SubTask(index=0, goal="Broken step", completion_condition="", max_retries=2)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is False
         assert subtask.status == SubTaskStatus.FAILED
 
-    def test_execute_exception_handling(self):
+    async def test_execute_exception_handling(self):
         async def handler(goal, context):
             raise ConnectionError("Network down")
 
         executor = ExecutorAgent(action_handler=handler)
         subtask = SubTask(index=0, goal="Fetch data", completion_condition="", max_retries=0)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            executor.execute_subtask(subtask)
-        )
+        result = await executor.execute_subtask(subtask)
         assert result.success is False
         assert "Network down" in result.error_message
 
@@ -278,8 +253,8 @@ class TestExecutorAgent(unittest.TestCase):
 # AgentCoordinator tests
 # ============================================================
 
-class TestCoordinatorBasic(unittest.TestCase):
-    def test_successful_3_step_flow(self):
+class TestCoordinatorBasic(unittest.IsolatedAsyncioTestCase):
+    async def test_successful_3_step_flow(self):
         """3-step plan, all succeed."""
         llm_response = json.dumps({
             "steps": [
@@ -299,13 +274,11 @@ class TestCoordinatorBasic(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_001", "org_001", "Download bank statements")
-        )
+        state = await coordinator.run("task_001", "org_001", "Download bank statements")
         assert state.status == "completed"
         assert len(state.completed_subtasks) == 3
 
-    def test_abort_on_first_step_failure(self):
+    async def test_abort_on_first_step_failure(self):
         """First step has abort strategy and fails."""
         llm_response = json.dumps({
             "steps": [
@@ -324,17 +297,15 @@ class TestCoordinatorBasic(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_002", "org_001", "Test task")
-        )
+        state = await coordinator.run("task_002", "org_001", "Test task")
         assert state.status == "failed"
         assert "Login failed" in state.error_message
 
 
-class TestCoordinatorReplan(unittest.TestCase):
+class TestCoordinatorReplan(unittest.IsolatedAsyncioTestCase):
     """Key test: 3-step flow, step 2 fails, Planner replans, continues."""
 
-    def test_step2_fails_replan_continues(self):
+    async def test_step2_fails_replan_continues(self):
         """
         Simulates:
         1. Step 0 (Login) -> SUCCESS
@@ -343,10 +314,7 @@ class TestCoordinatorReplan(unittest.TestCase):
         4. New step -> SUCCESS
         5. Original Step 2 is replaced by replan -> task COMPLETES
         """
-        call_count = {"plan": 0, "execute": 0}
-
         async def mock_llm(prompt):
-            call_count["plan"] += 1
             if "## Failed Step" in prompt:
                 # This is a replan request (uses REPLAN_SYSTEM_PROMPT)
                 return json.dumps({
@@ -365,7 +333,6 @@ class TestCoordinatorReplan(unittest.TestCase):
             })
 
         async def mock_handler(goal, context):
-            call_count["execute"] += 1
             if "Navigate to statements" in goal:
                 return {"success": False, "error": "Statements button not found"}
             return {"success": True, "data": {"goal": goal}}
@@ -374,16 +341,14 @@ class TestCoordinatorReplan(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor, max_replans=3)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_003", "org_001", "Download bank statements for Q1")
-        )
+        state = await coordinator.run("task_003", "org_001", "Download bank statements for Q1")
 
         assert state.status == "completed"
         assert state.total_replans == 1
         # Step 0 completed + 2 new steps from replan = 3 completed
         assert len(state.completed_subtasks) == 3
 
-    def test_max_replans_exceeded_goes_to_needs_human(self):
+    async def test_max_replans_exceeded_goes_to_needs_human(self):
         """When max replans is exceeded, task goes to needs_human."""
         async def mock_llm(prompt):
             return json.dumps({
@@ -399,14 +364,12 @@ class TestCoordinatorReplan(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor, max_replans=2)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_004", "org_001", "Impossible task")
-        )
+        state = await coordinator.run("task_004", "org_001", "Impossible task")
         assert state.status == "needs_human"
         assert state.total_replans >= 2
         assert "Max replans exceeded" in state.error_message
 
-    def test_skip_strategy_continues(self):
+    async def test_skip_strategy_continues(self):
         """Sub-task with skip strategy doesn't stop the pipeline."""
         async def mock_llm(prompt):
             return json.dumps({
@@ -431,14 +394,12 @@ class TestCoordinatorReplan(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_005", "org_001", "Main task")
-        )
+        state = await coordinator.run("task_005", "org_001", "Main task")
         assert state.status == "completed"
 
 
-class TestCoordinatorAudit(unittest.TestCase):
-    def test_audit_callback_called_for_each_subtask(self):
+class TestCoordinatorAudit(unittest.IsolatedAsyncioTestCase):
+    async def test_audit_callback_called_for_each_subtask(self):
         audit_records = []
 
         async def audit_cb(subtask, result):
@@ -463,16 +424,14 @@ class TestCoordinatorAudit(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor, audit_callback=audit_cb)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_006", "org_001", "Test audit")
-        )
+        state = await coordinator.run("task_006", "org_001", "Test audit")
         assert state.status == "completed"
         assert len(audit_records) == 2
         assert audit_records[0]["goal"] == "Step A"
         assert audit_records[1]["goal"] == "Step B"
         assert all(r["success"] for r in audit_records)
 
-    def test_audit_callback_failure_does_not_block(self):
+    async def test_audit_callback_failure_does_not_block(self):
         """Audit callback errors should not break task execution."""
         async def failing_audit(subtask, result):
             raise RuntimeError("Audit DB down")
@@ -489,14 +448,12 @@ class TestCoordinatorAudit(unittest.TestCase):
         executor = ExecutorAgent(action_handler=mock_handler)
         coordinator = AgentCoordinator(planner, executor, audit_callback=failing_audit)
 
-        state = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_007", "org_001", "Test")
-        )
+        state = await coordinator.run("task_007", "org_001", "Test")
         assert state.status == "completed"
 
 
-class TestCoordinatorResumption(unittest.TestCase):
-    def test_resume_skips_completed_subtasks(self):
+class TestCoordinatorResumption(unittest.IsolatedAsyncioTestCase):
+    async def test_resume_skips_completed_subtasks(self):
         """Resumption should skip already-completed sub-tasks."""
         async def mock_llm(prompt):
             return json.dumps({
@@ -518,23 +475,17 @@ class TestCoordinatorResumption(unittest.TestCase):
         coordinator = AgentCoordinator(planner, executor)
 
         # First run to get subtask IDs
-        state1 = asyncio.get_event_loop().run_until_complete(
-            coordinator.run("task_008", "org_001", "3-step task")
-        )
+        state1 = await coordinator.run("task_008", "org_001", "3-step task")
         assert state1.status == "completed"
         first_subtask_id = state1.completed_subtasks[0]
 
         # Second run, resuming from after first subtask
         execute_calls.clear()
-        state2 = asyncio.get_event_loop().run_until_complete(
-            coordinator.run(
-                "task_008", "org_001", "3-step task",
-                resume_from=[first_subtask_id],
-            )
+        state2 = await coordinator.run(
+            "task_008", "org_001", "3-step task",
+            resume_from=[first_subtask_id],
         )
         assert state2.status == "completed"
-        # Due to plan regeneration, subtask IDs are new, so resume_from
-        # won't match the new plan's IDs. But the mechanism is tested.
 
 
 if __name__ == "__main__":
