@@ -179,10 +179,17 @@ def create_api_app() -> FastAPI:
     fastapi_app.include_router(legacy_base_router, prefix="/api/v1")
     fastapi_app.include_router(legacy_v2_router, prefix="/api/v2")
 
+    # Enterprise tenant isolation middleware
+    from enterprise.tenant.middleware import TenantIsolationMiddleware
+
+    fastapi_app.add_middleware(TenantIsolationMiddleware)
+
     # Enterprise extension routes
     from enterprise.auth.routes import router as enterprise_auth_router
+    from enterprise.tenant.routes import router as enterprise_tenant_router
 
     fastapi_app.include_router(enterprise_auth_router, prefix="/api/v1")
+    fastapi_app.include_router(enterprise_tenant_router, prefix="/api/v1")
 
     # local dev endpoints
     if settings.ENV == "local":
