@@ -38,6 +38,22 @@ class ParamDefinition:
 
 
 @dataclass
+class SkillStepDefinition:
+    """A skill invocation within a workflow template.
+
+    Maps workflow parameters to skill parameters, enabling
+    templates to be composed from reusable skills.
+    """
+
+    skill_name: str  # must match a registered skill name
+    description: str = ""  # human-readable step description
+    param_mapping: dict[str, str] = field(default_factory=dict)
+    # Maps skill param -> workflow param name or literal value (prefixed with "=")
+    # e.g. {"url": "bank_url", "username": "username", "max_rows": "=500"}
+    error_strategy_override: str | None = None
+
+
+@dataclass
 class WorkflowTemplate:
     """A reusable workflow template for financial RPA scenarios."""
 
@@ -51,3 +67,4 @@ class WorkflowTemplate:
     approval_rule: str  # description of applicable approval rule
     parameters: list[ParamDefinition] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
+    skill_steps: list[SkillStepDefinition] = field(default_factory=list)
