@@ -1,46 +1,49 @@
 /**
- * Enterprise sidebar navigation with frosted-glass style.
- * Replaces original SideNav with enterprise menu items.
+ * Enterprise sidebar navigation with frosted-glass style and i18n support.
  */
 
 import { NavLink } from "react-router-dom";
 import { Icon, type IconName } from "@/components/Icon";
 import { cn } from "@/util/utils";
 import { useSidebarStore } from "@/store/SidebarStore";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
 type NavItem = {
-  label: string;
+  labelKey: MessageKey;
   to: string;
   icon: IconName;
 };
 
 const buildSection: NavItem[] = [
-  { label: "Discover",   to: "/discover",  icon: "search" },
-  { label: "Tasks",       to: "/tasks",     icon: "task" },
-  { label: "Workflows",   to: "/workflows", icon: "workflow" },
-  { label: "Runs",        to: "/runs",      icon: "refresh" },
+  { labelKey: "nav.discover",   to: "/discover",  icon: "search" },
+  { labelKey: "nav.tasks",      to: "/tasks",     icon: "task" },
+  { labelKey: "nav.workflows",  to: "/workflows", icon: "workflow" },
+  { labelKey: "nav.runs",       to: "/runs",      icon: "refresh" },
 ];
 
 const enterpriseSection: NavItem[] = [
-  { label: "Dashboard",   to: "/enterprise/dashboard",    icon: "dashboard" },
-  { label: "Approvals",   to: "/enterprise/approvals",    icon: "approval" },
-  { label: "Audit Logs",  to: "/enterprise/audit",        icon: "audit" },
-  { label: "Permissions", to: "/enterprise/permissions",  icon: "permissions" },
+  { labelKey: "nav.dashboard",   to: "/enterprise/dashboard",    icon: "dashboard" },
+  { labelKey: "nav.approvals",   to: "/enterprise/approvals",    icon: "approval" },
+  { labelKey: "nav.auditLogs",   to: "/enterprise/audit",        icon: "audit" },
+  { labelKey: "nav.permissions", to: "/enterprise/permissions",  icon: "permissions" },
 ];
 
 const generalSection: NavItem[] = [
-  { label: "Settings",    to: "/settings",     icon: "settings" },
+  { labelKey: "nav.settings",    to: "/settings",     icon: "settings" },
 ];
 
 function NavSection({
-  title,
+  titleKey,
   items,
   collapsed,
 }: {
-  title: string;
+  titleKey: MessageKey;
   items: NavItem[];
   collapsed: boolean;
 }) {
+  const { t } = useI18n();
+
   return (
     <div className="mb-6">
       {!collapsed && (
@@ -48,7 +51,7 @@ function NavSection({
           className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest"
           style={{ color: "var(--finrpa-text-muted)" }}
         >
-          {title}
+          {t(titleKey)}
         </div>
       )}
       <div className="space-y-1">
@@ -62,13 +65,13 @@ function NavSection({
                 "justify-center px-2": collapsed,
               })
             }
-            title={collapsed ? item.label : undefined}
+            title={collapsed ? t(item.labelKey) : undefined}
           >
             <Icon
               name={item.icon}
               size={20}
             />
-            {!collapsed && <span>{item.label}</span>}
+            {!collapsed && <span>{t(item.labelKey)}</span>}
           </NavLink>
         ))}
       </div>
@@ -81,9 +84,9 @@ export function EnterpriseSideNav() {
 
   return (
     <nav className="flex-1 overflow-y-auto py-2">
-      <NavSection title="Build"      items={buildSection}      collapsed={collapsed} />
-      <NavSection title="Enterprise" items={enterpriseSection} collapsed={collapsed} />
-      <NavSection title="General"    items={generalSection}    collapsed={collapsed} />
+      <NavSection titleKey="nav.build"      items={buildSection}      collapsed={collapsed} />
+      <NavSection titleKey="nav.enterprise" items={enterpriseSection} collapsed={collapsed} />
+      <NavSection titleKey="nav.general"    items={generalSection}    collapsed={collapsed} />
     </nav>
   );
 }

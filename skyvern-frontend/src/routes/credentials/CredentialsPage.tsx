@@ -156,7 +156,7 @@ function CredentialsPage() {
             `SKYVERN_AUTH_BITWARDEN_*` environment variables are configured. See
             details{" "}
             <a
-              href="https://docs.skyvern.com/credentials/bitwarden"
+              href="https://github.com/Musenn/finrpa-enterprise"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline hover:text-blue-300"
