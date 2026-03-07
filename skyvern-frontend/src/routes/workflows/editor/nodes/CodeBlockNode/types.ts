@@ -10,8 +10,8 @@ export type CodeBlockNodeData = NodeBaseData & {
 export type CodeBlockNode = Node<CodeBlockNodeData, "codeBlock">;
 
 const codeLead = `
-# This feature is currently in private beta. Please reach out to
-# founders@skyvern.com to get access.
+# Custom code block for FinRPA Enterprise.
+# Define your automation logic below.
 #
 # Any parameter you've added to the "Input Parameters" list is available in
 # global scope, by the same name.
