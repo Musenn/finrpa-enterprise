@@ -14,9 +14,8 @@ Covers:
 - Audit dict generation: sensitive param masking
 """
 
-import asyncio
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 from enterprise.skills.base import (
     SKILL_REGISTRY,
@@ -89,7 +88,7 @@ class TestSkillRegistry(unittest.TestCase):
 # LoginSkill tests
 # ============================================================
 
-class TestLoginSkill(unittest.TestCase):
+class TestLoginSkill(unittest.IsolatedAsyncioTestCase):
     def test_params_validation(self):
         p = LoginParams(
             url="https://bank.example.com",
@@ -115,20 +114,18 @@ class TestLoginSkill(unittest.TestCase):
     def test_error_strategy_is_abort(self):
         assert LoginSkill.error_strategy == ErrorStrategy.ABORT
 
-    def test_execute_no_page(self):
+    async def test_execute_no_page(self):
         skill = LoginSkill()
         params = LoginParams(
             url="https://bank.example.com",
             username="user1",
             password="pass123",
         )
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={})
-        )
+        result = await skill.execute(params, context={})
         assert result.status == SkillStatus.FAILED
         assert "No browser page" in result.error_message
 
-    def test_execute_with_mock_page(self):
+    async def test_execute_with_mock_page(self):
         skill = LoginSkill()
         params = LoginParams(
             url="https://bank.example.com",
@@ -141,15 +138,13 @@ class TestLoginSkill(unittest.TestCase):
         mock_page.fill = AsyncMock()
         mock_page.click = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["logged_in"] is True
         mock_page.goto.assert_called_once()
         assert mock_page.fill.call_count == 2  # username + password
 
-    def test_execute_with_llm_handler(self):
+    async def test_execute_with_llm_handler(self):
         skill = LoginSkill()
         params = LoginParams(
             url="https://bank.example.com",
@@ -161,13 +156,11 @@ class TestLoginSkill(unittest.TestCase):
         mock_page.goto = AsyncMock()
         mock_llm = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
-        )
+        result = await skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
         assert result.status == SkillStatus.COMPLETED
         mock_llm.assert_called_once()
 
-    def test_execute_captcha_manual_returns_pending(self):
+    async def test_execute_captcha_manual_returns_pending(self):
         skill = LoginSkill()
         params = LoginParams(
             url="https://bank.example.com",
@@ -180,9 +173,7 @@ class TestLoginSkill(unittest.TestCase):
         mock_page.goto = AsyncMock()
         mock_llm = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
-        )
+        result = await skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
         assert result.status == SkillStatus.PENDING
         assert result.data["needs_captcha"] is True
 
@@ -204,7 +195,7 @@ class TestLoginSkill(unittest.TestCase):
 # TableExtractSkill tests
 # ============================================================
 
-class TestTableExtractSkill(unittest.TestCase):
+class TestTableExtractSkill(unittest.IsolatedAsyncioTestCase):
     def test_params_defaults(self):
         p = TableExtractParams()
         assert p.output_format == "json"
@@ -214,29 +205,25 @@ class TestTableExtractSkill(unittest.TestCase):
     def test_error_strategy_is_retry(self):
         assert TableExtractSkill.error_strategy == ErrorStrategy.RETRY
 
-    def test_execute_no_page(self):
+    async def test_execute_no_page(self):
         skill = TableExtractSkill()
         params = TableExtractParams()
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={})
-        )
+        result = await skill.execute(params, context={})
         assert result.status == SkillStatus.FAILED
         assert "No browser page" in result.error_message
 
-    def test_execute_no_table_found(self):
+    async def test_execute_no_table_found(self):
         skill = TableExtractSkill()
         params = TableExtractParams()
 
         mock_page = AsyncMock()
         mock_page.query_selector = AsyncMock(return_value=None)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.FAILED
         assert "No table found" in result.error_message
 
-    def test_execute_json_output(self):
+    async def test_execute_json_output(self):
         skill = TableExtractSkill()
         params = TableExtractParams(output_format="json")
 
@@ -251,9 +238,7 @@ class TestTableExtractSkill(unittest.TestCase):
             ],
         })
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["row_count"] == 2
         assert result.data["output_format"] == "json"
@@ -262,7 +247,7 @@ class TestTableExtractSkill(unittest.TestCase):
         assert output[0]["Code"] == "000001"
         assert output[1]["NAV"] == "2.567"
 
-    def test_execute_csv_output(self):
+    async def test_execute_csv_output(self):
         skill = TableExtractSkill()
         params = TableExtractParams(output_format="csv")
 
@@ -274,16 +259,14 @@ class TestTableExtractSkill(unittest.TestCase):
             "rows": [["1", "2"], ["3", "4"]],
         })
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["output_format"] == "csv"
         csv_text = result.data["output"]
         assert "A,B" in csv_text
         assert "1,2" in csv_text
 
-    def test_execute_header_validation(self):
+    async def test_execute_header_validation(self):
         skill = TableExtractSkill()
         params = TableExtractParams(headers=["Code", "NAV"])
 
@@ -295,9 +278,7 @@ class TestTableExtractSkill(unittest.TestCase):
             "rows": [["001", "Test", "1.0"]],
         })
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["header_match"] is True  # "Code" in "Fund Code", "NAV" in "NAV Value"
 
@@ -306,19 +287,17 @@ class TestTableExtractSkill(unittest.TestCase):
 # SessionKeepAliveSkill tests
 # ============================================================
 
-class TestSessionKeepAliveSkill(unittest.TestCase):
-    def test_active_session(self):
+class TestSessionKeepAliveSkill(unittest.IsolatedAsyncioTestCase):
+    async def test_active_session(self):
         skill = SessionKeepAliveSkill()
         params = SessionKeepAliveParams()
         mock_page = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["session_active"] is True
 
-    def test_expired_session_indicator(self):
+    async def test_expired_session_indicator(self):
         skill = SessionKeepAliveSkill()
         params = SessionKeepAliveParams(
             session_timeout_indicator="session expired",
@@ -327,9 +306,7 @@ class TestSessionKeepAliveSkill(unittest.TestCase):
         mock_page = AsyncMock()
         mock_page.content = AsyncMock(return_value="<html>Your session expired. Please login again.</html>")
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.FAILED
         assert "Session expired" in result.error_message
 
@@ -338,8 +315,8 @@ class TestSessionKeepAliveSkill(unittest.TestCase):
 # FormFillSkill tests
 # ============================================================
 
-class TestFormFillSkill(unittest.TestCase):
-    def test_form_fill_with_llm(self):
+class TestFormFillSkill(unittest.IsolatedAsyncioTestCase):
+    async def test_form_fill_with_llm(self):
         skill = FormFillSkill()
         params = FormFillParams(
             field_mapping={"Username": "admin", "Account": "123456"},
@@ -348,9 +325,7 @@ class TestFormFillSkill(unittest.TestCase):
         mock_page = AsyncMock()
         mock_llm = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
-        )
+        result = await skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["total"] == 2
         assert len(result.data["filled_fields"]) == 2
@@ -360,8 +335,8 @@ class TestFormFillSkill(unittest.TestCase):
 # SearchAndSelectSkill tests
 # ============================================================
 
-class TestSearchAndSelectSkill(unittest.TestCase):
-    def test_search_and_select_with_llm(self):
+class TestSearchAndSelectSkill(unittest.IsolatedAsyncioTestCase):
+    async def test_search_and_select_with_llm(self):
         skill = SearchAndSelectSkill()
         params = SearchAndSelectParams(
             search_text="CLM001",
@@ -372,9 +347,7 @@ class TestSearchAndSelectSkill(unittest.TestCase):
         mock_page.wait_for_timeout = AsyncMock()
         mock_llm = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
-        )
+        result = await skill.execute(params, context={"page": mock_page, "llm_handler": mock_llm})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["selected"] == "Claim CLM001"
 
@@ -383,8 +356,8 @@ class TestSearchAndSelectSkill(unittest.TestCase):
 # PaginationSkill tests
 # ============================================================
 
-class TestPaginationSkill(unittest.TestCase):
-    def test_pagination_stops_on_empty(self):
+class TestPaginationSkill(unittest.IsolatedAsyncioTestCase):
+    async def test_pagination_stops_on_empty(self):
         skill = PaginationSkill()
         params = PaginationParams(
             max_pages=5,
@@ -396,9 +369,7 @@ class TestPaginationSkill(unittest.TestCase):
         mock_page.query_selector_all = AsyncMock(return_value=[])  # empty page
         mock_page.wait_for_timeout = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         assert result.status == SkillStatus.COMPLETED
         assert result.data["pages_traversed"] == 1  # stops at first empty
         assert result.data["items_collected"] == 0
@@ -408,13 +379,13 @@ class TestPaginationSkill(unittest.TestCase):
 # FileDownloadSkill tests
 # ============================================================
 
-class TestFileDownloadSkill(unittest.TestCase):
+class TestFileDownloadSkill(unittest.IsolatedAsyncioTestCase):
     def test_params_defaults(self):
         p = FileDownloadParams()
         assert p.download_path == "./downloads/"
         assert p.wait_timeout_ms == 30000
 
-    def test_no_trigger_found(self):
+    async def test_no_trigger_found(self):
         skill = FileDownloadSkill()
         params = FileDownloadParams(
             trigger_text="Download PDF",
@@ -430,9 +401,7 @@ class TestFileDownloadSkill(unittest.TestCase):
         mock_ctx.__aenter__ = AsyncMock(return_value=mock_ctx)
         mock_ctx.__aexit__ = AsyncMock(return_value=None)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            skill.execute(params, context={"page": mock_page})
-        )
+        result = await skill.execute(params, context={"page": mock_page})
         # Should fail since query_selector returns None for the trigger text
         assert result.status == SkillStatus.FAILED
 
@@ -441,8 +410,8 @@ class TestFileDownloadSkill(unittest.TestCase):
 # Skill Executor Pipeline tests
 # ============================================================
 
-class TestSkillPipeline(unittest.TestCase):
-    def test_successful_pipeline(self):
+class TestSkillPipeline(unittest.IsolatedAsyncioTestCase):
+    async def test_successful_pipeline(self):
         mock_page = AsyncMock()
         mock_page.goto = AsyncMock()
         mock_page.fill = AsyncMock()
@@ -459,25 +428,21 @@ class TestSkillPipeline(unittest.TestCase):
             ),
         ]
 
-        result = asyncio.get_event_loop().run_until_complete(
-            execute_pipeline(steps, context={"page": mock_page})
-        )
+        result = await execute_pipeline(steps, context={"page": mock_page})
         assert result.success is True
         assert result.steps_completed == 1
         assert result.steps_total == 1
 
-    def test_pipeline_abort_on_unknown_skill(self):
+    async def test_pipeline_abort_on_unknown_skill(self):
         steps = [
             SkillStep(skill_name="nonexistent_skill", params={}),
         ]
-        result = asyncio.get_event_loop().run_until_complete(
-            execute_pipeline(steps, context={})
-        )
+        result = await execute_pipeline(steps, context={})
         assert result.success is False
         assert result.aborted_at_step == 0
         assert "Unknown skill" in result.error_message
 
-    def test_pipeline_abort_on_login_failure(self):
+    async def test_pipeline_abort_on_login_failure(self):
         """Login skill has ABORT error strategy — pipeline should stop."""
         steps = [
             SkillStep(
@@ -494,14 +459,12 @@ class TestSkillPipeline(unittest.TestCase):
             ),
         ]
         # No page in context -> login fails -> pipeline aborts
-        result = asyncio.get_event_loop().run_until_complete(
-            execute_pipeline(steps, context={})
-        )
+        result = await execute_pipeline(steps, context={})
         assert result.success is False
         assert result.aborted_at_step == 0
         assert result.steps_completed == 0
 
-    def test_pipeline_skip_on_pagination_failure(self):
+    async def test_pipeline_skip_on_pagination_failure(self):
         """Pagination skill has SKIP error strategy — pipeline should continue."""
         mock_page = AsyncMock()
         mock_page.goto = AsyncMock()
@@ -520,12 +483,10 @@ class TestSkillPipeline(unittest.TestCase):
         mock_page.query_selector_all = AsyncMock(return_value=[])
         mock_page.wait_for_timeout = AsyncMock()
 
-        result = asyncio.get_event_loop().run_until_complete(
-            execute_pipeline(steps, context={"page": mock_page})
-        )
+        result = await execute_pipeline(steps, context={"page": mock_page})
         assert result.success is True
 
-    def test_pipeline_with_audit_callback(self):
+    async def test_pipeline_with_audit_callback(self):
         mock_page = AsyncMock()
         mock_page.goto = AsyncMock()
         mock_page.fill = AsyncMock()
@@ -552,9 +513,7 @@ class TestSkillPipeline(unittest.TestCase):
             ),
         ]
 
-        result = asyncio.get_event_loop().run_until_complete(
-            execute_pipeline(steps, context={"page": mock_page}, audit_callback=audit_cb)
-        )
+        result = await execute_pipeline(steps, context={"page": mock_page}, audit_callback=audit_cb)
         assert result.success is True
         assert len(audit_records) == 1
         assert audit_records[0]["skill"] == "login"
