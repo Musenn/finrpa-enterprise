@@ -1,4 +1,4 @@
-.PHONY: dev dev-down test test-unit test-integration test-cov lint lint-fix migrate seed health clean
+.PHONY: dev dev-down dev-prod test test-unit test-integration test-cov lint lint-fix migrate seed health clean frontend-build frontend-test
 
 # ============================================================
 # Development
@@ -16,6 +16,9 @@ dev:
 
 dev-down:
 	docker compose down
+
+dev-prod:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 health:
 	@echo "=== Service Health ==="
@@ -50,6 +53,16 @@ lint:
 
 lint-fix:
 	ruff check enterprise/ tests/ --fix
+
+# ============================================================
+# Frontend
+# ============================================================
+
+frontend-build:
+	cd skyvern-frontend && npm run build
+
+frontend-test:
+	cd skyvern-frontend && npx vitest run
 
 # ============================================================
 # Database
