@@ -10,6 +10,7 @@ from .schemas import (
     IndustryType,
     ParamDefinition,
     ParamType,
+    SkillStepDefinition,
     WorkflowTemplate,
 )
 
@@ -64,6 +65,30 @@ BANKING_STATEMENT_COLLECTION = WorkflowTemplate(
         ),
     ],
     tags=["财务对账", "税务申报", "网银"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录企业网银",
+            param_mapping={"url": "bank_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="form_fill",
+            description="填写账单查询条件",
+            param_mapping={
+                "field_mapping": "={\"账号\": \"${account_number}\", \"开始日期\": \"${start_date}\", \"结束日期\": \"${end_date}\"}",
+            },
+        ),
+        SkillStepDefinition(
+            skill_name="table_extract",
+            description="提取账单数据",
+            param_mapping={"output_format": "=csv"},
+        ),
+        SkillStepDefinition(
+            skill_name="file_download",
+            description="下载账单文件",
+            param_mapping={"download_path": "output_path", "trigger_text": "=导出"},
+        ),
+    ],
 )
 
 BANKING_LOAN_REMINDER = WorkflowTemplate(
@@ -102,6 +127,25 @@ BANKING_LOAN_REMINDER = WorkflowTemplate(
         ),
     ],
     tags=["贷后管理", "还款提醒", "信贷"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录信贷管理系统",
+            param_mapping={"url": "system_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="form_fill",
+            description="填写还款查询条件",
+            param_mapping={
+                "field_mapping": "={\"提前天数\": \"${days_ahead}\"}",
+            },
+        ),
+        SkillStepDefinition(
+            skill_name="table_extract",
+            description="提取还款记录",
+            param_mapping={"output_format": "=json"},
+        ),
+    ],
 )
 
 
@@ -143,6 +187,23 @@ INSURANCE_CLAIM_QUERY = WorkflowTemplate(
         ),
     ],
     tags=["理赔查询", "案件管理", "日常作业"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录核心业务系统",
+            param_mapping={"url": "system_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="search_and_select",
+            description="搜索理赔案件",
+            param_mapping={"search_text": "claim_ids", "target_text": "claim_ids"},
+        ),
+        SkillStepDefinition(
+            skill_name="table_extract",
+            description="提取案件状态数据",
+            param_mapping={"output_format": "=json"},
+        ),
+    ],
 )
 
 INSURANCE_RENEWAL_CHECK = WorkflowTemplate(
@@ -180,6 +241,25 @@ INSURANCE_RENEWAL_CHECK = WorkflowTemplate(
         ),
     ],
     tags=["续保提醒", "客户维护", "保单管理"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录核心业务系统",
+            param_mapping={"url": "system_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="form_fill",
+            description="填写保单到期查询条件",
+            param_mapping={
+                "field_mapping": "={\"到期天数\": \"${days_ahead}\"}",
+            },
+        ),
+        SkillStepDefinition(
+            skill_name="table_extract",
+            description="提取续保清单",
+            param_mapping={"output_format": "=json"},
+        ),
+    ],
 )
 
 
@@ -226,6 +306,28 @@ SECURITIES_REPORT_ARCHIVE = WorkflowTemplate(
         ),
     ],
     tags=["研报归档", "投研", "信息整合"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录研报数据平台",
+            param_mapping={"url": "platform_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="search_and_select",
+            description="筛选目标行业研报",
+            param_mapping={"search_text": "industry", "target_text": "industry"},
+        ),
+        SkillStepDefinition(
+            skill_name="pagination",
+            description="遍历多页研报列表",
+            param_mapping={"max_pages": "=20"},
+        ),
+        SkillStepDefinition(
+            skill_name="file_download",
+            description="下载研报并归档",
+            param_mapping={"download_path": "archive_path", "trigger_text": "=下载"},
+        ),
+    ],
 )
 
 SECURITIES_NAV_COLLECTION = WorkflowTemplate(
@@ -267,6 +369,25 @@ SECURITIES_NAV_COLLECTION = WorkflowTemplate(
         ),
     ],
     tags=["基金净值", "资管监控", "数据采集"],
+    skill_steps=[
+        SkillStepDefinition(
+            skill_name="login",
+            description="登录基金数据平台",
+            param_mapping={"url": "platform_url", "username": "username", "password": "password"},
+        ),
+        SkillStepDefinition(
+            skill_name="form_fill",
+            description="填写基金代码和日期范围",
+            param_mapping={
+                "field_mapping": "={\"基金代码\": \"${fund_codes}\", \"开始日期\": \"${start_date}\", \"结束日期\": \"${end_date}\"}",
+            },
+        ),
+        SkillStepDefinition(
+            skill_name="table_extract",
+            description="提取净值数据",
+            param_mapping={"output_format": "=csv"},
+        ),
+    ],
 )
 
 
