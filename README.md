@@ -262,6 +262,7 @@ make lint          # ruff + mypy 静态检查
 | Day 13 | `day-13/performance-optimization` | Action 缓存 + 模型路由优化 |
 | Day 14 | `day-14/production-ready` | 容器化完善 + 端到端验收 |
 | Day 15 | `day-15/enterprise-frontend-integration` | 企业认证 + 全站 i18n + LLM 监控 + SIT 测试 |
+| Day 16 | `day-16/demo-data-integration` | 演示数据生成器 + 前后端字段对齐 + 运营大屏升级 |
 
 每个阶段的设计决策和踩坑记录在对应分支的 `summaries/` 目录中。
 

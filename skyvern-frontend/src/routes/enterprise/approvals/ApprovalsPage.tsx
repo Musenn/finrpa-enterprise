@@ -14,46 +14,62 @@ type ApprovalRequest = {
   task_id: string;
   risk_level: string;
   risk_reason: string;
-  action_description: string;
-  department_name: string;
-  business_line: string;
+  operation_description: string | null;
+  department_id: string;
+  business_line_id: string | null;
   requested_at: string;
-  screenshot_url?: string;
+  screenshot_path?: string | null;
   status: string;
+};
+
+// Lookup maps matching seed_demo_data.sql
+const DEPT_NAMES: Record<string, string> = {
+  dept_corp_credit: "对公信贷部",
+  dept_personal_fin: "个人金融部",
+  dept_asset_mgmt: "资产管理部",
+  dept_risk_mgmt: "风险管理部",
+  dept_compliance: "合规审计部",
+  dept_it: "信息技术部",
+};
+const BL_NAMES: Record<string, string> = {
+  bl_corp_loan: "对公贷款",
+  bl_retail_credit: "零售信贷",
+  bl_wealth_mgmt: "财富管理",
+  bl_intl_settle: "国际结算",
 };
 
 function demoApprovals(): ApprovalRequest[] {
   return [
     {
       approval_id: "apr_001",
-      task_id: "task_101",
+      task_id: "tsk_demo_0245",
       risk_level: "high",
-      risk_reason: "检测到大额转账操作：500,000 元",
-      action_description: "从账户 ****1234 向账户 ****5678 转账",
-      department_name: "对公信贷部",
-      business_line: "对公贷款",
+      risk_reason: "大额交易操作，金额超过100万元",
+      operation_description: "企业贷款申请材料审核",
+      department_id: "dept_corp_credit",
+      business_line_id: "bl_corp_loan",
       requested_at: "2026-03-07T10:30:00",
       status: "pending",
     },
     {
       approval_id: "apr_002",
-      task_id: "task_102",
+      task_id: "tsk_demo_0248",
       risk_level: "critical",
-      risk_reason: "检测到销户操作",
-      action_description: "为客户张某销户储蓄账户 ****9012",
-      department_name: "零售银行部",
-      business_line: "零售信贷",
+      risk_reason: "核心数据库批量修改",
+      operation_description: "客户KYC信息更新",
+      department_id: "dept_personal_fin",
+      business_line_id: "bl_retail_credit",
       requested_at: "2026-03-07T09:15:00",
       status: "pending",
     },
     {
       approval_id: "apr_003",
-      task_id: "task_103",
+      task_id: "tsk_demo_0250",
       risk_level: "high",
-      risk_reason: "保险保单受益人变更",
-      action_description: "变更保单 #INS-2026-0042 的受益人",
-      department_name: "保险运营部",
-      business_line: "保险",
+      risk_reason: "跨境交易金额异常",
+      operation_description: "跨境汇款合规审查",
+      department_id: "dept_corp_credit",
+      business_line_id: "bl_intl_settle",
       requested_at: "2026-03-07T08:45:00",
       status: "pending",
     },
@@ -77,9 +93,9 @@ function ApprovalCard({
       <div className="flex gap-6">
         {/* Screenshot area */}
         <div className="hidden w-48 shrink-0 sm:block">
-          {item.screenshot_url ? (
+          {item.screenshot_path ? (
             <img
-              src={item.screenshot_url}
+              src={item.screenshot_path}
               alt="Task screenshot"
               className="h-32 w-full rounded-lg border border-gray-200 object-cover"
             />
@@ -95,12 +111,13 @@ function ApprovalCard({
           <div className="mb-2 flex items-center gap-3">
             <RiskBadge level={item.risk_level} />
             <span className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
-              {item.department_name} / {item.business_line}
+              {DEPT_NAMES[item.department_id] ?? item.department_id}
+              {item.business_line_id && ` / ${BL_NAMES[item.business_line_id] ?? item.business_line_id}`}
             </span>
           </div>
 
           <h3 className="text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
-            {item.action_description}
+            {item.operation_description ?? item.task_id}
           </h3>
 
           <p className="mt-1 text-sm" style={{ color: "var(--finrpa-text-secondary)" }}>
@@ -167,7 +184,7 @@ export function ApprovalsPage() {
       const resp = await authFetch(`/api/v1/enterprise/approvals/${id}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ remark: "" }),
+        body: JSON.stringify({ note: "" }),
       });
       if (resp.ok) {
         setApprovals((prev) => prev.filter((a) => a.approval_id !== id));
@@ -183,7 +200,7 @@ export function ApprovalsPage() {
       const resp = await authFetch(`/api/v1/enterprise/approvals/${id}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ remark: "" }),
+        body: JSON.stringify({ note: "" }),
       });
       if (resp.ok) {
         setApprovals((prev) => prev.filter((a) => a.approval_id !== id));

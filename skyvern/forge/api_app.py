@@ -201,6 +201,10 @@ def create_api_app() -> FastAPI:
     fastapi_app.include_router(enterprise_dashboard_router, prefix="/api/v1")
     fastapi_app.include_router(enterprise_cache_router, prefix="/api/v1")
 
+    # Populate enterprise demo data stores so all modules have data on startup
+    from enterprise.demo_seed import populate_all_stores
+    populate_all_stores()
+
     # Bridge enterprise JWT auth into Skyvern's native org auth so that
     # endpoints like /workflows/create-from-prompt accept enterprise tokens.
     from enterprise.auth.bridge import (

@@ -20,8 +20,8 @@ type AuditLogEntry = {
   target_element: string;
   input_value: string;
   page_url: string;
-  screenshot_before_key?: string;
-  screenshot_after_key?: string;
+  screenshot_before_url?: string;
+  screenshot_after_url?: string;
   duration_ms: number;
   executor: string;
   execution_result: string;
@@ -143,11 +143,11 @@ function LogTimelineItem({
       <div className="cursor-pointer" onClick={onToggle}>
         <Timeline items={[timelineItem]} />
       </div>
-      {expanded && (log.screenshot_before_key || log.screenshot_after_key) && (
+      {expanded && (log.screenshot_before_url || log.screenshot_after_url) && (
         <div className="ml-12 mt-2">
           <ScreenshotDiff
-            beforeUrl={log.screenshot_before_key}
-            afterUrl={log.screenshot_after_key}
+            beforeUrl={log.screenshot_before_url}
+            afterUrl={log.screenshot_after_url}
           />
         </div>
       )}
