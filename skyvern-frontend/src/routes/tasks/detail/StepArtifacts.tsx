@@ -17,6 +17,7 @@ import { basicLocalTimeFormat, basicTimeFormat } from "@/util/timeFormat";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { Artifact } from "./Artifact";
 import { apiPathPrefix } from "@/util/env";
+import { useI18n } from "@/i18n/useI18n";
 
 const enable_log_artifacts =
   import.meta.env.VITE_ENABLE_LOG_ARTIFACTS === "true";
@@ -27,6 +28,7 @@ type Props = {
 };
 
 function StepArtifacts({ id, stepProps }: Props) {
+  const { t } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const artifact = searchParams.get("artifact") ?? "info";
   const credentialGetter = useCredentialGetter();
@@ -104,25 +106,25 @@ function StepArtifacts({ id, stepProps }: Props) {
       className="w-full"
     >
       <TabsList className="grid h-16 w-full grid-cols-5">
-        <TabsTrigger value="info">Info</TabsTrigger>
-        <TabsTrigger value="screenshot_llm">Annotated Screenshots</TabsTrigger>
-        <TabsTrigger value="screenshot_action">Action Screenshots</TabsTrigger>
+        <TabsTrigger value="info">{t("artifacts.info")}</TabsTrigger>
+        <TabsTrigger value="screenshot_llm">{t("artifacts.annotatedScreenshots")}</TabsTrigger>
+        <TabsTrigger value="screenshot_action">{t("artifacts.actionScreenshots")}</TabsTrigger>
         <TabsTrigger value="element_tree_trimmed">
-          HTML Element Tree
+          {t("artifacts.htmlElementTree")}
         </TabsTrigger>
-        <TabsTrigger value="element_tree">Element Tree</TabsTrigger>
-        <TabsTrigger value="llm_prompt">Prompt</TabsTrigger>
-        <TabsTrigger value="llm_response_parsed">Action List</TabsTrigger>
-        <TabsTrigger value="html_raw">HTML (Raw)</TabsTrigger>
-        <TabsTrigger value="llm_request">LLM Request (Raw)</TabsTrigger>
+        <TabsTrigger value="element_tree">{t("artifacts.elementTree")}</TabsTrigger>
+        <TabsTrigger value="llm_prompt">{t("artifacts.prompt")}</TabsTrigger>
+        <TabsTrigger value="llm_response_parsed">{t("artifacts.actionList")}</TabsTrigger>
+        <TabsTrigger value="html_raw">{t("artifacts.htmlRaw")}</TabsTrigger>
+        <TabsTrigger value="llm_request">{t("artifacts.llmRequestRaw")}</TabsTrigger>
         {enable_log_artifacts && (
-          <TabsTrigger value="skyvern_log">Skyvern Log</TabsTrigger>
+          <TabsTrigger value="skyvern_log">{t("tasks.logs")}</TabsTrigger>
         )}
       </TabsList>
       <TabsContent value="info">
         <div className="flex flex-col gap-6 p-4">
           <div className="flex items-center">
-            <Label className="w-32 shrink-0">Step ID</Label>
+            <Label className="w-32 shrink-0">{t("artifacts.stepId")}</Label>
             {isFetching ? (
               <Skeleton className="h-4 w-40" />
             ) : (
@@ -130,7 +132,7 @@ function StepArtifacts({ id, stepProps }: Props) {
             )}
           </div>
           <div className="flex items-center">
-            <Label className="w-32 shrink-0">Status</Label>
+            <Label className="w-32 shrink-0">{t("common.status")}</Label>
             {isFetching ? (
               <Skeleton className="h-4 w-40" />
             ) : stepProps ? (
@@ -138,7 +140,7 @@ function StepArtifacts({ id, stepProps }: Props) {
             ) : null}
           </div>
           <div className="flex items-center">
-            <Label className="w-32 shrink-0">Created At</Label>
+            <Label className="w-32 shrink-0">{t("tasks.createdAt")}</Label>
             {isFetching ? (
               <Skeleton className="h-4 w-40" />
             ) : stepProps ? (
@@ -170,7 +172,7 @@ function StepArtifacts({ id, stepProps }: Props) {
             <Skeleton className="h-full w-full" />
           </div>
         ) : (
-          <div>No screenshots found</div>
+          <div>{t("artifacts.noScreenshots")}</div>
         )}
       </TabsContent>
       <TabsContent value="screenshot_action">
@@ -192,7 +194,7 @@ function StepArtifacts({ id, stepProps }: Props) {
             <Skeleton className="h-full w-full" />
           </div>
         ) : (
-          <div>No screenshots found</div>
+          <div>{t("artifacts.noScreenshots")}</div>
         )}
       </TabsContent>
       <TabsContent value="element_tree_trimmed">

@@ -52,6 +52,7 @@ import { cn } from "@/util/utils";
 import { Button } from "@/components/ui/button";
 import { TestWebhookDialog } from "@/components/TestWebhookDialog";
 import { getWorkflowBlocks } from "../../workflowEditorUtils";
+import { useI18n } from "@/i18n/useI18n";
 
 interface StartSettings {
   webhookCallbackUrl: string;
@@ -64,6 +65,7 @@ interface StartSettings {
 }
 
 function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
+  const { t } = useI18n();
   const workflowSettingsStore = useWorkflowSettingsStore();
   const reactFlowInstance = useReactFlow();
   const nodes = useNodes<AppNode>();
@@ -217,7 +219,7 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
             )}
           >
             <div className="relative">
-              <header className="mb-6 mt-2">Start</header>
+              <header className="mb-6 mt-2">{t("editor.start")}</header>
               <Separator />
               <Accordion
                 type="single"
@@ -226,7 +228,7 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
               >
                 <AccordionItem value="settings" className="mt-4 border-b-0">
                   <AccordionTrigger className="py-2">
-                    Workflow Settings
+                    {t("editor.workflowSettings")}
                   </AccordionTrigger>
                   <AccordionContent className="pl-6 pr-1 pt-1">
                     <div key={rerender.key} className="space-y-4">
@@ -241,8 +243,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       </div>
                       <div className="space-y-2">
                         <div className="flex gap-2">
-                          <Label>Webhook Callback URL</Label>
-                          <HelpTooltip content="The URL of a webhook endpoint to send the workflow results" />
+                          <Label>{t("editor.webhookCallbackUrl")}</Label>
+                          <HelpTooltip content={t("editor.webhookCallbackUrlHelp")} />
                         </div>
                         <div className="flex flex-col gap-2">
                           <Input
@@ -268,7 +270,7 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                                 className="self-start"
                                 disabled={!localWebhookUrl}
                               >
-                                Test Webhook
+                                {t("editor.testWebhook")}
                               </Button>
                             }
                           />
@@ -276,8 +278,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       </div>
                       <div className="space-y-2">
                         <div className="flex gap-2">
-                          <Label>Proxy Location</Label>
-                          <HelpTooltip content="Route Skyvern through one of our available proxies." />
+                          <Label>{t("tasks.proxyLocation")}</Label>
+                          <HelpTooltip content={t("tasks.proxyHelper")} />
                         </div>
                         <ProxySelector
                           value={data.proxyLocation}
@@ -290,8 +292,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between">
                             <div className="flex items-center gap-2">
-                              <Label>Run With</Label>
-                              <HelpTooltip content="If code has been generated and saved from a previously successful run, set this to 'Code' to use that code when executing the workflow. To avoid using code, set this to 'Skyvern Agent'." />
+                              <Label>{t("workflows.runWith")}</Label>
+                              <HelpTooltip content={t("editor.runWithHelp")} />
                             </div>
                             <Select
                               value={data.runWith ?? "agent"}
@@ -300,17 +302,17 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                               }}
                             >
                               <SelectTrigger className="w-48">
-                                <SelectValue placeholder="Run Method" />
+                                <SelectValue placeholder={t("editor.runMethod")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="agent">
-                                  Skyvern Agent
+                                  {t("workflows.finrpaAgent")}
                                 </SelectItem>
-                                <SelectItem value="code">Code</SelectItem>
+                                <SelectItem value="code">{t("workflows.code")}</SelectItem>
                                 <SelectItem value="code_v2">
-                                  <span>Code 2.0</span>{" "}
+                                  <span>{t("workflows.code20")}</span>{" "}
                                   <span className="text-xs italic text-yellow-400">
-                                    new
+                                    {t("editor.new")}
                                   </span>
                                 </SelectItem>
                               </SelectContent>
@@ -318,8 +320,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                           </div>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <Label>AI Fallback (self-healing)</Label>
-                              <HelpTooltip content="If a run with code fails, fallback to AI and regenerate the code." />
+                              <Label>{t("workflows.aiFallback")}</Label>
+                              <HelpTooltip content={t("workflows.aiFallbackDesc")} />
                               <Switch
                                 className="ml-auto"
                                 checked={data.aiFallback}
@@ -331,8 +333,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                           </div>
                           <div className="space-y-2">
                             <div className="flex gap-2">
-                              <Label>Code Key (optional)</Label>
-                              <HelpTooltip content="A static or dynamic key for directing code generation." />
+                              <Label>{t("editor.codeKeyOptional")}</Label>
+                              <HelpTooltip content={t("editor.codeKeyHelp")} />
                             </div>
                             <WorkflowBlockInputTextarea
                               nodeId={id}
@@ -351,8 +353,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       <div className="flex flex-col gap-4">
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
-                            <Label>Run Sequentially</Label>
-                            <HelpTooltip content="Run the workflow in a sequential order" />
+                            <Label>{t("editor.runSequentially")}</Label>
+                            <HelpTooltip content={t("editor.runSequentiallyHelp")} />
                             <Switch
                               className="ml-auto"
                               checked={data.runSequentially}
@@ -371,8 +373,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                           <div className="flex flex-col gap-4 rounded-md bg-slate-elevation4 p-4 pl-4">
                             <div className="space-y-2">
                               <div className="flex gap-2">
-                                <Label>Sequential Key (optional)</Label>
-                                <HelpTooltip content="A static or dynamic key for directing sequential workflow execution." />
+                                <Label>{t("editor.sequentialKeyOptional")}</Label>
+                                <HelpTooltip content={t("editor.sequentialKeyHelp")} />
                               </div>
                               <WorkflowBlockInputTextarea
                                 nodeId={id}
@@ -390,8 +392,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label>Save &amp; Reuse Session</Label>
-                          <HelpTooltip content="Persist session information across workflow runs" />
+                          <Label>{t("editor.saveReuseSession")}</Label>
+                          <HelpTooltip content={t("editor.saveReuseSessionHelp")} />
                           <Switch
                             className="ml-auto"
                             checked={data.persistBrowserSession}
@@ -403,8 +405,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label>Extra HTTP Headers</Label>
-                          <HelpTooltip content="Specify some self-defined HTTP requests headers" />
+                          <Label>{t("editor.extraHttpHeaders")}</Label>
+                          <HelpTooltip content={t("editor.extraHttpHeadersHelp")} />
                         </div>
                         <KeyValueInput
                           value={
@@ -429,12 +431,12 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
 
                             update({ extraHttpHeaders: normalized });
                           }}
-                          addButtonText="Add Header"
+                          addButtonText={t("editor.addHeader")}
                         />
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label>Max Screenshot Scrolls</Label>
+                          <Label>{t("editor.maxScreenshotScrolls")}</Label>
                           <HelpTooltip
                             content={`The maximum number of scrolls for the post action screenshot. Default is ${MAX_SCREENSHOT_SCROLLS_DEFAULT}. If it's set to 0, it will take the current viewport screenshot.`}
                           />
@@ -454,8 +456,8 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label>Execute on Any Outcome</Label>
-                          <HelpTooltip content="Select a block that will always run after the workflow completes, whether it succeeds, fails, or terminates early. Useful for cleanup tasks like logging out." />
+                          <Label>{t("editor.executeOnAnyOutcome")}</Label>
+                          <HelpTooltip content={t("editor.executeOnAnyOutcomeHelp")} />
                         </div>
                         <Select
                           value={data.finallyBlockLabel ?? "none"}
@@ -467,10 +469,10 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
                           }}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="None" />
+                            <SelectValue placeholder={t("editor.none")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="none">{t("editor.none")}</SelectItem>
                             {terminalBlockLabels.map((label) => (
                               <SelectItem key={label} value={label}>
                                 {label}
@@ -489,7 +491,7 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
 
         <BlockCodeEditor
           blockLabel="__start_block__"
-          title="Start"
+          title={t("editor.start")}
           script={script}
           onExit={() => {
             hideAllScripts();
@@ -512,23 +514,22 @@ function StartNode({ id, data, parentId }: NodeProps<StartNode>) {
         id="a"
         className="opacity-0"
       />
-      <div className="w-[30rem] rounded-lg bg-slate-elevation4 px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-        Start
+      <div className="w-[30rem] rounded-lg bg-slate-elevation4 px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--finrpa-text-muted)" }}>
+        {t("editor.start")}
         {isInsideLoop && (
-          <div className="mt-4 flex gap-3 rounded-md bg-slate-800 p-3 normal-case tracking-normal">
-            <span className="rounded bg-slate-700 p-1 text-lg">💡</span>
-            <div className="space-y-1 text-left font-normal text-slate-400">
-              Use{" "}
+          <div className="mt-4 flex gap-3 rounded-md p-3 normal-case tracking-normal" style={{ background: "rgba(26,58,92,0.06)" }}>
+            <span className="rounded p-1 text-lg" style={{ background: "rgba(26,58,92,0.10)" }}>💡</span>
+            <div className="space-y-1 text-left font-normal" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("editor.loopCurrentValueHint")}{" "}
               <code className="text-white">
                 &#123;&#123;&nbsp;current_value&nbsp;&#125;&#125;
-              </code>{" "}
-              to get the current loop value for a given iteration.
+              </code>
             </div>
           </div>
         )}
         {isInsideConditional && (
-          <div className="mt-4 rounded-md border border-dashed border-slate-500 p-4 text-center font-normal normal-case tracking-normal text-slate-300">
-            Start adding blocks to be executed for the selected condition
+          <div className="mt-4 rounded-md border border-dashed p-4 text-center font-normal normal-case tracking-normal" style={{ borderColor: "var(--glass-border)", color: "var(--finrpa-text-secondary)" }}>
+            {t("editor.conditionalStartHint")}
           </div>
         )}
       </div>

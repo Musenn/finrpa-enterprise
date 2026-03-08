@@ -16,6 +16,7 @@ import {
   CredentialModalTypes,
   useCredentialModalState,
 } from "@/routes/credentials/useCredentialModalState";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   value: string;
@@ -24,6 +25,7 @@ type Props = {
 };
 
 function CredentialSelector({ value, onChange, placeholder }: Props) {
+  const { t } = useI18n();
   const { setIsOpen, setType } = useCredentialModalState();
   const { data: credentials, isFetching } = useCredentialsQuery({
     page_size: 100, // Reasonable limit for dropdown selector
@@ -51,7 +53,7 @@ function CredentialSelector({ value, onChange, placeholder }: Props) {
         }}
       >
         <SelectTrigger>
-          <SelectValue placeholder={placeholder ?? "Select a credential"} />
+          <SelectValue placeholder={placeholder ?? t("credentials.selectCredential")} />
         </SelectTrigger>
         <SelectContent>
           {credentials.map((credential) => (
@@ -77,12 +79,12 @@ function CredentialSelector({ value, onChange, placeholder }: Props) {
                     </>
                   )}
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   {credential.credential_type === "password"
-                    ? "Password"
+                    ? t("credentials.password")
                     : credential.credential_type === "credit_card"
-                      ? "Credit Card"
-                      : "Secret"}
+                      ? t("credentials.creditCard")
+                      : t("credentials.secret")}
                 </p>
               </div>
             </CustomSelectItem>
@@ -90,7 +92,7 @@ function CredentialSelector({ value, onChange, placeholder }: Props) {
           <SelectItem value="new">
             <div className="flex items-center gap-2">
               <PlusIcon className="size-4" />
-              <span>Add new credential</span>
+              <span>{t("credentials.addNewCredential")}</span>
             </div>
           </SelectItem>
         </SelectContent>

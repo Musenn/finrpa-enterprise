@@ -37,11 +37,13 @@ import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuer
 import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 import { useRerender } from "@/hooks/useRerender";
 
+import { useI18n } from "@/i18n/useI18n";
 import { DisableCache } from "../DisableCache";
 import { BlockExecutionOptions } from "../components/BlockExecutionOptions";
 import { AI_IMPROVE_CONFIGS } from "../../constants";
 
 function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
+  const { t } = useI18n();
   const blockScriptStore = useBlockScriptStore();
   const { editable, label } = data;
   const script = blockScriptStore.scripts[label];
@@ -87,7 +89,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
               "pointer-events-none": thisBlockIsPlaying,
-              "bg-slate-950 outline outline-2 outline-slate-300":
+              "outline outline-2 outline-primary":
                 thisBlockIsTargetted,
             },
             data.comparisonColor,
@@ -105,11 +107,11 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">URL</Label>
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
                   <HelpTooltip content={helpTooltips["login"]["url"]} />
                 </div>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                     Tip: Use the {"+"} button to add parameters!
                   </div>
                 ) : null}
@@ -125,7 +127,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
             </div>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">Login Goal</Label>
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Login Goal</Label>
                 <HelpTooltip
                   content={helpTooltips["login"]["navigationGoal"]}
                 />
@@ -142,7 +144,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300">Credential</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Credential</Label>
               <LoginBlockCredentialSelector
                 nodeId={id}
                 value={
@@ -194,7 +196,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs text-slate-300">
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                       Complete if...
                     </Label>
                     <WorkflowBlockInputTextarea
@@ -210,7 +212,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Engine
                       </Label>
                     </div>
@@ -224,7 +226,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Max Steps Override
                       </Label>
                       <HelpTooltip
@@ -249,7 +251,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                   <div className="space-y-2">
                     <div className="flex gap-4">
                       <div className="flex gap-2">
-                        <Label className="text-xs font-normal text-slate-300">
+                        <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                           Error Messages
                         </Label>
                         <HelpTooltip
@@ -309,7 +311,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                         2FA Identifier
                       </Label>
                       <HelpTooltip
@@ -328,7 +330,7 @@ function LoginNode({ id, data, type }: NodeProps<LoginNode>) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                         2FA Verification URL
                       </Label>
                       <HelpTooltip

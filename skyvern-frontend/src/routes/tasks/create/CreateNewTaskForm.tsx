@@ -42,6 +42,7 @@ import {
 } from "./taskFormTypes";
 import { ProxySelector } from "@/components/ProxySelector";
 import { Switch } from "@/components/ui/switch";
+import { useI18n } from "@/i18n/useI18n";
 import { MAX_SCREENSHOT_SCROLLS_DEFAULT } from "@/routes/workflows/editor/nodes/Taskv2Node/types";
 import { TestWebhookDialog } from "@/components/TestWebhookDialog";
 type Props = {
@@ -104,6 +105,7 @@ function createTaskRequestObject(
 type Section = "base" | "extraction" | "advanced";
 
 function CreateNewTaskForm({ initialValues }: Props) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const credentialGetter = useCredentialGetter();
   const apiCredential = useApiCredential();
@@ -158,13 +160,12 @@ function CreateNewTaskForm({ initialValues }: Props) {
       if (error.response?.status === 402) {
         toast({
           variant: "destructive",
-          title: "Failed to create task",
-          description:
-            "You don't have enough credits to run this task. Go to billing to see your credit balance.",
+          title: t("tasks.failedCreate"),
+          description: t("tasks.insufficientCredits"),
           action: (
-            <ToastAction altText="Go to Billing">
+            <ToastAction altText={t("tasks.goBilling")}>
               <Button asChild>
-                <Link to="billing">Go to Billing</Link>
+                <Link to="billing">{t("tasks.goBilling")}</Link>
               </Button>
             </ToastAction>
           ),
@@ -173,19 +174,19 @@ function CreateNewTaskForm({ initialValues }: Props) {
       }
       toast({
         variant: "destructive",
-        title: "There was an error creating the task.",
+        title: t("tasks.errorCreating"),
         description: error.message,
       });
     },
     onSuccess: (response) => {
       toast({
         variant: "success",
-        title: "Task Created",
-        description: `${response.data.task_id} created successfully.`,
+        title: t("tasks.taskCreated"),
+        description: `${response.data.task_id} ${t("tasks.createdSuccessfully")}`,
         action: (
-          <ToastAction altText="View">
+          <ToastAction altText={t("tasks.view")}>
             <Button asChild>
-              <Link to={`/tasks/${response.data.task_id}`}>View</Link>
+              <Link to={`/tasks/${response.data.task_id}`}>{t("tasks.view")}</Link>
             </Button>
           </ToastAction>
         ),
@@ -220,7 +221,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <TaskFormSection
           index={1}
-          title="Base Content"
+          title={t("tasks.baseContent")}
           active={isActive("base")}
           onClick={() => {
             toggleSection("base");
@@ -241,9 +242,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">URL</h1>
-                            <h2 className="text-base text-slate-400">
-                              The starting URL for the task
+                            <h1 className="text-lg">{t("tasks.url")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.urlDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -265,10 +266,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Navigation Goal</h1>
-                            <h2 className="text-base text-slate-400">
-                              Where should Skyvern go and what should Skyvern
-                              do?
+                            <h1 className="text-lg">{t("tasks.navigationGoal")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.navigationGoalDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -276,7 +276,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                           <FormControl>
                             <AutoResizingTextarea
                               {...field}
-                              placeholder="Tell Skyvern what to do."
+                              placeholder={t("tasks.navigationGoalPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -296,10 +296,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                           <div className="flex gap-16">
                             <FormLabel>
                               <div className="w-72">
-                                <h1 className="text-lg">Navigation Payload</h1>
-                                <h2 className="text-base text-slate-400">
-                                  Specify important parameters, routes, or
-                                  states
+                                <h1 className="text-lg">{t("tasks.navigationPayload")}</h1>
+                                <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                                  {t("tasks.navigationPayloadDesc")}
                                 </h2>
                               </div>
                               <Button
@@ -311,7 +310,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                                 }}
                                 size="sm"
                               >
-                                Hide Advanced Settings
+                                {t("tasks.hideAdvanced")}
                               </Button>
                             </FormLabel>
                             <div className="w-full">
@@ -343,7 +342,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       }}
                       size="sm"
                     >
-                      Show Advanced Settings
+                      {t("tasks.showAdvanced")}
                     </Button>
                   </div>
                 )}
@@ -353,7 +352,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
         </TaskFormSection>
         <TaskFormSection
           index={2}
-          title="Extraction"
+          title={t("tasks.extraction")}
           active={isActive("extraction")}
           onClick={() => {
             toggleSection("extraction");
@@ -374,9 +373,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Data Extraction Goal</h1>
-                            <h2 className="text-base text-slate-400">
-                              What outputs are you looking to get?
+                            <h1 className="text-lg">{t("tasks.dataExtractionGoal")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.dataExtractionGoalDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -384,7 +383,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                           <FormControl>
                             <AutoResizingTextarea
                               {...field}
-                              placeholder="What data do you need to extract?"
+                              placeholder={t("tasks.dataExtractionGoalPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -402,9 +401,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Data Schema</h1>
-                            <h2 className="text-base text-slate-400">
-                              Specify the output format in JSON
+                            <h1 className="text-lg">{t("tasks.dataSchema")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.dataSchemaDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -430,7 +429,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
         </TaskFormSection>
         <TaskFormSection
           index={3}
-          title="Advanced Settings"
+          title={t("tasks.advanced")}
           active={isActive("advanced")}
           onClick={() => {
             toggleSection("advanced");
@@ -453,10 +452,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Include Action History</h1>
-                            <h2 className="text-base text-slate-400">
-                              Whether to include action history when verifying
-                              the task completion.
+                            <h1 className="text-lg">{t("tasks.includeActionHistory")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.includeActionHistoryDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -483,10 +481,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Max Steps Override</h1>
-                            <h2 className="text-base text-slate-400">
-                              Want to allow this task to execute more or less
-                              steps than the default?
+                            <h1 className="text-lg">{t("tasks.maxSteps")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.maxStepsDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -497,7 +494,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                               type="number"
                               min={1}
                               value={field.value ?? ""}
-                              placeholder={`Default: ${organization?.max_steps_per_run ?? MAX_STEPS_DEFAULT}`}
+                              placeholder={`${t("common.default")}: ${organization?.max_steps_per_run ?? MAX_STEPS_DEFAULT}`}
                               onChange={(event) => {
                                 const value =
                                   event.target.value === ""
@@ -521,10 +518,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Webhook Callback URL</h1>
-                            <h2 className="text-base text-slate-400">
-                              The URL of a webhook endpoint to send the
-                              extracted information
+                            <h1 className="text-lg">{t("tasks.webhookUrl")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.webhookUrlDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -550,7 +546,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                                     className="self-start"
                                     disabled={!field.value}
                                   >
-                                    Test Webhook
+                                    {t("tasks.testWebhook")}
                                   </Button>
                                 }
                               />
@@ -572,11 +568,10 @@ function CreateNewTaskForm({ initialValues }: Props) {
                           <FormLabel>
                             <div className="w-72">
                               <div className="flex items-center gap-2 text-lg">
-                                Proxy Location
+                                {t("tasks.proxyLocation")}
                               </div>
-                              <h2 className="text-sm text-slate-400">
-                                Route Skyvern through one of our available
-                                proxies.
+                              <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                                {t("tasks.proxyHelper")}
                               </h2>
                             </div>
                           </FormLabel>
@@ -603,9 +598,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Max Screenshot Scrolls</h1>
-                            <h2 className="text-base text-slate-400">
-                              {`The maximum number of scrolls for the post action screenshot. Default is ${MAX_SCREENSHOT_SCROLLS_DEFAULT}. If it's set to 0, it will take the current viewport screenshot.`}
+                            <h1 className="text-lg">{t("tasks.maxScreenshotScrolls")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.maxScreenshotScrollsDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -616,7 +611,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                               type="number"
                               min={0}
                               value={field.value ?? ""}
-                              placeholder={`Default: ${MAX_SCREENSHOT_SCROLLS_DEFAULT}`}
+                              placeholder={`${t("common.default")}: ${MAX_SCREENSHOT_SCROLLS_DEFAULT}`}
                               onChange={(event) => {
                                 const value =
                                   event.target.value === ""
@@ -641,10 +636,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Extra HTTP Headers</h1>
-                            <h2 className="text-base text-slate-400">
-                              Specify some self defined HTTP requests headers in
-                              Dict format
+                            <h1 className="text-lg">{t("tasks.extraHttpHeaders")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.extraHttpHeadersDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -653,7 +647,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
                             <KeyValueInput
                               value={field.value ?? ""}
                               onChange={(val) => field.onChange(val)}
-                              addButtonText="Add Header"
+                              addButtonText={t("tasks.addHeader")}
                             />
                           </FormControl>
                           <FormMessage />
@@ -670,10 +664,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Error Messages</h1>
-                            <h2 className="text-base text-slate-400">
-                              Specify any error outputs you would like to be
-                              notified about
+                            <h1 className="text-lg">{t("tasks.errorCodeMapping")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.errorCodeMappingDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -702,15 +695,15 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">2FA Identifier</h1>
-                            <h2 className="text-base text-slate-400"></h2>
+                            <h1 className="text-lg">{t("tasks.totpIdentifier")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}></h2>
                           </div>
                         </FormLabel>
                         <div className="w-full">
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Add an ID that links your TOTP to the task"
+                              placeholder={t("tasks.totpIdentifierPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -728,10 +721,9 @@ function CreateNewTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">Browser Address</h1>
-                            <h2 className="text-base text-slate-400">
-                              The address of the Browser server to use for the
-                              task run.
+                            <h1 className="text-lg">{t("tasks.browserAddress")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.browserAddressDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -789,7 +781,7 @@ function CreateNewTaskForm({ initialValues }: Props) {
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
             <PlayIcon className="mr-2 h-4 w-4" />
-            Run
+            {t("tasks.run")}
           </Button>
         </div>
       </form>

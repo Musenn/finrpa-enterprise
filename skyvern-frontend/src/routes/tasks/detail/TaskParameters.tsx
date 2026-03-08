@@ -10,8 +10,10 @@ import { CodeEditor } from "@/routes/workflows/components/CodeEditor";
 import { MAX_SCREENSHOT_SCROLLS_DEFAULT } from "@/routes/workflows/editor/nodes/Taskv2Node/types";
 import { useQuery } from "@tanstack/react-query";
 import { useFirstParam } from "@/hooks/useFirstParam";
+import { useI18n } from "@/i18n/useI18n";
 
 function TaskParameters() {
+  const { t } = useI18n();
   const taskId = useFirstParam("taskId", "runId");
   const credentialGetter = useCredentialGetter();
   const {
@@ -35,16 +37,16 @@ function TaskParameters() {
   }
 
   if (taskIsError || !task) {
-    return <div>Error loading parameters</div>;
+    return <div>{t("common.error")}</div>;
   }
 
   return (
-    <section className="space-y-8 rounded-lg bg-slate-elevation3 px-6 py-5">
+    <section className="space-y-8 rounded-lg px-6 py-5 glass-card-static">
       <div className="flex gap-16">
         <div className="w-72">
-          <h1 className="text-lg">URL</h1>
-          <h2 className="text-base text-slate-400">
-            The starting URL for the task
+          <h1 className="text-lg">{t("tasks.url")}</h1>
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.urlDesc")}
           </h2>
         </div>
         <Input value={task.request.url} readOnly />
@@ -52,8 +54,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Navigation Goal</h1>
-          <h2 className="text-base text-slate-400">
-            Where should Skyvern go and what should Skyvern do?
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.navigationGoalDesc")}
           </h2>
         </div>
         <AutoResizingTextarea
@@ -64,8 +66,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Navigation Payload</h1>
-          <h2 className="text-base text-slate-400">
-            Specify important parameters, routes, or states
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.navigationPayloadDesc")}
           </h2>
         </div>
         <CodeEditor
@@ -84,8 +86,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Data Extraction Goal</h1>
-          <h2 className="text-base text-slate-400">
-            What outputs are you looking to get?
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.dataExtractionGoalDesc")}
           </h2>
         </div>
         <AutoResizingTextarea
@@ -96,8 +98,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Data Schema</h1>
-          <h2 className="text-base text-slate-400">
-            Specify the output format in JSON
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.dataSchemaDesc")}
           </h2>
         </div>
         <CodeEditor
@@ -120,8 +122,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Extra HTTP Headers</h1>
-          <h2 className="text-base text-slate-400">
-            Specify some self-defined HTTP requests headers
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.extraHttpHeadersDesc")}
           </h2>
         </div>
         <div className="w-full">
@@ -139,8 +141,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Webhook Callback URL</h1>
-          <h2 className="text-base text-slate-400">
-            The URL of a webhook endpoint to send the extracted information
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.webhookUrlDesc")}
           </h2>
         </div>
         <Input value={task.request.webhook_callback_url ?? ""} readOnly />
@@ -148,8 +150,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Max Screenshot Scrolls</h1>
-          <h2 className="text-base text-slate-400">
-            The maximum number of times to scroll the page
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.maxScreenshotScrollsDesc")}
           </h2>
         </div>
         <Input
@@ -161,8 +163,8 @@ function TaskParameters() {
       <div className="flex gap-16">
         <div className="w-72">
           <h1 className="text-lg">Include Action History</h1>
-          <h2 className="text-base text-slate-400">
-            Include the action history in the completion verification
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.includeActionHistoryDesc")}
           </h2>
         </div>
         <div className="w-full">

@@ -32,6 +32,8 @@ import {
 import { getDefaultValueForParameterType } from "../workflowEditorUtils";
 import { validateBitwardenLoginCredential } from "./util";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
 type Props = {
   type: WorkflowEditorParameterType;
@@ -66,19 +68,19 @@ function getAvailableSourcesForDataType(
   switch (dataType) {
     case "password":
       return [
-        ...(isCloud ? [{ value: "skyvern" as const, label: "Skyvern" }] : []),
+        ...(isCloud ? [{ value: "skyvern" as const, label: "FinRPA" }] : []),
         { value: "bitwarden" as const, label: "Bitwarden" },
         { value: "onepassword" as const, label: "1Password" },
         { value: "azurevault" as const, label: "Azure Key Vault" },
       ];
     case "secret":
       return [
-        ...(isCloud ? [{ value: "skyvern" as const, label: "Skyvern" }] : []),
+        ...(isCloud ? [{ value: "skyvern" as const, label: "FinRPA" }] : []),
         { value: "bitwarden" as const, label: "Bitwarden" },
       ];
     case "creditCard":
       return [
-        ...(isCloud ? [{ value: "skyvern" as const, label: "Skyvern" }] : []),
+        ...(isCloud ? [{ value: "skyvern" as const, label: "FinRPA" }] : []),
         { value: "bitwarden" as const, label: "Bitwarden" },
         { value: "onepassword" as const, label: "1Password" },
       ];
@@ -89,19 +91,20 @@ function header(
   type: WorkflowEditorParameterType,
   isEdit: boolean,
   isCredentialSelected: boolean,
+  t: (key: MessageKey) => string,
 ) {
-  const prefix = isEdit ? "Edit" : "Add";
+  const prefix = isEdit ? t("editor.edit") : t("editor.add");
   if (type === "workflow" && !isEdit) {
     // Unified add mode
-    return `${prefix} Parameter`;
+    return `${prefix} ${t("editor.parameter")}`;
   }
   if (type === "workflow") {
-    return `${prefix} Input Parameter`;
+    return `${prefix} ${t("editor.inputParameter")}`;
   }
   if (type === "credential" || (!isEdit && isCredentialSelected)) {
-    return `${prefix} Credential Parameter`;
+    return `${prefix} ${t("editor.credentialParameter")}`;
   }
-  return `${prefix} Context Parameter`;
+  return `${prefix} ${t("editor.contextParameter")}`;
 }
 
 /**
@@ -109,12 +112,12 @@ function header(
  * Parameter keys are used in Jinja2 templates, so they must be valid identifiers.
  * Returns an error message if invalid, or null if valid.
  */
-function validateParameterKey(key: string): string | null {
+function validateParameterKey(key: string, t: (key: MessageKey) => string): string | null {
   if (!key) return null; // Empty key is handled separately
 
   // Check for whitespace
   if (/\s/.test(key)) {
-    return "Key cannot contain whitespace characters. Consider using underscores (_) instead.";
+    return t("editor.keyNoWhitespace");
   }
 
   // Check if it's a valid Python identifier:
@@ -123,18 +126,18 @@ function validateParameterKey(key: string): string | null {
   const validIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
   if (!validIdentifierRegex.test(key)) {
     if (/^[0-9]/.test(key)) {
-      return "Key cannot start with a digit. Parameter keys must start with a letter or underscore.";
+      return t("editor.keyNoStartDigit");
     }
     if (key.includes("/")) {
-      return "Key cannot contain '/' characters. Use underscores instead (e.g., 'State_or_Province' instead of 'State/Province').";
+      return t("editor.keyNoSlash");
     }
     if (key.includes("-")) {
-      return "Key cannot contain '-' characters. Use underscores instead (e.g., 'my_parameter' instead of 'my-parameter').";
+      return t("editor.keyNoDash");
     }
     if (key.includes(".")) {
-      return "Key cannot contain '.' characters. Use underscores instead.";
+      return t("editor.keyNoDot");
     }
-    return "Key must be a valid identifier (only letters, digits, and underscores; cannot start with a digit).";
+    return t("editor.keyMustBeValidIdentifier");
   }
 
   return null;
@@ -176,6 +179,7 @@ function WorkflowParameterEditPanel({
   onSave,
   initialValues,
 }: Props) {
+  const { t } = useI18n();
   const reservedKeys = [
     "current_item",
     "current_value",
@@ -191,7 +195,7 @@ function WorkflowParameterEditPanel({
   const isCloud = useContext(CloudContext);
   const isEditMode = !!initialValues;
   const [key, setKey] = useState(initialValues?.key ?? "");
-  const keyValidationError = validateParameterKey(key);
+  const keyValidationError = validateParameterKey(key, t);
 
   // Detect initial values for backward compatibility
   const isBitwardenCredential =
@@ -350,18 +354,18 @@ function WorkflowParameterEditPanel({
       <ScrollAreaViewport className="max-h-[500px]">
         <div className="space-y-4 p-1 px-4">
           <header className="flex items-center justify-between">
-            <span>{header(type, isEditMode, isCredentialSelected)}</span>
+            <span>{header(type, isEditMode, isCredentialSelected, t)}</span>
             <Cross2Icon className="h-6 w-6 cursor-pointer" onClick={onClose} />
           </header>
           <div className="space-y-1">
-            <Label className="text-xs text-slate-300">Key</Label>
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.key")}</Label>
             <Input value={key} onChange={(e) => setKey(e.target.value)} />
             {keyValidationError && (
               <p className="text-xs text-destructive">{keyValidationError}</p>
             )}
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-slate-300">Description</Label>
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.description")}</Label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -370,7 +374,7 @@ function WorkflowParameterEditPanel({
           {type === "workflow" && (
             <>
               <div className="space-y-1">
-                <Label className="text-xs">Value Type</Label>
+                <Label className="text-xs">{t("editor.valueType")}</Label>
                 <Select
                   value={parameterType}
                   onValueChange={(value) => {
@@ -422,7 +426,7 @@ function WorkflowParameterEditPanel({
                   }}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a type" />
+                    <SelectValue placeholder={t("editor.selectAType")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -465,8 +469,8 @@ function WorkflowParameterEditPanel({
                         });
                       }}
                     />
-                    <Label className="text-xs text-slate-300">
-                      Use Default Value
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                      {t("editor.useDefaultValue")}
                     </Label>
                   </div>
                   {defaultValueState.hasDefaultValue && (
@@ -508,10 +512,10 @@ function WorkflowParameterEditPanel({
               {/* Step 1: Credential Type */}
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Credential Type
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.credentialType")}
                   </Label>
-                  <HelpTooltip content="Select the type of credential you want to use. Password for login credentials, Secret for sensitive data fields, Credit Card for payment information." />
+                  <HelpTooltip content={t("editor.credentialTypeHelp")} />
                 </div>
                 <Select
                   value={credentialDataType}
@@ -520,13 +524,13 @@ function WorkflowParameterEditPanel({
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select credential type" />
+                    <SelectValue placeholder={t("editor.selectCredentialType")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="password">Password</SelectItem>
-                      <SelectItem value="secret">Secret</SelectItem>
-                      <SelectItem value="creditCard">Credit Card</SelectItem>
+                      <SelectItem value="password">{t("editor.password")}</SelectItem>
+                      <SelectItem value="secret">{t("editor.secret")}</SelectItem>
+                      <SelectItem value="creditCard">{t("editor.creditCard")}</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -535,8 +539,8 @@ function WorkflowParameterEditPanel({
               {/* Step 2: Source */}
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">Source</Label>
-                  <HelpTooltip content="Select where your credentials are stored. Skyvern uses managed credentials, while Bitwarden, 1Password, and Azure Key Vault connect directly to your vault." />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.source")}</Label>
+                  <HelpTooltip content={t("editor.credentialSourceHelp")} />
                 </div>
                 <Select
                   value={credentialSource}
@@ -545,7 +549,7 @@ function WorkflowParameterEditPanel({
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select source" />
+                    <SelectValue placeholder={t("editor.selectSource")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -566,10 +570,10 @@ function WorkflowParameterEditPanel({
             <>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    URL Parameter Key
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.urlParameterKey")}
                   </Label>
-                  <HelpTooltip content="Optional. The workflow parameter key that holds the URL. If provided, Skyvern will match the credential based on this URL." />
+                  <HelpTooltip content={t("editor.urlParameterKeyHelp")} />
                 </div>
                 <Input
                   value={urlParameterKey}
@@ -578,10 +582,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Bitwarden Collection ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.bitwardenCollectionId")}
                   </Label>
-                  <HelpTooltip content="The Bitwarden collection ID. You can find this in the URL when viewing a collection in Bitwarden (e.g., https://vault.bitwarden.com/#/organizations/.../collections/[COLLECTION_ID])." />
+                  <HelpTooltip content={t("editor.bitwardenCollectionIdHelp")} />
                 </div>
                 <Input
                   value={bitwardenCollectionId}
@@ -590,10 +594,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Bitwarden Item ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.bitwardenItemId")}
                   </Label>
-                  <HelpTooltip content="The Bitwarden item ID. You can find this in the URL when viewing the item in Bitwarden (e.g., https://vault.bitwarden.com/#/vault?itemId=[ITEM_ID])." />
+                  <HelpTooltip content={t("editor.bitwardenItemIdHelp")} />
                 </div>
                 <Input
                   value={bitwardenLoginCredentialItemId}
@@ -610,10 +614,10 @@ function WorkflowParameterEditPanel({
             <>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Bitwarden Collection ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.bitwardenCollectionId")}
                   </Label>
-                  <HelpTooltip content="Required. The Bitwarden collection ID containing the identity item. You can find this in the URL when viewing a collection in Bitwarden." />
+                  <HelpTooltip content={t("editor.bitwardenCollectionIdRequiredHelp")} />
                 </div>
                 <Input
                   value={bitwardenCollectionId}
@@ -622,8 +626,8 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">Identity Key</Label>
-                  <HelpTooltip content="The key used to identify which identity to use from Bitwarden (e.g., the identity name or a custom identifier)." />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.identityKey")}</Label>
+                  <HelpTooltip content={t("editor.identityKeyHelp")} />
                 </div>
                 <Input
                   value={identityKey}
@@ -632,10 +636,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Identity Fields
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.identityFields")}
                   </Label>
-                  <HelpTooltip content="Comma-separated list of field names to extract from the Bitwarden identity (e.g., 'ssn, address, phone')." />
+                  <HelpTooltip content={t("editor.identityFieldsHelp")} />
                 </div>
                 <Input
                   value={identityFields}
@@ -651,10 +655,10 @@ function WorkflowParameterEditPanel({
             <>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Bitwarden Collection ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.bitwardenCollectionId")}
                   </Label>
-                  <HelpTooltip content="Required. The Bitwarden collection ID containing the credit card. You can find this in the URL when viewing a collection in Bitwarden." />
+                  <HelpTooltip content={t("editor.bitwardenCollectionIdCreditCardHelp")} />
                 </div>
                 <Input
                   value={bitwardenCollectionId}
@@ -663,10 +667,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Bitwarden Item ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.bitwardenItemId")}
                   </Label>
-                  <HelpTooltip content="Required. The Bitwarden item ID of the credit card. You can find this in the URL when viewing the item in Bitwarden." />
+                  <HelpTooltip content={t("editor.bitwardenItemIdCreditCardHelp")} />
                 </div>
                 <Input
                   value={sensitiveInformationItemId}
@@ -683,10 +687,10 @@ function WorkflowParameterEditPanel({
             <>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    1Password Vault ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.onePasswordVaultId")}
                   </Label>
-                  <HelpTooltip content="You can find the Vault ID in the URL when viewing the vault in 1Password on the web (e.g., https://my.1password.com/vaults/[VAULT_ID])." />
+                  <HelpTooltip content={t("editor.onePasswordVaultIdHelp")} />
                 </div>
                 <Input
                   value={opVaultId}
@@ -695,10 +699,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    1Password Item ID
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.onePasswordItemId")}
                   </Label>
-                  <HelpTooltip content="You can find the Item ID in the URL when viewing the item in 1Password on the web. Supports all item types: Logins, Passwords, Credit Cards, Secure Notes, and more." />
+                  <HelpTooltip content={t("editor.onePasswordItemIdHelp")} />
                 </div>
                 <Input
                   value={opItemId}
@@ -706,11 +710,9 @@ function WorkflowParameterEditPanel({
                 />
               </div>
               {credentialDataType === "creditCard" && (
-                <div className="rounded-md bg-slate-800 p-2">
-                  <div className="space-y-1 text-xs text-slate-400">
-                    Credit Cards: Due to a 1Password limitation, add the
-                    expiration date as a separate text field named "Expire Date"
-                    in the format MM/YYYY (e.g. 09/2027).
+                <div className="rounded-md p-2" style={{ background: "var(--glass-bg)" }}>
+                  <div className="space-y-1 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.onePasswordCreditCardNote")}
                   </div>
                 </div>
               )}
@@ -722,10 +724,10 @@ function WorkflowParameterEditPanel({
             <>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Azure Key Vault Name
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.azureKeyVaultName")}
                   </Label>
-                  <HelpTooltip content="The name of your Azure Key Vault instance (e.g., 'my-company-vault'). This is the name you see in the Azure portal." />
+                  <HelpTooltip content={t("editor.azureKeyVaultNameHelp")} />
                 </div>
                 <Input
                   value={azureVaultName}
@@ -734,10 +736,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Azure Username Secret Key
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.azureUsernameSecretKey")}
                   </Label>
-                  <HelpTooltip content="The secret name in Azure Key Vault that stores the username (e.g., 'my-app-username')." />
+                  <HelpTooltip content={t("editor.azureUsernameSecretKeyHelp")} />
                 </div>
                 <Input
                   autoComplete="off"
@@ -747,10 +749,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Azure Password Secret Key
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.azurePasswordSecretKey")}
                   </Label>
-                  <HelpTooltip content="The secret name in Azure Key Vault that stores the password (e.g., 'my-app-password')." />
+                  <HelpTooltip content={t("editor.azurePasswordSecretKeyHelp")} />
                 </div>
                 <Input
                   value={azurePasswordKey}
@@ -759,10 +761,10 @@ function WorkflowParameterEditPanel({
               </div>
               <div className="space-y-1">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">
-                    Azure TOTP Secret Key
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.azureTotpSecretKey")}
                   </Label>
-                  <HelpTooltip content="Optional. The secret name in Azure Key Vault that stores the TOTP secret for two-factor authentication." />
+                  <HelpTooltip content={t("editor.azureTotpSecretKeyHelp")} />
                 </div>
                 <Input
                   value={azureTotpSecretKey}
@@ -776,10 +778,10 @@ function WorkflowParameterEditPanel({
           {showSkyvernCredentialSelector && (
             <div className="space-y-1">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">
-                  Skyvern Credential
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                  {t("editor.finrpaCredential")}
                 </Label>
-                <HelpTooltip content="Select a credential from your Skyvern credential store. These are managed credentials you've previously added to Skyvern." />
+                <HelpTooltip content={t("editor.finrpaCredentialHelp")} />
               </div>
               <CredentialParameterSourceSelector
                 value={credentialId}
@@ -790,7 +792,7 @@ function WorkflowParameterEditPanel({
 
           {type === "context" && (
             <div className="space-y-1">
-              <Label className="text-xs text-slate-300">Source Parameter</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.sourceParameter")}</Label>
               <SourceParameterKeySelector
                 value={sourceParameterKey}
                 onChange={setSourceParameterKey}
@@ -804,15 +806,15 @@ function WorkflowParameterEditPanel({
                 if (!key) {
                   toast({
                     variant: "destructive",
-                    title: "Failed to save parameter",
-                    description: "Key is required",
+                    title: t("editor.failedSaveParameter"),
+                    description: t("editor.keyIsRequired"),
                   });
                   return;
                 }
                 if (keyValidationError) {
                   toast({
                     variant: "destructive",
-                    title: "Failed to save parameter",
+                    title: t("editor.failedSaveParameter"),
                     description: keyValidationError,
                   });
                   return;
@@ -820,8 +822,8 @@ function WorkflowParameterEditPanel({
                 if (!isEditMode && reservedKeys.includes(key)) {
                   toast({
                     variant: "destructive",
-                    title: "Failed to add parameter",
-                    description: `${key} is reserved, please use another key`,
+                    title: t("editor.failedAddParameter"),
+                    description: t("editor.keyIsReserved", { key }),
                   });
                   return;
                 }
@@ -837,8 +839,8 @@ function WorkflowParameterEditPanel({
                     } catch (e) {
                       toast({
                         variant: "destructive",
-                        title: "Failed to save parameter",
-                        description: "Invalid JSON for default value",
+                        title: t("editor.failedSaveParameter"),
+                        description: t("editor.invalidJsonDefault"),
                       });
                       return;
                     }
@@ -886,8 +888,8 @@ function WorkflowParameterEditPanel({
                   if (!sourceParameterKey) {
                     toast({
                       variant: "destructive",
-                      title: "Failed to save parameter",
-                      description: "Source parameter key is required",
+                      title: t("editor.failedSaveParameter"),
+                      description: t("editor.sourceParameterKeyRequired"),
                     });
                     return;
                   }
@@ -907,8 +909,8 @@ function WorkflowParameterEditPanel({
                     if (!credentialId) {
                       toast({
                         variant: "destructive",
-                        title: "Failed to save parameter",
-                        description: "Credential is required",
+                        title: t("editor.failedSaveParameter"),
+                        description: t("editor.credentialIsRequired"),
                       });
                       return;
                     }
@@ -933,7 +935,7 @@ function WorkflowParameterEditPanel({
                       if (errorMessage) {
                         toast({
                           variant: "destructive",
-                          title: "Failed to save parameter",
+                          title: t("editor.failedSaveParameter"),
                           description: errorMessage,
                         });
                         return;
@@ -961,8 +963,8 @@ function WorkflowParameterEditPanel({
                       if (!bitwardenCollectionId) {
                         toast({
                           variant: "destructive",
-                          title: "Failed to save parameter",
-                          description: "Bitwarden Collection ID is required",
+                          title: t("editor.failedSaveParameter"),
+                          description: t("editor.bitwardenCollectionIdRequired"),
                         });
                         return;
                       }
@@ -985,16 +987,16 @@ function WorkflowParameterEditPanel({
                       if (!bitwardenCollectionId) {
                         toast({
                           variant: "destructive",
-                          title: "Failed to save parameter",
-                          description: "Bitwarden Collection ID is required",
+                          title: t("editor.failedSaveParameter"),
+                          description: t("editor.bitwardenCollectionIdRequired"),
                         });
                         return;
                       }
                       if (!sensitiveInformationItemId) {
                         toast({
                           variant: "destructive",
-                          title: "Failed to save parameter",
-                          description: "Bitwarden Item ID is required",
+                          title: t("editor.failedSaveParameter"),
+                          description: t("editor.bitwardenItemIdRequired"),
                         });
                         return;
                       }
@@ -1014,9 +1016,8 @@ function WorkflowParameterEditPanel({
                     if (opVaultId.trim() === "" || opItemId.trim() === "") {
                       toast({
                         variant: "destructive",
-                        title: "Failed to save parameter",
-                        description:
-                          "1Password Vault ID and Item ID are required",
+                        title: t("editor.failedSaveParameter"),
+                        description: t("editor.onePasswordVaultItemRequired"),
                       });
                       return;
                     }
@@ -1039,9 +1040,8 @@ function WorkflowParameterEditPanel({
                     ) {
                       toast({
                         variant: "destructive",
-                        title: "Failed to add parameter",
-                        description:
-                          "Azure Vault Name, Username Key and Password Key are required",
+                        title: t("editor.failedAddParameter"),
+                        description: t("editor.azureFieldsRequired"),
                       });
                       return;
                     }
@@ -1060,7 +1060,7 @@ function WorkflowParameterEditPanel({
                 }
               }}
             >
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </div>

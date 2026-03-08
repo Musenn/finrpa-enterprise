@@ -8,12 +8,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getImageURL } from "../detail/artifactUtils";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   id: string;
 };
 
 function LatestScreenshot({ id }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
 
   const {
@@ -76,7 +78,7 @@ function LatestScreenshot({ id }: Props) {
     <img
       src={getImageURL(artifact)}
       className="h-full w-full object-contain"
-      alt="Latest screenshot"
+      alt={t("tasks.latestScreenshot")}
     />
   );
 }

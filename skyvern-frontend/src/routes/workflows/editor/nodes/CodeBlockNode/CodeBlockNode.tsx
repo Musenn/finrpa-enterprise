@@ -50,7 +50,7 @@ function CodeBlockNode({ id, data }: NodeProps<CodeBlockNode>) {
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
           data.comparisonColor,
@@ -65,7 +65,7 @@ function CodeBlockNode({ id, data }: NodeProps<CodeBlockNode>) {
           type="code" // sic: the naming is not consistent
         />
         <div className="space-y-2">
-          <Label className="text-xs text-slate-300">Input Parameters</Label>
+          <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Input Parameters</Label>
           <WorkflowBlockInputSet
             nodeId={id}
             onChange={(parameterKeys) => {
@@ -80,7 +80,7 @@ function CodeBlockNode({ id, data }: NodeProps<CodeBlockNode>) {
           />
         </div>
         <div className="space-y-2">
-          <Label className="text-xs text-slate-300">Code Input</Label>
+          <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Code Input</Label>
           <CodeEditor
             language="python"
             value={data.code}

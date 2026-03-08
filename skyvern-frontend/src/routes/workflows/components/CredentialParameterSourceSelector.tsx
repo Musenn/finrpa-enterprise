@@ -12,6 +12,7 @@ import { WorkflowParameterValueType } from "../types/workflowTypes";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { CredentialsModal } from "@/routes/credentials/CredentialsModal";
 import { useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   value: string;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 function CredentialParameterSourceSelector({ value, onChange }: Props) {
+  const { t } = useI18n();
   const { data: credentials, isFetching } = useCredentialsQuery({
     page_size: 100, // Reasonable limit for dropdown selector
   });
@@ -70,7 +72,7 @@ function CredentialParameterSourceSelector({ value, onChange }: Props) {
         }}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Select a credential" />
+          <SelectValue placeholder={t("credentials.selectCredential")} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
@@ -81,7 +83,7 @@ function CredentialParameterSourceSelector({ value, onChange }: Props) {
           <SelectItem value="new">
             <div className="flex items-center gap-2">
               <PlusIcon className="size-4" />
-              <span>Add new credential</span>
+              <span>{t("credentials.addNewCredential")}</span>
             </div>
           </SelectItem>
         </SelectContent>

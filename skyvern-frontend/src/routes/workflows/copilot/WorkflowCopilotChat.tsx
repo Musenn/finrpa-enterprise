@@ -9,6 +9,7 @@ import { WorkflowCreateYAMLRequest } from "@/routes/workflows/types/workflowYaml
 import { WorkflowApiResponse } from "@/routes/workflows/types/workflowTypes";
 import { toast } from "@/components/ui/use-toast";
 import { getSseClient } from "@/api/sse";
+import { useI18n } from "@/i18n/useI18n";
 import {
   WorkflowCopilotChatHistoryResponse,
   WorkflowCopilotProcessingUpdate,
@@ -57,13 +58,13 @@ const MessageItem = memo(({ message, footer }: MessageItemProps) => {
       >
         {message.sender === "ai" ? "AI" : "U"}
       </div>
-      <div className="relative flex-1 rounded-lg bg-slate-800 p-3 pr-12">
-        <p className="whitespace-pre-wrap pr-3 text-sm text-slate-200">
+      <div className="relative flex-1 rounded-lg p-3 pr-12" style={{ background: "var(--glass-bg)" }}>
+        <p className="whitespace-pre-wrap pr-3 text-sm text-foreground">
           {message.content}
         </p>
         {footer ? <div className="mt-3 flex gap-2">{footer}</div> : null}
         {message.timestamp ? (
-          <span className="pointer-events-none absolute bottom-2 right-2 rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] text-slate-400">
+          <span className="pointer-events-none absolute bottom-2 right-2 rounded px-1.5 py-0.5 text-[10px] text-muted-foreground" style={{ background: "rgba(26,58,92,0.06)" }}>
             {formatChatTimestamp(message.timestamp)}
           </span>
         ) : null}
@@ -134,6 +135,7 @@ export function WorkflowCopilotChat({
   onMessageCountChange,
   buttonRef,
 }: WorkflowCopilotChatProps = {}) {
+  const { t } = useI18n();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [proposedWorkflow, setProposedWorkflow] =
     useState<WorkflowApiResponse | null>(null);
@@ -214,8 +216,8 @@ export function WorkflowCopilotChat({
     } catch (updateError) {
       console.error("Failed to update workflow:", updateError);
       toast({
-        title: "Update failed",
-        description: "Failed to apply workflow changes. Please try again.",
+        title: t("workflows.updateFailed"),
+        description: t("workflows.failedApplyWorkflowChanges"),
         variant: "destructive",
       });
       return false;
@@ -254,10 +256,10 @@ export function WorkflowCopilotChat({
     } catch (error) {
       console.error("Failed to clear proposed workflow:", error);
       toast({
-        title: "Copilot update failed",
+        title: t("workflows.copilotUpdateFailed"),
         description: autoAcceptValue
-          ? "Workflow was applied, but auto-accept did not update."
-          : "Failed to clear copilot proposal. Please try again.",
+          ? t("workflows.autoAcceptNotUpdated")
+          : t("workflows.failedClearProposal"),
         variant: "destructive",
       });
     }
@@ -374,8 +376,8 @@ export function WorkflowCopilotChat({
     if (!inputValue.trim() || isLoading) return;
     if (!workflowPermanentId) {
       toast({
-        title: "Missing workflow",
-        description: "Workflow permanent ID is required to chat.",
+        title: t("workflows.missingWorkflow"),
+        description: t("workflows.workflowIdRequiredToChat"),
         variant: "destructive",
       });
       return;
@@ -394,7 +396,7 @@ export function WorkflowCopilotChat({
     const messageContent = inputValue;
     setInputValue("");
     setIsLoading(true);
-    setProcessingStatus("Starting...");
+    setProcessingStatus(t("workflows.copilotStarting"));
 
     const abortController = new AbortController();
     streamingAbortController.current?.abort();
@@ -407,8 +409,8 @@ export function WorkflowCopilotChat({
 
       if (!workflowId) {
         toast({
-          title: "Missing workflow",
-          description: "Workflow ID is required to chat.",
+          title: t("workflows.missingWorkflow"),
+          description: t("workflows.workflowIdRequiredToChat"),
           variant: "destructive",
         });
         return;
@@ -558,7 +560,7 @@ export function WorkflowCopilotChat({
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
         sender: "ai",
-        content: "Sorry, I encountered an error. Please try again.",
+        content: t("workflows.copilotError"),
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -730,8 +732,10 @@ export function WorkflowCopilotChat({
 
   return (
     <div
-      className="fixed z-50 flex flex-col rounded-lg border border-slate-700 bg-slate-900 shadow-2xl"
+      className="fixed z-50 flex flex-col rounded-lg border shadow-2xl"
       style={{
+        borderColor: "var(--glass-border)",
+        background: "var(--glass-bg)",
         left: `${position.x}px`,
         top: `${position.y}px`,
         width: `${size.width}px`,
@@ -740,29 +744,30 @@ export function WorkflowCopilotChat({
     >
       {/* Header */}
       <div
-        className="flex cursor-move items-center justify-between border-b border-slate-700 px-4 py-2"
+        className="flex cursor-move items-center justify-between border-b px-4 py-2"
+        style={{ borderColor: "var(--glass-border)" }}
         onMouseDown={handleMouseDown}
       >
-        <h3 className="text-sm font-semibold text-slate-200">
-          Workflow Copilot (Beta)
+        <h3 className="text-sm font-semibold text-foreground">
+          {t("workflows.workflowCopilotBeta")}
         </h3>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleNewChat}
             onMouseDown={(e) => e.stopPropagation()}
-            className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-800"
+            className="rounded border px-2 py-1 text-xs hover:bg-muted" style={{ borderColor: "var(--glass-border)", color: "var(--finrpa-text-secondary)" }}
           >
-            New chat
+            {t("workflows.newChat")}
           </button>
           <div className="h-2 w-2 rounded-full bg-green-500"></div>
-          <span className="text-xs text-slate-400">Active</span>
+          <span className="text-xs text-muted-foreground">{t("workflows.copilotActive")}</span>
           <button
             type="button"
             onClick={() => onClose?.()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="ml-2 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            title="Close"
+            className="ml-2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            title={t("common.close")}
           >
             <Cross2Icon className="h-4 w-4" />
           </button>
@@ -773,15 +778,13 @@ export function WorkflowCopilotChat({
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-3">
           {!isLoadingHistory && messages.length === 0 && !isLoading ? (
-            <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-300">
-              <p className="font-semibold text-slate-200">Start a new chat</p>
-              <p className="mt-2 text-slate-400">
-                Ask the copilot to draft or edit your workflow. Provide a goal,
-                the target site, and any credentials it should use.
+            <div className="rounded-lg border p-4 text-sm" style={{ borderColor: "var(--glass-border)", background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-secondary)" }}>
+              <p className="font-semibold text-foreground">{t("workflows.startNewChat")}</p>
+              <p className="mt-2 text-muted-foreground">
+                {t("workflows.copilotInstructions")}
               </p>
-              <p className="mt-2 text-slate-400">
-                Example: "Build workflow to find the top post on hackernews
-                today"
+              <p className="mt-2 text-muted-foreground">
+                {t("workflows.copilotExample")}
               </p>
             </div>
           ) : null}
@@ -800,14 +803,14 @@ export function WorkflowCopilotChat({
                         onClick={() => handleReviewWorkflow(proposedWorkflow)}
                         className="rounded border border-blue-500/60 bg-blue-500/10 px-3 py-1 text-xs text-blue-100 hover:bg-blue-500/20"
                       >
-                        Review
+                        {t("workflows.review")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleAcceptWorkflow(proposedWorkflow)}
                         className="rounded bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700"
                       >
-                        Accept
+                        {t("workflows.accept")}
                       </button>
                       <button
                         type="button"
@@ -816,14 +819,14 @@ export function WorkflowCopilotChat({
                         }
                         className="rounded bg-emerald-600 px-3 py-1 text-xs text-white hover:bg-emerald-700"
                       >
-                        Always accept
+                        {t("workflows.alwaysAccept")}
                       </button>
                       <button
                         type="button"
                         onClick={handleRejectWorkflow}
                         className="rounded bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700"
                       >
-                        Reject
+                        {t("workflows.reject")}
                       </button>
                     </>
                   ) : null
@@ -836,10 +839,10 @@ export function WorkflowCopilotChat({
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
                 AI
               </div>
-              <div className="flex-1 rounded-lg bg-slate-800 p-3">
-                <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex-1 rounded-lg p-3" style={{ background: "var(--glass-bg)" }}>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <ReloadIcon className="h-4 w-4 animate-spin" />
-                  <span>{processingStatus || "Processing..."}</span>
+                  <span>{processingStatus || t("workflows.copilotProcessing")}</span>
                 </div>
               </div>
             </div>
@@ -849,18 +852,20 @@ export function WorkflowCopilotChat({
       </div>
 
       {/* Input */}
-      <div className="border-t border-slate-700 p-3">
+      <div className="border-t p-3" style={{ borderColor: "var(--glass-border)" }}>
         <div className="flex items-end gap-2">
           <textarea
             ref={textareaRef}
-            placeholder="Type your message... (Shift+Enter for new line)"
+            placeholder={t("workflows.copilotPlaceholder")}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
             disabled={isLoading}
             rows={1}
-            className="flex-1 resize-none rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 resize-none rounded-md border px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             style={{
+              borderColor: "var(--glass-border)",
+              background: "var(--glass-bg)",
               minHeight: "38px",
               maxHeight: "150px",
               overflow: "auto",
@@ -871,7 +876,7 @@ export function WorkflowCopilotChat({
             disabled={isLoading}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Send
+            {t("workflows.send")}
           </button>
         </div>
       </div>

@@ -18,9 +18,7 @@ import { KeyIcon } from "@/components/icons/KeyIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CredentialsTotpTab } from "./CredentialsTotpTab";
 import { useSearchParams } from "react-router-dom";
-
-const subHeaderText =
-  "Securely store your passwords, credit cards, secrets, and manage incoming 2FA codes for your workflows.";
+import { useI18n } from "@/i18n/useI18n";
 
 const TAB_VALUES = [
   "passwords",
@@ -32,6 +30,7 @@ type TabValue = (typeof TAB_VALUES)[number];
 const DEFAULT_TAB: TabValue = "passwords";
 
 function CredentialsPage() {
+  const { t } = useI18n();
   const { setIsOpen, setType } = useCredentialModalState();
   const { startBackgroundTest } = useBackgroundCredentialTest();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,13 +55,13 @@ function CredentialsPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl">Credentials</h1>
+      <h1 className="text-2xl">{t("credentials.title")}</h1>
       <div className="flex items-center justify-between">
-        <div className="w-96 text-sm text-slate-300">{subHeaderText}</div>
+        <div className="w-96 text-sm text-slate-300">{t("credentials.subtitle")}</div>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button>
-              <PlusIcon className="mr-2 size-6" /> Add
+              <PlusIcon className="mr-2 size-6" /> {t("credentials.add")}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48">
@@ -74,7 +73,7 @@ function CredentialsPage() {
               className="cursor-pointer"
             >
               <KeyIcon className="mr-2 size-4" />
-              Password
+              {t("credentials.password")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => {
@@ -84,7 +83,7 @@ function CredentialsPage() {
               className="cursor-pointer"
             >
               <CardStackIcon className="mr-2 size-4" />
-              Credit Card
+              {t("credentials.creditCard")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => {
@@ -94,7 +93,7 @@ function CredentialsPage() {
               className="cursor-pointer"
             >
               <LockClosedIcon className="mr-2 size-4" />
-              Secret
+              {t("credentials.secret")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -105,10 +104,10 @@ function CredentialsPage() {
         onValueChange={handleTabChange}
       >
         <TabsList className="bg-slate-elevation1">
-          <TabsTrigger value="passwords">Passwords</TabsTrigger>
-          <TabsTrigger value="creditCards">Credit Cards</TabsTrigger>
-          <TabsTrigger value="secrets">Secrets</TabsTrigger>
-          <TabsTrigger value="twoFactor">2FA</TabsTrigger>
+          <TabsTrigger value="passwords">{t("credentials.passwordTab")}</TabsTrigger>
+          <TabsTrigger value="creditCards">{t("credentials.creditCardTab")}</TabsTrigger>
+          <TabsTrigger value="secrets">{t("credentials.secretTab")}</TabsTrigger>
+          <TabsTrigger value="twoFactor">{t("credentials.twoFATab")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="passwords" className="space-y-4">
@@ -133,35 +132,32 @@ function CredentialsPage() {
       {activeTab !== "twoFactor" && (
         <div className="mt-8 border-t border-slate-700 pt-4">
           <div className="text-sm italic text-slate-400">
-            <strong>Note:</strong> This feature requires a Bitwarden-compatible
-            server ({" "}
+            <strong>{t("common.note")}</strong> {t("credentials.bitwardenNote1")}{" "}
             <a
               href="https://bitwarden.com/help/self-host-an-organization/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline hover:text-blue-300"
             >
-              self-hosted Bitwarden
+              {t("credentials.selfHostedBitwarden")}
             </a>{" "}
-            ) or{" "}
+            {t("credentials.bitwardenNote2")}{" "}
             <a
               href="https://github.com/dani-garcia/vaultwarden"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline hover:text-blue-300"
             >
-              this community version
+              {t("credentials.communityVersion")}
             </a>{" "}
-            or a paid Bitwarden account. Make sure the relevant
-            `SKYVERN_AUTH_BITWARDEN_*` environment variables are configured. See
-            details{" "}
+            {t("credentials.bitwardenNote3")}{" "}
             <a
               href="https://github.com/Musenn/finrpa-enterprise"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 underline hover:text-blue-300"
             >
-              here
+              {t("credentials.here")}
             </a>
             .
           </div>

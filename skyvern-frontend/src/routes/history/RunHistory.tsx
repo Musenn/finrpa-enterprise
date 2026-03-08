@@ -49,12 +49,14 @@ import { useKeywordSearch } from "@/routes/workflows/hooks/useKeywordSearch";
 import { useParameterExpansion } from "@/routes/workflows/hooks/useParameterExpansion";
 import { ParameterDisplayInline } from "@/routes/workflows/components/ParameterDisplayInline";
 import { HighlightText } from "@/routes/workflows/components/HighlightText";
+import { useI18n } from "@/i18n/useI18n";
 
 function isTask(run: Task | WorkflowRunApiResponse): run is Task {
   return "task_id" in run;
 }
 
 function RunHistory() {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
@@ -148,7 +150,7 @@ function RunHistory() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-2xl">Run History</h1>
+        <h1 className="text-2xl">{t("runs.history")}</h1>
       </header>
       <div className="flex items-center justify-between gap-4">
         <TableSearchInput
@@ -159,7 +161,7 @@ function RunHistory() {
             params.set("page", "1");
             setSearchParams(params, { replace: true });
           }}
-          placeholder="Search by run ID or parameter..."
+          placeholder={t("runs.searchPlaceholder")}
           className="w-48 lg:w-72"
         />
         <StatusFilterDropdown
@@ -167,17 +169,17 @@ function RunHistory() {
           onChange={setStatusFilters}
         />
       </div>
-      <div className="rounded-lg border">
+      <div className="border" style={{ borderRadius: "var(--radius-lg)", boxShadow: "var(--glass-shadow)", borderColor: "var(--glass-border)", overflow: "hidden" }}>
         <Table>
-          <TableHeader className="rounded-t-lg bg-slate-elevation2">
+          <TableHeader className="rounded-t-lg" style={{ background: "rgba(26,58,92,0.06)" }}>
             <TableRow>
-              <TableHead className="w-1/5 rounded-tl-lg text-slate-400">
-                Run ID
+              <TableHead className="w-1/5 rounded-tl-lg" style={{ color: "var(--finrpa-text-muted)" }}>
+                {t("runs.runId")}
               </TableHead>
-              <TableHead className="w-1/5 text-slate-400">Detail</TableHead>
-              <TableHead className="w-1/5 text-slate-400">Status</TableHead>
-              <TableHead className="w-1/5 text-slate-400">Created At</TableHead>
-              <TableHead className="w-1/5 rounded-tr-lg text-slate-400"></TableHead>
+              <TableHead className="w-1/5" style={{ color: "var(--finrpa-text-muted)" }}>{t("runs.detail")}</TableHead>
+              <TableHead className="w-1/5" style={{ color: "var(--finrpa-text-muted)" }}>{t("common.status")}</TableHead>
+              <TableHead className="w-1/5" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.createdAt")}</TableHead>
+              <TableHead className="w-1/5 rounded-tr-lg" style={{ color: "var(--finrpa-text-muted)" }}></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -192,7 +194,7 @@ function RunHistory() {
             ) : runs?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4}>
-                  <div className="text-center">No runs found</div>
+                  <div className="text-center">{t("runs.noRunsFound")}</div>
                 </TableCell>
               </TableRow>
             ) : (
@@ -228,7 +230,7 @@ function RunHistory() {
                 const workflowTitle =
                   run.script_run === true ? (
                     <div className="flex items-center gap-2">
-                      <Tip content="Ran with code">
+                      <Tip content={t("runs.ranWithCode")}>
                         <LightningBoltIcon className="text-[gold]" />
                       </Tip>
                       <span>{run.workflow_title ?? ""}</span>
@@ -297,8 +299,8 @@ function RunHistory() {
                               </TooltipTrigger>
                               <TooltipContent>
                                 {isExpanded
-                                  ? "Hide Parameters"
-                                  : "Show Parameters"}
+                                  ? t("runs.hideParameters")
+                                  : t("runs.showParameters")}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -310,7 +312,7 @@ function RunHistory() {
                       <TableRow key={`${run.workflow_run_id}-params`}>
                         <TableCell
                           colSpan={5}
-                          className="bg-slate-50 dark:bg-slate-900/50"
+                          style={{ background: "rgba(26,58,92,0.06)" }}
                         >
                           <WorkflowRunParametersInline
                             workflowPermanentId={run.workflow_permanent_id}
@@ -329,7 +331,7 @@ function RunHistory() {
         </Table>
         <div className="relative px-3 py-3">
           <div className="absolute left-3 top-1/2 flex -translate-y-1/2 items-center gap-2 text-sm">
-            <span className="text-slate-400">Items per page</span>
+            <span style={{ color: "var(--finrpa-text-muted)" }}>{t("runs.itemsPerPage")}</span>
             <select
               className="h-9 rounded-md border border-slate-300 bg-background px-3"
               value={itemsPerPage}
@@ -393,6 +395,7 @@ function WorkflowRunParametersInline({
   searchQuery,
   keywordMatchesParameter,
 }: WorkflowRunParametersInlineProps) {
+  const { t } = useI18n();
   const { data: globalWorkflows } = useGlobalWorkflowsQuery();
   const credentialGetter = useCredentialGetter();
 
@@ -436,8 +439,8 @@ function WorkflowRunParametersInline({
 
   if (!hasParameters && !hasExtraHeaders) {
     return (
-      <div className="ml-8 py-4 text-sm text-slate-400">
-        No parameters for this run
+      <div className="ml-8 py-4 text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+        {t("runs.noParameters")}
       </div>
     );
   }
@@ -463,7 +466,7 @@ function WorkflowRunParametersInline({
     <div className="space-y-4">
       {hasParameters && (
         <ParameterDisplayInline
-          title="Run Parameters"
+          title={t("runs.runParameters")}
           parameters={parameterItems}
           searchQuery={searchQuery}
           keywordMatchesParameter={keywordMatchesParameter}
@@ -472,7 +475,7 @@ function WorkflowRunParametersInline({
       )}
       {hasExtraHeaders && (
         <ParameterDisplayInline
-          title="Extra HTTP Headers"
+          title={t("tasks.extraHttpHeaders")}
           parameters={headerItems}
           searchQuery={searchQuery}
           keywordMatchesParameter={keywordMatchesParameter}

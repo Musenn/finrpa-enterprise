@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { copyText } from "@/util/copyText";
+import { useI18n } from "@/i18n/useI18n";
 import {
   generateApiCommands,
   type ApiCommandOptions,
@@ -26,6 +27,7 @@ export function ApiWebhookActionsMenu({
   webhookDisabled = false,
   onTestWebhook,
 }: ApiWebhookActionsMenuProps) {
+  const { t } = useI18n();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,7 +45,7 @@ export function ApiWebhookActionsMenu({
             copyText(curl).then(() => {
               toast({
                 variant: "success",
-                title: "Copied to Clipboard",
+                title: t("common.copiedToClipboard"),
                 description:
                   "The cURL command has been copied to your clipboard.",
               });
@@ -58,7 +60,7 @@ export function ApiWebhookActionsMenu({
             copyText(powershell).then(() => {
               toast({
                 variant: "success",
-                title: "Copied to Clipboard",
+                title: t("common.copiedToClipboard"),
                 description:
                   "The PowerShell command has been copied to your clipboard.",
               });

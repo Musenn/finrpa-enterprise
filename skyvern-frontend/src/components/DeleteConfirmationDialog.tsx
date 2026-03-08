@@ -47,11 +47,11 @@ function DeleteConfirmationDialog({
                     The following blocks reference this item and will be
                     updated:
                   </p>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-slate-300">
+                  <ul className="list-inside list-disc space-y-1 text-sm" style={{ color: "var(--finrpa-text-secondary)" }}>
                     {affectedBlocks.map((block) => (
                       <li key={block.nodeId}>
                         <span className="font-medium">{block.label}</span>
-                        <span className="text-slate-400">
+                        <span style={{ color: "var(--finrpa-text-muted)" }}>
                           {" "}
                           (
                           {[

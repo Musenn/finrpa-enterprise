@@ -64,6 +64,7 @@ import { WorkflowCreateYAMLRequest } from "./types/workflowYamlTypes";
 import { WorkflowActions } from "./WorkflowActions";
 import { WorkflowTemplates } from "../discover/WorkflowTemplates";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useI18n } from "@/i18n/useI18n";
 import { TableSearchInput } from "@/components/TableSearchInput";
 import { ParameterDisplayInline } from "./components/ParameterDisplayInline";
 import { useKeywordSearch } from "./hooks/useKeywordSearch";
@@ -121,6 +122,7 @@ const emptyWorkflowRequest: WorkflowCreateYAMLRequest = {
 };
 
 function Workflows() {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const navigate = useNavigate();
   const createWorkflowMutation = useCreateWorkflowMutation();
@@ -390,25 +392,24 @@ function Workflows() {
         <div className="space-y-5">
           <div className="flex items-center gap-2">
             <LightningBoltIcon className="size-6" />
-            <h1 className="text-2xl">Workflows</h1>
+            <h1 className="text-2xl">{t("workflows.title")}</h1>
           </div>
-          <p className="text-slate-300">
-            Create your own complex workflows by connecting web agents together.
-            Define a series of actions, set it, and forget it.
+          <p style={{ color: "var(--finrpa-text-secondary)" }}>
+            {t("workflows.listDesc")}
           </p>
         </div>
         <div className="flex gap-5">
           <NarrativeCard
             index={1}
-            description="Save browser sessions and reuse them in subsequent runs"
+            description={t("workflows.narrativeCard1")}
           />
           <NarrativeCard
             index={2}
-            description="Connect multiple agents together to carry out complex objectives"
+            description={t("workflows.narrativeCard2")}
           />
           <NarrativeCard
             index={3}
-            description="Execute non-browser tasks such as sending emails"
+            description={t("workflows.narrativeCard3")}
           />
         </div>
       </div>
@@ -417,24 +418,24 @@ function Workflows() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold">Folders</h2>
+              <h2 className="text-lg font-semibold">{t("workflows.folders")}</h2>
               <Button
                 variant="link"
                 size="sm"
-                className="h-auto p-0 text-blue-600 dark:text-blue-400"
+                className="h-auto p-0 text-blue-600"
                 onClick={() => setIsCreateFolderOpen(true)}
               >
-                + New folder
+                {t("workflows.newFolder")}
               </Button>
             </div>
             {allFolders.length > 5 && (
               <Button
                 variant="link"
                 size="sm"
-                className="text-blue-600 dark:text-blue-400"
+                className="text-blue-600"
                 onClick={() => setIsViewAllFoldersOpen(true)}
               >
-                View all
+                {t("common.viewAll")}
               </Button>
             )}
           </div>
@@ -457,25 +458,23 @@ function Workflows() {
               ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-slate-200 bg-slate-elevation1 py-6 text-center dark:border-slate-700">
+            <div className="border py-6 text-center" style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-lg)", borderColor: "var(--glass-border)", boxShadow: "var(--glass-shadow)" }}>
               <div className="mx-auto max-w-md">
                 <FolderIcon className="mx-auto mb-3 h-10 w-10 text-blue-400 opacity-50" />
-                <h3 className="mb-2 text-slate-900 dark:text-slate-100">
-                  Organize Your Workflows with Folders
+                <h3 className="mb-2" style={{ color: "var(--finrpa-text-primary)" }}>
+                  {t("workflows.organizeFolders")}
                 </h3>
-                <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
-                  Keep your workflows organized by creating folders. Group
-                  related workflows together by project, team, or workflow type
-                  for easier management.
+                <p className="mb-4 text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("workflows.organizeFoldersDesc")}
                 </p>
                 <Button
                   variant="link"
                   size="sm"
-                  className="h-auto p-0 text-blue-600 dark:text-blue-400"
+                  className="h-auto p-0 text-blue-600"
                   onClick={() => setIsCreateFolderOpen(true)}
                 >
                   <PlusIcon className="mr-2 h-4 w-4" />
-                  Create Your First Folder
+                  {t("workflows.createFirstFolder")}
                 </Button>
               </div>
             </div>
@@ -484,15 +483,15 @@ function Workflows() {
 
         {/* Workflows Section */}
         <header className="flex items-center justify-between">
-          <h1 className="text-xl">My Flows</h1>
+          <h1 className="text-xl">{t("workflows.myFlows")}</h1>
           {selectedFolderId && (
             <Button
               variant="link"
               size="sm"
-              className="h-auto p-0 text-blue-600 dark:text-blue-400"
+              className="h-auto p-0 text-blue-600"
               onClick={() => setSelectedFolderId(null)}
             >
-              View all workflows
+              {t("workflows.viewAllWorkflows")}
             </Button>
           )}
         </header>
@@ -503,7 +502,7 @@ function Workflows() {
               setSearch(value);
               setParamPatch({ page: "1" });
             }}
-            placeholder="Search by title or parameter..."
+            placeholder={t("workflows.searchPlaceholder")}
             className="w-48 lg:w-72"
           />
           <div className="flex gap-4">
@@ -519,7 +518,7 @@ function Workflows() {
                   ) : (
                     <PlusIcon className="mr-2 h-4 w-4" />
                   )}
-                  Create
+                  {t("common.create")}
                   <ChevronDownIcon className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -528,34 +527,35 @@ function Workflows() {
                   onSelect={() => {
                     createWorkflowMutation.mutate({
                       ...emptyWorkflowRequest,
+                      title: t("workflows.newWorkflowTitle"),
                       folder_id: selectedFolderId,
                     });
                   }}
                 >
                   <PlusIcon className="mr-2 h-4 w-4" />
-                  Blank Workflow
+                  {t("workflows.blankWorkflow")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => setIsTemplateDialogOpen(true)}
                 >
                   <BookmarkFilledIcon className="mr-2 h-4 w-4" />
-                  From Template
+                  {t("workflows.fromTemplate")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-        <div className="rounded-lg border">
+        <div className="border" style={{ borderRadius: "var(--radius-lg)", boxShadow: "var(--glass-shadow)", borderColor: "var(--glass-border)", overflow: "hidden" }}>
           <Table className="table-fixed">
-            <TableHeader className="rounded-t-lg bg-slate-elevation2">
+            <TableHeader className="rounded-t-lg" style={{ background: "rgba(26,58,92,0.06)" }}>
               <TableRow>
-                <TableHead className="w-[25%] rounded-tl-lg text-slate-400">
-                  ID
+                <TableHead className="w-[25%] rounded-tl-lg" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("workflows.tableId")}
                 </TableHead>
-                <TableHead className="w-[30%] text-slate-400">Title</TableHead>
-                <TableHead className="w-[15%] text-slate-400">Folder</TableHead>
-                <TableHead className="w-[15%] text-slate-400">
-                  Created At
+                <TableHead className="w-[30%]" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.tableTitle")}</TableHead>
+                <TableHead className="w-[15%]" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.tableFolder")}</TableHead>
+                <TableHead className="w-[15%]" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("tasks.createdAt")}
                 </TableHead>
                 <TableHead className="w-[15%] rounded-tr-lg"></TableHead>
               </TableRow>
@@ -591,7 +591,7 @@ function Workflows() {
                 ))
               ) : displayWorkflows?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5}>No workflows found</TableCell>
+                  <TableCell colSpan={5}>{t("workflows.noWorkflowsFound")}</TableCell>
                 </TableRow>
               ) : (
                 displayWorkflows?.map((workflow) => {
@@ -626,7 +626,7 @@ function Workflows() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <span className="text-slate-400">-</span>
+                            <span style={{ color: "var(--finrpa-text-muted)" }}>-</span>
                           </TableCell>
                           <TableCell>
                             {basicLocalTimeFormat(workflow.created_at)}
@@ -689,7 +689,7 @@ function Workflows() {
                                     <TooltipTrigger asChild>
                                       <BookmarkFilledIcon className="h-3.5 w-3.5 shrink-0 text-blue-500" />
                                     </TooltipTrigger>
-                                    <TooltipContent>Template</TooltipContent>
+                                    <TooltipContent>{t("workflows.template")}</TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
                               )}
@@ -723,7 +723,7 @@ function Workflows() {
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-slate-400">-</span>
+                              <span style={{ color: "var(--finrpa-text-muted)" }}>-</span>
                             )}
                           </TableCell>
                           <TableCell
@@ -752,7 +752,7 @@ function Workflows() {
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    Assign to Folder
+                                    {t("workflows.assignToFolder")}
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -778,9 +778,9 @@ function Workflows() {
                                   <TooltipContent>
                                     {hasParameters
                                       ? isExpanded
-                                        ? "Hide Parameters"
-                                        : "Show Parameters"
-                                      : "No Parameters"}
+                                        ? t("runs.hideParameters")
+                                        : t("runs.showParameters")
+                                      : t("workflows.noParameters")}
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -801,7 +801,7 @@ function Workflows() {
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    Open in Editor
+                                    {t("workflows.openInEditor")}
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -822,7 +822,7 @@ function Workflows() {
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    Create New Run
+                                    {t("workflows.createNewRun")}
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -839,7 +839,7 @@ function Workflows() {
                         >
                           <TableCell
                             colSpan={5}
-                            className="bg-slate-50 dark:bg-slate-900/50"
+                            style={{ background: "rgba(26,58,92,0.06)" }}
                           >
                             <ParameterDisplayInline
                               parameters={parameterItems}
@@ -857,7 +857,7 @@ function Workflows() {
           </Table>
           <div className="relative px-3 py-3">
             <div className="absolute left-3 top-1/2 flex -translate-y-1/2 items-center gap-2 text-sm">
-              <span className="text-slate-400">Items per page</span>
+              <span style={{ color: "var(--finrpa-text-muted)" }}>{t("runs.itemsPerPage")}</span>
               <select
                 className="h-9 rounded-md border border-slate-300 bg-background px-3"
                 value={itemsPerPage}
@@ -920,7 +920,7 @@ function Workflows() {
           onSelectTemplate={(template) => {
             const clonedWorkflow = convert({
               ...template,
-              title: `${template.title} (copy)`,
+              title: `${template.title} (${t("common.copy")})`,
             });
             createWorkflowMutation.mutate({
               ...clonedWorkflow,

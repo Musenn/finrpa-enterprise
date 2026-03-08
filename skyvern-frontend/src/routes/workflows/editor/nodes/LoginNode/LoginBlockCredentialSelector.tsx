@@ -20,6 +20,7 @@ import {
 import { useNodes } from "@xyflow/react";
 import { AppNode } from "..";
 import { isLoginNode } from "./types";
+import { useI18n } from "@/i18n/useI18n";
 import {
   parameterIsSkyvernCredential,
   parameterIsBitwardenCredential,
@@ -62,6 +63,7 @@ function LoginBlockCredentialSelector({
   onUrlAutoFill,
   currentUrl,
 }: Props) {
+  const { t } = useI18n();
   const { setIsOpen, setType } = useCredentialModalState();
   const nodes = useNodes<AppNode>();
   const {
@@ -261,10 +263,10 @@ function LoginBlockCredentialSelector({
           {isCredentialMissing ? (
             <div className="flex items-center gap-2 text-red-500">
               <ExclamationTriangleIcon className="size-4" />
-              <span>Credential not found</span>
+              <span>{t("credentials.notFound")}</span>
             </div>
           ) : (
-            <SelectValue placeholder="Select a credential" />
+            <SelectValue placeholder={t("credentials.selectCredential")} />
           )}
         </SelectTrigger>
         <SelectContent>
@@ -275,7 +277,7 @@ function LoginBlockCredentialSelector({
                 {"hasBrowserProfile" in option && option.hasBrowserProfile && (
                   <>
                     <span className="rounded bg-green-900/40 px-1.5 py-0.5 text-[10px] text-green-400">
-                      saved-profile
+                      {t("credentials.savedProfile")}
                     </span>
                     {option.browserProfileUrl && (
                       <span className="text-[10px] text-muted-foreground">
@@ -290,7 +292,7 @@ function LoginBlockCredentialSelector({
           <SelectItem value="new">
             <div className="flex items-center gap-2">
               <PlusIcon className="size-4" />
-              <span>Add new credential</span>
+              <span>{t("credentials.addNew")}</span>
             </div>
           </SelectItem>
         </SelectContent>

@@ -9,8 +9,10 @@ import {
   LightningBoltIcon,
 } from "@radix-ui/react-icons";
 import { KeyIcon } from "@/components/icons/KeyIcon.tsx";
+import { useI18n } from "@/i18n/useI18n";
 
 function SideNav() {
+  const { t } = useI18n();
   const { collapsed } = useSidebarStore();
 
   return (
@@ -20,40 +22,40 @@ function SideNav() {
       })}
     >
       <NavLinkGroup
-        title="Build"
+        title={t("nav.build")}
         links={[
           {
-            label: "Discover",
+            label: t("nav.discover"),
             to: "/discover",
             icon: <CompassIcon className="size-6" />,
           },
           {
-            label: "Workflows",
+            label: t("nav.workflows"),
             to: "/workflows",
             icon: <LightningBoltIcon className="size-6" />,
           },
           {
-            label: "Runs",
+            label: t("nav.runs"),
             to: "/runs",
             icon: <CounterClockwiseClockIcon className="size-6" />,
           },
           {
-            label: "Browsers",
+            label: t("nav.browsers"),
             to: "/browser-sessions",
             icon: <GlobeIcon className="size-6" />,
           },
         ]}
       />
       <NavLinkGroup
-        title={"General"}
+        title={t("nav.general")}
         links={[
           {
-            label: "Settings",
+            label: t("nav.settings"),
             to: "/settings",
             icon: <GearIcon className="size-6" />,
           },
           {
-            label: "Credentials",
+            label: t("nav.credentials"),
             to: "/credentials",
             icon: <KeyIcon className="size-6" />,
           },

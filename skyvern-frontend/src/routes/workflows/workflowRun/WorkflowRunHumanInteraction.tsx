@@ -18,12 +18,14 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useWorkflowRunWithWorkflowQuery } from "../hooks/useWorkflowRunWithWorkflowQuery";
 import { WorkflowRunBlock } from "../types/workflowRunTypes";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
   workflowRunBlock: WorkflowRunBlock;
 }
 
 export function WorkflowRunHumanInteraction({ workflowRunBlock }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
   const { data: workflowRun } = useWorkflowRunWithWorkflowQuery();
@@ -65,7 +67,7 @@ export function WorkflowRunHumanInteraction({ workflowRunBlock }: Props) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Interaction Failed",
+        title: t("workflows.interactionFailed"),
         description: error.message,
       });
     },
@@ -97,7 +99,7 @@ export function WorkflowRunHumanInteraction({ workflowRunBlock }: Props) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Interaction Failed",
+        title: t("workflows.interactionFailed"),
         description: error.message,
       });
     },
@@ -117,11 +119,11 @@ export function WorkflowRunHumanInteraction({ workflowRunBlock }: Props) {
                 ? workflowRunBlock.positive_descriptor
                 : workflowRunBlock.negative_descriptor}
             </DialogTitle>
-            <DialogDescription>Are you sure?</DialogDescription>
+            <DialogDescription>{t("common.areYouSure")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="secondary">Back</Button>
+              <Button variant="secondary">{t("common.back")}</Button>
             </DialogClose>
             <Button
               variant={choice === "reject" ? "destructive" : "default"}
@@ -133,7 +135,7 @@ export function WorkflowRunHumanInteraction({ workflowRunBlock }: Props) {
                 }
               }}
             >
-              Proceed
+              {t("workflows.proceed")}
             </Button>
           </DialogFooter>
         </DialogContent>

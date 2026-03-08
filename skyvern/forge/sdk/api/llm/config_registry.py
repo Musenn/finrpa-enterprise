@@ -1664,9 +1664,11 @@ if settings.ENABLE_OPENAI_COMPATIBLE:
                 else settings.LLM_CONFIG_TEMPERATURE,
                 litellm_params=litellm_params,
                 reasoning_effort=settings.OPENAI_COMPATIBLE_REASONING_EFFORT,
+                force_stream=settings.OPENAI_COMPATIBLE_FORCE_STREAM,
             ),
         )
         LOG.info(
             f"Registered OpenAI-compatible model with key {openai_compatible_model_key}",
             model_name=openai_compatible_model_name,
+            force_stream=settings.OPENAI_COMPATIBLE_FORCE_STREAM,
         )

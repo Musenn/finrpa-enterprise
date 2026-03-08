@@ -7,6 +7,7 @@ import {
 import { cn } from "@/util/utils";
 import { HorizontallyResizingInput } from "./HorizontallyResizingInput";
 import { useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   value: string;
@@ -23,6 +24,7 @@ function EditableNodeTitle({
   titleClassName,
   inputClassName,
 }: Props) {
+  const { t } = useI18n();
   const [editing, setEditing] = useState(false);
 
   if (!editing) {
@@ -39,7 +41,7 @@ function EditableNodeTitle({
               {value}
             </h1>
           </TooltipTrigger>
-          <TooltipContent>Click to edit</TooltipContent>
+          <TooltipContent>{t("editor.clickToEdit")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { useCustomCredentialServiceConfig } from "@/hooks/useCustomCredentialServiceConfig";
 import { EyeOpenIcon, EyeClosedIcon, GlobeIcon } from "@radix-ui/react-icons";
+import { useI18n } from "@/i18n/useI18n";
 
 const CustomCredentialServiceConfigSchema = z
   .object({
@@ -35,6 +36,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 export function CustomCredentialServiceConfigForm() {
+  const { t } = useI18n();
   const [showApiToken, setShowApiToken] = useState(false);
   const {
     customCredentialServiceAuthToken,
@@ -73,19 +75,18 @@ export function CustomCredentialServiceConfigForm() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium">Custom Credential Service</h3>
+          <h3 className="text-lg font-medium">{t("settings.customCredential")}</h3>
           <p className="text-sm text-muted-foreground">
-            Configure your custom HTTP API for credential management. Your API
-            should support the standard CRUD operations.
+            {t("settings.customCredentialFullDesc")}
           </p>
         </div>
         {customCredentialServiceAuthToken && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-sm text-muted-foreground">{t("settings.status")}:</span>
             <span
               className={`text-sm ${customCredentialServiceAuthToken.valid ? "text-green-600" : "text-red-600"}`}
             >
-              {customCredentialServiceAuthToken.valid ? "Active" : "Inactive"}
+              {customCredentialServiceAuthToken.valid ? t("settings.active") : t("settings.inactive")}
             </span>
           </div>
         )}
@@ -98,10 +99,9 @@ export function CustomCredentialServiceConfigForm() {
             name="config.api_base_url"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>API Base URL</FormLabel>
+                <FormLabel>{t("settings.apiBaseUrl")}</FormLabel>
                 <FormDescription>
-                  The base URL of your custom credential service API (e.g.,
-                  https://credentials.company.com/api/v1)
+                  {t("settings.apiBaseUrlDesc")}
                 </FormDescription>
                 <div className="relative">
                   <FormControl>
@@ -124,10 +124,9 @@ export function CustomCredentialServiceConfigForm() {
             name="config.api_token"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>API Token</FormLabel>
+                <FormLabel>{t("settings.apiToken")}</FormLabel>
                 <FormDescription>
-                  Bearer token for authenticating with your custom credential
-                  service
+                  {t("settings.apiTokenDesc")}
                 </FormDescription>
                 <div className="relative">
                   <FormControl>
@@ -160,12 +159,12 @@ export function CustomCredentialServiceConfigForm() {
 
           <div className="flex items-center gap-4">
             <Button type="submit" disabled={isLoading || isUpdating}>
-              {isUpdating ? "Updating..." : "Update Configuration"}
+              {isUpdating ? t("settings.updating") : t("settings.updateConfig")}
             </Button>
 
             {customCredentialServiceAuthToken && (
               <div className="text-sm text-muted-foreground">
-                Last updated:{" "}
+                {t("settings.lastUpdated")}{" "}
                 {new Date(
                   customCredentialServiceAuthToken.modified_at,
                 ).toLocaleDateString()}
@@ -178,13 +177,13 @@ export function CustomCredentialServiceConfigForm() {
       {customCredentialServiceAuthToken && (
         <div className="rounded-md bg-muted p-4">
           <h4 className="mb-2 text-sm font-medium">
-            Configuration Information
+            {t("settings.configInfo")}
           </h4>
           <div className="space-y-1 text-sm text-muted-foreground">
             <div>ID: {customCredentialServiceAuthToken.id}</div>
-            <div>Type: {customCredentialServiceAuthToken.token_type}</div>
+            <div>{t("common.type")}: {customCredentialServiceAuthToken.token_type}</div>
             <div>
-              Created:{" "}
+              {t("settings.created")}{" "}
               {new Date(
                 customCredentialServiceAuthToken.created_at,
               ).toLocaleDateString()}
@@ -192,11 +191,11 @@ export function CustomCredentialServiceConfigForm() {
             {parsedConfig && (
               <div className="mt-2">
                 <div>
-                  <strong>Configured API URL:</strong>{" "}
+                  <strong>{t("settings.configuredApiUrl")}</strong>{" "}
                   {parsedConfig.api_base_url}
                 </div>
                 <div>
-                  <strong>Token (masked):</strong>{" "}
+                  <strong>{t("settings.tokenMasked")}</strong>{" "}
                   {parsedConfig.api_token.length > 8
                     ? `${parsedConfig.api_token.slice(0, 8)}...`
                     : "********"}

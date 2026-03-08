@@ -10,6 +10,7 @@ import { SwitchBar } from "@/components/SwitchBar";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ScrollAreaViewport } from "@radix-ui/react-scroll-area";
+import { useI18n } from "@/i18n/useI18n";
 
 // Reserved parameters that are always available
 // See: skyvern/forge/sdk/workflow/models/parameter.py RESERVED_PARAMETER_KEYS
@@ -48,6 +49,7 @@ type Props = {
 };
 
 function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
+  const { t } = useI18n();
   const [content, setContent] = useState("parameters");
   const { parameters: workflowParameters } = useWorkflowParametersStore();
   const nodes = useNodes<AppNode>();
@@ -68,7 +70,7 @@ function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
   return (
     <div className="cursor-auto space-y-3">
       <header className="flex justify-between">
-        <h1>Add Parameter</h1>
+        <h1>{t("editor.addParameter")}</h1>
       </header>
       <SwitchBar
         className="w-full"
@@ -76,15 +78,15 @@ function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
         value={content}
         options={[
           {
-            label: "Parameters",
+            label: t("workflows.parameters"),
             value: "parameters",
           },
           {
-            label: "Block Outputs",
+            label: t("editor.blockOutputs"),
             value: "outputs",
           },
           {
-            label: "System",
+            label: t("editor.system"),
             value: "system",
           },
         ]}
@@ -108,7 +110,7 @@ function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
                 );
               })}
               {allParameterKeys.length === 0 && (
-                <div className="text-xs">No parameters</div>
+                <div className="text-xs">{t("editor.noParameters")}</div>
               )}
             </div>
           )}
@@ -129,7 +131,7 @@ function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
                 );
               })}
               {outputParameterKeys.length === 0 && (
-                <div className="text-xs">No output parameters</div>
+                <div className="text-xs">{t("editor.noOutputParameters")}</div>
               )}
             </div>
           )}
@@ -153,7 +155,7 @@ function WorkflowBlockParameterSelect({ nodeId, onAdd }: Props) {
                 </div>
               ))}
               {reservedParameters.length === 0 && (
-                <div className="text-xs">No reserved parameters</div>
+                <div className="text-xs">{t("editor.noReservedParameters")}</div>
               )}
             </div>
           )}

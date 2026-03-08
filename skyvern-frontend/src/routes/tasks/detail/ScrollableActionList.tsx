@@ -61,13 +61,16 @@ function ScrollableActionList({
             refs.current[i] = element;
           }}
           className={cn(
-            "flex cursor-pointer rounded-lg border-2 bg-slate-elevation3 hover:border-slate-50",
+            "flex cursor-pointer rounded-lg border-2",
             {
               "border-l-destructive": !action.success,
               "border-l-success": action.success,
-              "border-slate-50": selected,
             },
           )}
+          style={{
+            background: "var(--glass-bg)",
+            borderColor: selected ? "var(--finrpa-text-primary)" : undefined,
+          }}
           onClick={() => onActiveIndexChange(i)}
           onMouseEnter={() => {
             queryClient.prefetchQuery({
@@ -117,11 +120,11 @@ function ScrollableActionList({
                 )}
               </div>
             </div>
-            <div className="text-xs text-slate-400">{action.reasoning}</div>
+            <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>{action.reasoning}</div>
             {action.type === ActionTypes.InputText && (
               <>
                 <Separator />
-                <div className="text-xs text-slate-400">
+                <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   Input: {action.input}
                 </div>
               </>
@@ -134,12 +137,12 @@ function ScrollableActionList({
   }
 
   return (
-    <div className="h-[40rem] w-1/3 rounded border bg-slate-elevation1">
+    <div className="h-[40rem] w-1/3 rounded border" style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
       <div className="grid grid-cols-2 gap-2 p-4">
-        <div className="flex h-8 items-center justify-center rounded-sm bg-slate-700 px-3 text-xs text-gray-50">
+        <div className="flex h-8 items-center justify-center rounded-sm px-3 text-xs" style={{ background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-primary)" }}>
           Actions: {taskDetails.actions}
         </div>
-        <div className="flex h-8 items-center justify-center rounded-sm bg-slate-700 px-3 text-xs text-gray-50">
+        <div className="flex h-8 items-center justify-center rounded-sm px-3 text-xs" style={{ background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-primary)" }}>
           Steps: {taskDetails.steps}
         </div>
       </div>
@@ -153,12 +156,11 @@ function ScrollableActionList({
                 ref={(element) => {
                   refs.current[data.length] = element;
                 }}
-                className={cn(
-                  "flex cursor-pointer rounded-lg border-2 bg-slate-elevation3 p-4 hover:border-slate-50",
-                  {
-                    "border-slate-50": activeIndex === "stream",
-                  },
-                )}
+                className="flex cursor-pointer rounded-lg border-2 p-4"
+                style={{
+                  background: "var(--glass-bg)",
+                  borderColor: activeIndex === "stream" ? "var(--finrpa-text-primary)" : undefined,
+                }}
                 onClick={() => onActiveIndexChange("stream")}
               >
                 <div className="flex items-center gap-2">

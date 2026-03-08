@@ -21,8 +21,10 @@ import { WorkflowRunRecording } from "@/routes/workflows/workflowRun/WorkflowRun
 import { WorkflowRunCode } from "@/routes/workflows/workflowRun/WorkflowRunCode";
 import { WorkflowsPageLayout } from "@/routes/workflows/WorkflowsPageLayout";
 import { useTaskV2Query } from "@/routes/runs/useTaskV2Query";
+import { useI18n } from "@/i18n/useI18n";
 
 function RunRouter() {
+  const { t } = useI18n();
   const { runId } = useParams();
 
   const { data: task_v2, isLoading } = useTaskV2Query({
@@ -86,7 +88,7 @@ function RunRouter() {
 
   if (runId?.startsWith("tsk_v2")) {
     if (isLoading) {
-      return <div>Fetching task details...</div>;
+      return <div>{t("runs.fetchingTaskDetails")}</div>;
     }
 
     if (!task_v2) {

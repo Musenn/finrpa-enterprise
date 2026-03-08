@@ -61,13 +61,13 @@ function WorkflowsTable() {
   return (
     <div className="space-y-4">
       <Table>
-        <TableHeader className="bg-slate-elevation2 text-slate-400 [&_tr]:border-b-0">
+        <TableHeader className="[&_tr]:border-b-0" style={{ background: "rgba(26,58,92,0.06)" }}>
           <TableRow className="rounded-lg px-6 [&_th:first-child]:pl-6 [&_th]:py-4">
-            <TableHead className="text-sm text-slate-400">Title</TableHead>
-            <TableHead className="text-sm text-slate-400">
+            <TableHead className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>Title</TableHead>
+            <TableHead className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
               Last Run Status
             </TableHead>
-            <TableHead className="text-sm text-slate-400">
+            <TableHead className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
               Last Run Time
             </TableHead>
           </TableRow>

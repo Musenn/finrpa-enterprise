@@ -41,15 +41,10 @@ import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 
 import { DisableCache } from "../DisableCache";
 import { BlockExecutionOptions } from "../components/BlockExecutionOptions";
-
-const urlTooltip =
-  "The URL Skyvern is navigating to. Leave this field blank to pick up from where the last block left off.";
-const navigationGoalTooltip =
-  "Specify a single step or action you'd like Skyvern to complete. Actions are one-off tasks like filling a field or interacting with a specific element on the page.\n\nCurrently supported actions are click, input text, upload file, and select. Use {{ parameter_name }} to specify parameters to use.";
-
-const navigationGoalPlaceholder = 'Input {{ name }} into "Name" field.';
+import { useI18n } from "@/i18n/useI18n";
 
 function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
+  const { t } = useI18n();
   const [facing, setFacing] = useState<"front" | "back">("front");
   const blockScriptStore = useBlockScriptStore();
   const { editable, label } = data;
@@ -94,7 +89,7 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
               "pointer-events-none": thisBlockIsPlaying,
-              "bg-slate-950 outline outline-2 outline-slate-300":
+              "outline outline-2 outline-primary":
                 thisBlockIsTargetted,
             },
             data.comparisonColor,
@@ -116,12 +111,12 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">URL</Label>
-                  <HelpTooltip content={urlTooltip} />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
+                  <HelpTooltip content={helpTooltips["action"]["url"]} />
                 </div>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
-                    Tip: Use the {"+"} button to add parameters!
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.tipAddParameters")}
                   </div>
                 ) : null}
               </div>
@@ -138,10 +133,10 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
             </div>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">
-                  Action Instruction
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                  {t("editor.actionInstruction")}
                 </Label>
-                <HelpTooltip content={navigationGoalTooltip} />
+                <HelpTooltip content={helpTooltips["action"]["navigationGoal"]} />
               </div>
               <WorkflowBlockInputTextarea
                 aiImprove={AI_IMPROVE_CONFIGS.action.navigationGoal}
@@ -150,14 +145,13 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   update({ navigationGoal: value });
                 }}
                 value={data.navigationGoal}
-                placeholder={navigationGoalPlaceholder}
+                placeholder={placeholders["action"]["navigationGoal"]}
                 className="nopan text-xs"
               />
             </div>
-            <div className="rounded-md bg-slate-800 p-2">
-              <div className="space-y-1 text-xs text-slate-400">
-                Tip: While executing the action block, Skyvern will only take
-                one action.
+            <div className="rounded-md p-2" style={{ background: "var(--glass-bg)" }}>
+              <div className="space-y-1 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                {t("editor.actionBlockTip")}
               </div>
             </div>
           </div>
@@ -172,7 +166,7 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
           >
             <AccordionItem value="advanced" className="border-b-0">
               <AccordionTrigger className="py-0">
-                Advanced Settings
+                {t("editor.advancedSettings")}
               </AccordionTrigger>
               <AccordionContent className="pl-6 pr-1 pt-1">
                 <div key={rerender.key} className="space-y-4">
@@ -194,8 +188,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        Engine
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("tasks.engine")}
                       </Label>
                     </div>
                     <RunEngineSelector
@@ -209,8 +203,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   <div className="space-y-2">
                     <div className="flex gap-4">
                       <div className="flex gap-2">
-                        <Label className="text-xs font-normal text-slate-300">
-                          Error Messages
+                        <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                          {t("editor.errorMessages")}
                         </Label>
                         <HelpTooltip
                           content={helpTooltips["action"]["errorCodeMapping"]}
@@ -275,8 +269,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        Complete on Download
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.completeOnDownload")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["action"]["completeOnDownload"]}
@@ -296,8 +290,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        File Name
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.fileName")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["action"]["fileSuffix"]}
@@ -317,8 +311,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        2FA Identifier
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.twoFaIdentifier")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["action"]["totpIdentifier"]}
@@ -336,8 +330,8 @@ function ActionNode({ id, data, type }: NodeProps<ActionNode>) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        2FA Verification URL
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.twoFaVerificationUrl")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["task"]["totpVerificationUrl"]}

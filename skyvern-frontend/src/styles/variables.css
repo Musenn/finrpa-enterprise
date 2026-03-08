@@ -13,27 +13,32 @@
   --finrpa-gold-dark: #A68A30;
 
   /* === Background === */
-  --finrpa-bg: #F8F9FA;
-  --finrpa-bg-alt: #F0F2F5;
+  --finrpa-bg: #EFF1F5;
+  --finrpa-bg-alt: #E8EBF0;
 
-  /* === Text === */
-  --finrpa-text-primary: #1A1A2E;
-  --finrpa-text-secondary: #6B7280;
-  --finrpa-text-muted: #9CA3AF;
+  /* === Text — blue-tinted grays for warmth, high contrast === */
+  --finrpa-text-primary: #1A1D2E;
+  --finrpa-text-secondary: #374155;
+  --finrpa-text-muted: #526077;
   --finrpa-text-white: #FFFFFF;
 
   /* === Glass Properties === */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-hover: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-blur: 12px;
-  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-bg-hover: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(26, 58, 92, 0.13);
+  --glass-blur: 14px;
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.13);
 
   /* === Sidebar === */
   --sidebar-width: 256px;
   --sidebar-collapsed-width: 72px;
-  --sidebar-bg: rgba(255, 255, 255, 0.82);
+  --sidebar-bg: rgba(255, 255, 255, 0.72);
+  --sidebar-shadow: 0 8px 32px rgba(26, 58, 92, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --sidebar-border: rgba(26, 58, 92, 0.1);
+  --sidebar-blur: 20px;
+  --sidebar-margin: 12px;
+  --sidebar-radius: 16px;
 
   /* === Spacing === */
   --space-xs: 4px;
@@ -67,8 +72,8 @@
   --risk-critical: #991B1B;
 
   /* === Charts === */
-  --chart-axis: #E5E7EB;
-  --chart-grid: #F3F4F6;
+  --chart-axis: #D1D5DB;
+  --chart-grid: #E5E7EB;
   --chart-blue: #1A3A5C;
   --chart-gold: #C9A84C;
   --chart-green: #10B981;
@@ -80,4 +85,11 @@
   --transition-fast: 150ms ease;
   --transition-normal: 200ms ease;
   --transition-slow: 300ms ease;
+
+  /* === Slate Elevations (light-theme overrides for glass-page) === */
+  --slate-elevation-1: 220 20% 96%;
+  --slate-elevation-2: 218 18% 93%;
+  --slate-elevation-3: 216 16% 90%;
+  --slate-elevation-4: 215 14% 87%;
+  --slate-elevation-5: 214 12% 84%;
 }

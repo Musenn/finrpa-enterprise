@@ -15,6 +15,7 @@ import { useBlockOutputStore } from "@/store/BlockOutputStore";
 import { cn, formatMs } from "@/util/utils";
 
 import { CodeEditor } from "./CodeEditor";
+import { useI18n } from "@/i18n/useI18n";
 
 type PageName = "output" | "override";
 
@@ -25,6 +26,7 @@ function BlockOutputs({
   blockLabel: string;
   blockOutput: { [k: string]: unknown } | null;
 }) {
+  const { t } = useI18n();
   const { workflowPermanentId } = useParams();
   const blockOutputStore = useBlockOutputStore();
   const [pageName, setPageName] = useState<PageName>("output");
@@ -77,15 +79,14 @@ function BlockOutputs({
           value={pageName}
           options={[
             {
-              label: "Output",
+              label: t("workflows.output"),
               value: "output",
-              helpText:
-                "The last output from this block, when it completed successfully.",
+              helpText: t("workflows.outputHelpText"),
             },
             {
-              label: "Override",
+              label: t("workflows.override"),
               value: "override",
-              helpText: "Supply your own override output.",
+              helpText: t("workflows.overrideHelpText"),
             },
           ]}
         />
@@ -95,16 +96,16 @@ function BlockOutputs({
               <TooltipTrigger asChild>
                 <header className="w-full text-right text-xs">{ago}</header>
               </TooltipTrigger>
-              <TooltipContent>When the output was created</TooltipContent>
+              <TooltipContent>{t("workflows.outputCreatedAt")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
         {pageName === "override" && (
           <header className="flex w-full items-center justify-end gap-2 text-xs">
-            <Label className="text-xs font-normal text-slate-300">
-              Use Override
+            <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+              {t("workflows.useOverride")}
             </Label>
-            <HelpTooltip content="Use this override instead of the last block output" />
+            <HelpTooltip content={t("workflows.useOverrideTooltip")} />
             <Switch
               checked={useOverride}
               onCheckedChange={(value) => {
@@ -134,8 +135,8 @@ function BlockOutputs({
               />
             </>
           ) : (
-            <div className="flex h-full w-full flex-1 items-center justify-center bg-slate-950">
-              No output defined
+            <div className="flex h-full w-full flex-1 items-center justify-center" style={{ background: "var(--glass-bg)" }}>
+              {t("workflows.noOutputDefined")}
             </div>
           )}
         </div>

@@ -2,8 +2,10 @@ import { VerificationCodeBanner } from "@/components/VerificationCodeBanner";
 import { statusIsFinalized } from "@/routes/tasks/types";
 import { useWorkflowRunWithWorkflowQuery } from "../hooks/useWorkflowRunWithWorkflowQuery";
 import { useQueryClient } from "@tanstack/react-query";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowRunVerificationCodeForm() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const { data: workflowRun } = useWorkflowRunWithWorkflowQuery();
 
@@ -22,7 +24,7 @@ function WorkflowRunVerificationCodeForm() {
       pollingStartedAt={
         workflowRun?.verification_code_polling_started_at ?? null
       }
-      label={`Workflow "${workflowRun?.workflow?.title ?? "Run"}"`}
+      label={`${t("workflows.workflow")} "${workflowRun?.workflow?.title ?? t("tasks.run")}"`}
       notificationTag={`2fa-required-${workflowRun?.workflow_run_id}`}
       navigateUrl={navigateUrl}
       defaultIdentifier={workflowRun?.verification_code_identifier ?? null}

@@ -201,6 +201,16 @@ def create_api_app() -> FastAPI:
     fastapi_app.include_router(enterprise_dashboard_router, prefix="/api/v1")
     fastapi_app.include_router(enterprise_cache_router, prefix="/api/v1")
 
+    # Bridge enterprise JWT auth into Skyvern's native org auth so that
+    # endpoints like /workflows/create-from-prompt accept enterprise tokens.
+    from enterprise.auth.bridge import (
+        authenticate_enterprise_token,
+        authenticate_enterprise_user,
+    )
+
+    forge_app.authentication_function = authenticate_enterprise_token
+    forge_app.authenticate_user_function = authenticate_enterprise_user
+
     # local dev endpoints
     if settings.ENV == "local":
         fastapi_app.include_router(internal_auth.router, prefix="/v1")

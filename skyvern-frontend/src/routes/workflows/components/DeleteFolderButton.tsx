@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { useDeleteFolderMutation } from "../hooks/useFolderMutations";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   folderId: string;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 function DeleteFolderButton({ folderId, folderTitle }: Props) {
+  const { t } = useI18n();
   const [deleteOption, setDeleteOption] = useState<
     "folder_only" | "folder_and_workflows"
   >("folder_only");
@@ -63,14 +65,14 @@ function DeleteFolderButton({ folderId, folderTitle }: Props) {
               </button>
             </DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>Delete Folder</TooltipContent>
+          <TooltipContent>{t("workflows.deleteFolder")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Delete Folder: {folderTitle}</DialogTitle>
+          <DialogTitle>{t("workflows.deleteFolderTitle")}: {folderTitle}</DialogTitle>
           <DialogDescription>
-            Choose how you want to delete this folder.
+            {t("workflows.deleteFolderDesc")}
           </DialogDescription>
         </DialogHeader>
         <RadioGroup
@@ -82,7 +84,7 @@ function DeleteFolderButton({ folderId, folderTitle }: Props) {
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="folder_only" id="folder_only" />
             <Label htmlFor="folder_only" className="font-normal">
-              Delete folder only (workflows will be unassigned)
+              {t("workflows.deleteFolderOnly")}
             </Label>
           </div>
           <div className="flex items-center space-x-2">
@@ -91,13 +93,13 @@ function DeleteFolderButton({ folderId, folderTitle }: Props) {
               id="folder_and_workflows"
             />
             <Label htmlFor="folder_and_workflows" className="font-normal">
-              Delete folder and all workflows inside it
+              {t("workflows.deleteFolderAndWorkflows")}
             </Label>
           </div>
         </RadioGroup>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary">{t("common.cancel")}</Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -107,7 +109,7 @@ function DeleteFolderButton({ folderId, folderTitle }: Props) {
             {isDeleteFolderPending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Delete
+            {t("common.delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

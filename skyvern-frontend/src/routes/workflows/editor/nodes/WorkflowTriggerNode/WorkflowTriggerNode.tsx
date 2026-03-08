@@ -110,7 +110,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
         )}
@@ -126,7 +126,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex gap-2">
-              <Label className="text-xs text-slate-300">Target Workflow</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Target Workflow</Label>
               <HelpTooltip content={workflowPermanentIdTooltip} />
             </div>
             <WorkflowSelector
@@ -144,7 +144,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
           <Separator />
           <div className="space-y-4">
             <div className="flex gap-2">
-              <Label className="text-xs text-slate-300">Payload</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Payload</Label>
               <HelpTooltip content={payloadTooltip} />
             </div>
             {hasWorkflowSelected ? (
@@ -158,7 +158,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
                 isLoading={isLoadingParams}
               />
             ) : (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                 Select a target workflow to configure its input parameters here.
               </p>
             )}
@@ -172,7 +172,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
               <AccordionContent className="space-y-4 pl-6 pr-1 pt-4">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    <Label className="text-xs font-normal text-slate-300">
+                    <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                       Wait for Completion
                     </Label>
                     <HelpTooltip content={waitForCompletionTooltip} />
@@ -202,7 +202,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Use Parent Browser Session
                       </Label>
                       <HelpTooltip content={useParentBrowserSessionTooltip} />
@@ -226,7 +226,7 @@ function WorkflowTriggerNode({ id, data }: NodeProps<WorkflowTriggerNodeType>) {
                 </div>
                 <div className="space-y-2">
                   <div className="flex gap-2">
-                    <Label className="text-xs font-normal text-slate-300">
+                    <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                       Browser Session ID
                     </Label>
                     <HelpTooltip content={browserSessionIdTooltip} />

@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { GlassCard } from "@/components/enterprise/GlassCard";
 import { Icon } from "@/components/Icon";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
+import { authFetch } from "@/util/authFetch";
 
 type OverviewData = {
   total_tasks: number;
@@ -80,28 +83,28 @@ function demoBL(): BLComparison[] {
   ];
 }
 
-function OverviewCards({ data }: { data: OverviewData }) {
+function OverviewCards({ data, t }: { data: OverviewData; t: (key: MessageKey, params?: Record<string, string | number>) => string }) {
   const cards = [
     {
-      title: "Total Tasks",
+      title: t("dashboard.totalTasks"),
       value: data.total_tasks.toLocaleString(),
       icon: "task" as const,
       color: "var(--finrpa-blue)",
     },
     {
-      title: "Success Rate (Today)",
+      title: t("dashboard.successRate"),
       value: `${data.success_rate_today}%`,
       icon: "check-circle" as const,
       color: "var(--status-completed)",
     },
     {
-      title: "Pending Approvals",
+      title: t("dashboard.pendingApproval"),
       value: data.pending_approvals.toString(),
       icon: "clock" as const,
       color: "var(--finrpa-gold)",
     },
     {
-      title: "Needs Human",
+      title: t("dashboard.needsHuman"),
       value: data.needs_human_count.toString(),
       icon: "user-check" as const,
       color: "var(--status-needs-human)",
@@ -134,40 +137,40 @@ function OverviewCards({ data }: { data: OverviewData }) {
   );
 }
 
-function TrendChart({ data }: { data: TrendItem[] }) {
+function TrendChart({ data, t }: { data: TrendItem[]; t: (key: MessageKey, params?: Record<string, string | number>) => string }) {
   const option = {
     tooltip: { trigger: "axis" as const },
-    legend: { data: ["Success", "Failed"], bottom: 0 },
+    legend: { data: [t("dashboard.chartSuccess"), t("dashboard.chartFailed")], bottom: 0 },
     grid: { left: 40, right: 20, top: 20, bottom: 40 },
     xAxis: {
       type: "category" as const,
       data: data.map((d) => d.date.slice(5)),
-      axisLine: { lineStyle: { color: "var(--chart-axis)" } },
-      axisLabel: { color: "var(--finrpa-text-secondary)" },
+      axisLine: { lineStyle: { color: "#D1D5DB" } },
+      axisLabel: { color: "#374155" },
     },
     yAxis: {
       type: "value" as const,
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: "var(--chart-grid)" } },
-      axisLabel: { color: "var(--finrpa-text-secondary)" },
+      splitLine: { lineStyle: { color: "#E5E7EB" } },
+      axisLabel: { color: "#374155" },
     },
     series: [
       {
-        name: "Success",
+        name: t("dashboard.chartSuccess"),
         type: "line",
         smooth: true,
         data: data.map((d) => d.success),
-        lineStyle: { color: "var(--chart-blue)", width: 2 },
-        itemStyle: { color: "var(--chart-blue)" },
-        areaStyle: { color: "rgba(26,58,92,0.08)" },
+        lineStyle: { color: "#10B981", width: 2 },
+        itemStyle: { color: "#10B981" },
+        areaStyle: { color: "rgba(16, 185, 129, 0.08)" },
       },
       {
-        name: "Failed",
+        name: t("dashboard.chartFailed"),
         type: "line",
         smooth: true,
         data: data.map((d) => d.failed),
-        lineStyle: { color: "var(--chart-red)", width: 2 },
-        itemStyle: { color: "var(--chart-red)" },
+        lineStyle: { color: "#EF4444", width: 2 },
+        itemStyle: { color: "#EF4444" },
       },
     ],
   };
@@ -175,9 +178,16 @@ function TrendChart({ data }: { data: TrendItem[] }) {
   return <ReactECharts option={option} style={{ height: 280 }} />;
 }
 
-function ErrorPieChart({ data }: { data: ErrorDistribution }) {
+const errorNameKeys: Record<string, MessageKey> = {
+  LLM_FAILURE: "error.llmFailure",
+  TIMEOUT: "error.timeout",
+  PAGE_ERROR: "error.pageError",
+  APPROVAL_REJECTED: "error.approvalRejected",
+};
+
+function ErrorPieChart({ data, t }: { data: ErrorDistribution; t: (key: MessageKey, params?: Record<string, string | number>) => string }) {
   const entries = Object.entries(data);
-  const colors = ["var(--chart-red)", "var(--chart-gold)", "var(--chart-purple)", "var(--chart-cyan)"];
+  const colors = ["#EF4444", "#F59E0B", "#8B5CF6", "#06B6D4"];
   const option = {
     tooltip: { trigger: "item" as const },
     series: [
@@ -185,12 +195,12 @@ function ErrorPieChart({ data }: { data: ErrorDistribution }) {
         type: "pie",
         radius: ["40%", "70%"],
         data: entries.map(([name, value], i) => ({
-          name,
+          name: errorNameKeys[name] ? t(errorNameKeys[name]!) : name,
           value,
           itemStyle: { color: colors[i % colors.length] },
         })),
         label: {
-          color: "var(--finrpa-text-secondary)",
+          color: "#374155",
           fontSize: 12,
         },
       },
@@ -200,30 +210,46 @@ function ErrorPieChart({ data }: { data: ErrorDistribution }) {
   return <ReactECharts option={option} style={{ height: 280 }} />;
 }
 
-function BLBarChart({ data }: { data: BLComparison[] }) {
+function BLBarChart({ data, t }: { data: BLComparison[]; t: (key: MessageKey, params?: Record<string, string | number>) => string }) {
   const option = {
-    tooltip: { trigger: "axis" as const },
     grid: { left: 120, right: 30, top: 20, bottom: 20 },
     xAxis: {
       type: "value" as const,
       max: 100,
-      axisLabel: { formatter: "{value}%", color: "var(--finrpa-text-secondary)" },
-      splitLine: { lineStyle: { color: "var(--chart-grid)" } },
+      axisLabel: { formatter: "{value}%", color: "#374155" },
+      splitLine: { lineStyle: { color: "#E5E7EB" } },
     },
     yAxis: {
       type: "category" as const,
-      data: data.map((d) => d.business_line_id),
-      axisLabel: { color: "var(--finrpa-text-secondary)", fontSize: 12 },
-      axisLine: { lineStyle: { color: "var(--chart-axis)" } },
+      data: data.map((d) => {
+        const keyMap: Record<string, MessageKey> = {
+          "Corporate Lending": "dashboard.blCorporateLending",
+          "Retail Credit": "dashboard.blRetailCredit",
+          "Wealth Management": "dashboard.blWealthManagement",
+          "Intl Settlement": "dashboard.blIntlSettlement",
+        };
+        return keyMap[d.business_line_id] ? t(keyMap[d.business_line_id]!) : d.business_line_id;
+      }),
+      axisLabel: { color: "#374155", fontSize: 12 },
+      axisLine: { lineStyle: { color: "#D1D5DB" } },
     },
+    tooltip: { trigger: "item" as const },
     series: [
       {
         type: "bar",
         data: data.map((d) => d.success_rate),
         barWidth: 20,
         itemStyle: {
-          color: "var(--chart-blue)",
+          color: "#1A3A5C",
           borderRadius: [0, 4, 4, 0],
+        },
+        emphasis: {
+          itemStyle: {
+            color: "#2A5A8C",
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.2)",
+            shadowOffsetY: -2,
+          },
         },
       },
     ],
@@ -233,6 +259,7 @@ function BLBarChart({ data }: { data: BLComparison[] }) {
 }
 
 export function DashboardPage() {
+  const { t } = useI18n();
   const [overview, setOverview] = useState<OverviewData | null>(null);
   const [trend, setTrend] = useState<TrendItem[]>([]);
   const [errors, setErrors] = useState<ErrorDistribution>({});
@@ -243,10 +270,10 @@ export function DashboardPage() {
     async function load() {
       try {
         const [ov, tr, er, bl] = await Promise.all([
-          fetch("/api/v1/enterprise/dashboard/overview").then((r) => r.ok ? r.json() : null),
-          fetch("/api/v1/enterprise/dashboard/trend?days=7").then((r) => r.ok ? r.json() : null),
-          fetch("/api/v1/enterprise/dashboard/errors").then((r) => r.ok ? r.json() : null),
-          fetch("/api/v1/enterprise/dashboard/business-lines").then((r) => r.ok ? r.json() : null),
+          authFetch("/api/v1/enterprise/dashboard/overview").then((r) => r.ok ? r.json() : null),
+          authFetch("/api/v1/enterprise/dashboard/trend?days=7").then((r) => r.ok ? r.json() : null),
+          authFetch("/api/v1/enterprise/dashboard/errors").then((r) => r.ok ? r.json() : null),
+          authFetch("/api/v1/enterprise/dashboard/business-lines").then((r) => r.ok ? r.json() : null),
         ]);
         setOverview(ov ?? demoOverview());
         setTrend(tr ?? demoTrend());
@@ -270,38 +297,38 @@ export function DashboardPage() {
         <div className="flex items-center gap-3">
           <Icon name="dashboard" size={24} color="var(--finrpa-blue)" />
           <h1 className="text-xl font-bold" style={{ color: "var(--finrpa-blue)" }}>
-            Operations Dashboard
+            {t("dashboard.title")}
           </h1>
         </div>
         <button className="glass-btn-secondary flex items-center gap-2 text-sm">
           <Icon name="download" size={16} />
-          Export CSV
+          {t("dashboard.exportCsv")}
         </button>
       </div>
 
-      <OverviewCards data={overview} />
+      <OverviewCards data={overview} t={t} />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <GlassCard hoverable={false} padding="md">
           <h3 className="mb-4 text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
-            Task Trend (7 Days)
+            {t("dashboard.taskTrend")}
           </h3>
-          <TrendChart data={trend} />
+          <TrendChart data={trend} t={t} />
         </GlassCard>
 
         <GlassCard hoverable={false} padding="md">
           <h3 className="mb-4 text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
-            Error Distribution
+            {t("dashboard.errorDistribution")}
           </h3>
-          <ErrorPieChart data={errors} />
+          <ErrorPieChart data={errors} t={t} />
         </GlassCard>
       </div>
 
       <GlassCard hoverable={false} padding="md">
         <h3 className="mb-4 text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
-          Business Line Comparison — Success Rate
+          {t("dashboard.businessLineComparison")} — {t("dashboard.successRateLabel")}
         </h3>
-        <BLBarChart data={blData} />
+        <BLBarChart data={blData} t={t} />
       </GlassCard>
     </div>
   );

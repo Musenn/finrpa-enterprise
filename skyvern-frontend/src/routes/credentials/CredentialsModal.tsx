@@ -41,6 +41,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { Label } from "@/components/ui/label";
 import { getHostname } from "@/util/getHostname";
+import { useI18n } from "@/i18n/useI18n";
 
 const PASSWORD_CREDENTIAL_INITIAL_VALUES = {
   name: "",
@@ -69,14 +70,14 @@ const SECRET_CREDENTIAL_INITIAL_VALUES = {
 // Maximum polling duration: 5 minutes
 const MAX_POLL_DURATION_MS = 5 * 60 * 1000;
 
-// Progressive status messages during test — each advances once at a real interval
-const TEST_STATUS_MESSAGES = [
-  "Testing credential login...",
-  "Entering credentials...",
-  "Verifying login...",
-  "This may take a moment...",
-  "Still working...",
-];
+// Keys for progressive status messages during test — each advances once at a real interval
+const TEST_STATUS_MESSAGE_KEYS = [
+  "credentials.testingLogin",
+  "credentials.enteringCredentials",
+  "credentials.verifyingLogin",
+  "credentials.mayTakeAMoment",
+  "credentials.stillWorking",
+] as const;
 // Delays (ms) before advancing to the next message (last message stays forever)
 const TEST_MESSAGE_DELAYS = [15_000, 30_000, 75_000, 60_000];
 
@@ -119,6 +120,7 @@ function CredentialsModal({
   overrideType,
   onStartBackgroundTest,
 }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
   const {
@@ -319,12 +321,11 @@ function CredentialsModal({
         pollIntervalRef.current = null;
         setTestStatus("failed");
         setTestFailureReason(
-          "The test timed out after 5 minutes. The login may be taking too long or requires manual interaction.",
+          t("credentials.testTimedOutReason"),
         );
         toast({
-          title: "Credential test timed out",
-          description:
-            "The test did not complete within 5 minutes. Please try again.",
+          title: t("credentials.testTimedOut"),
+          description: t("credentials.testTimedOutDesc"),
           variant: "destructive",
         });
         // Cancel the backend workflow run so it stops consuming resources
@@ -359,7 +360,7 @@ function CredentialsModal({
             setTestStatus("profile_failed");
             setTestFailureReason(data.browser_profile_failure_reason);
             toast({
-              title: "Browser profile was not saved",
+              title: t("credentials.browserProfileNotSaved"),
               description: data.browser_profile_failure_reason,
               variant: "destructive",
             });
@@ -371,12 +372,12 @@ function CredentialsModal({
             ? getHostname(data.tested_url)
             : null;
           toast({
-            title: "Credential test passed",
+            title: t("credentials.testPassed"),
             description: data.browser_profile_id
               ? profileHost
-                ? `Login successful! Saved browser session enabled for ${profileHost}`
-                : "Login successful! Saved browser session enabled."
-              : "Login successful!",
+                ? `${t("credentials.loginSuccessful")} ${t("credentials.savedSessionEnabledFor")} ${profileHost}`
+                : t("credentials.loginSuccessfulWithSession")
+              : t("credentials.loginSuccessful"),
             variant: "success",
           });
           return;
@@ -388,17 +389,17 @@ function CredentialsModal({
         ) {
           pollIntervalRef.current = null;
           setTestStatus("failed");
-          setTestFailureReason(data.failure_reason ?? "Unknown error");
+          setTestFailureReason(data.failure_reason ?? t("common.unknownError"));
           const failedHost =
             (data.tested_url ? getHostname(data.tested_url) : null) ??
             (testUrl ? getHostname(testUrl) : null) ??
             testUrl;
           toast({
             title: failedHost
-              ? `Unable to save browser session for ${failedHost}`
-              : "Unable to save browser session",
+              ? `${t("credentials.unableSaveSessionFor")} ${failedHost}`
+              : t("credentials.unableSaveSession"),
             description:
-              data.failure_reason ?? "The login test did not succeed",
+              data.failure_reason ?? t("credentials.loginTestFailed"),
             variant: "destructive",
           });
           return;
@@ -413,12 +414,11 @@ function CredentialsModal({
           pollIntervalRef.current = null;
           setTestStatus("failed");
           setTestFailureReason(
-            "Network error — please check your connection and try again.",
+            t("credentials.networkError"),
           );
           toast({
-            title: "Connection lost",
-            description:
-              "Unable to reach the server after multiple attempts. Please check your connection.",
+            title: t("credentials.connectionLost"),
+            description: t("credentials.connectionLostDesc"),
             variant: "destructive",
           });
           return;
@@ -478,10 +478,10 @@ function CredentialsModal({
       const detail = (
         (error as AxiosError)?.response?.data as { detail?: string }
       )?.detail;
-      setTestFailureReason(detail ?? "Failed to start credential test");
+      setTestFailureReason(detail ?? t("credentials.failedStartTest"));
       toast({
-        title: "Failed to start credential test",
-        description: detail ?? "An unexpected error occurred",
+        title: t("credentials.failedStartTest"),
+        description: detail ?? t("credentials.unexpectedError"),
         variant: "destructive",
       });
     }
@@ -519,23 +519,21 @@ function CredentialsModal({
       if (shouldTestAfterSave && onStartBackgroundTest) {
         onStartBackgroundTest(data.credential_id, capturedTestUrl);
         toast({
-          title: "Credential saved",
-          description:
-            "Testing browser profile in the background. You'll be notified when it's ready.",
+          title: t("credentials.credentialSaved"),
+          description: t("credentials.testingInBackground"),
           variant: "success",
         });
       } else if (shouldTestAfterSave) {
         // Background test hook not available in this context (e.g. workflow editor)
         toast({
-          title: "Credential saved",
-          description:
-            "To set up a browser profile, test this credential from the Credentials page.",
+          title: t("credentials.credentialSaved"),
+          description: t("credentials.testFromCredentialsPage"),
           variant: "success",
         });
       } else {
         toast({
-          title: "Credential created",
-          description: "Your credential has been created successfully",
+          title: t("credentials.credentialCreated"),
+          description: t("credentials.credentialCreatedDesc"),
           variant: "success",
         });
       }
@@ -543,7 +541,7 @@ function CredentialsModal({
     onError: (error: AxiosError) => {
       const detail = (error.response?.data as { detail?: string })?.detail;
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: detail ? detail : error.message,
         variant: "destructive",
       });
@@ -566,15 +564,15 @@ function CredentialsModal({
         queryKey: ["credentials"],
       });
       toast({
-        title: "Credential updated",
-        description: "Your credential has been updated successfully",
+        title: t("credentials.credentialUpdated"),
+        description: t("credentials.credentialUpdatedDesc"),
         variant: "success",
       });
     },
     onError: (error: AxiosError) => {
       const detail = (error.response?.data as { detail?: string })?.detail;
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: detail ? detail : error.message,
         variant: "destructive",
       });
@@ -610,15 +608,15 @@ function CredentialsModal({
       reset();
       setIsOpen(false);
       toast({
-        title: "Credential saved",
-        description: "Your credential has been saved successfully",
+        title: t("credentials.credentialSaved"),
+        description: t("credentials.credentialSavedDesc"),
         variant: "success",
       });
     },
     onError: (error: AxiosError) => {
       const detail = (error.response?.data as { detail?: string })?.detail;
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: detail ? detail : error.message,
         variant: "destructive",
       });
@@ -652,8 +650,8 @@ function CredentialsModal({
           : secretCredentialValues.name.trim();
     if (name === "") {
       toast({
-        title: "Error",
-        description: "Name is required",
+        title: t("common.error"),
+        description: t("credentials.nameRequired"),
         variant: "destructive",
       });
       return;
@@ -681,8 +679,8 @@ function CredentialsModal({
 
       if (username === "" || password === "") {
         toast({
-          title: "Error",
-          description: "Username and password are required",
+          title: t("common.error"),
+          description: t("credentials.usernamePasswordRequired"),
           variant: "destructive",
         });
         return;
@@ -733,8 +731,8 @@ function CredentialsModal({
         cardHolderName === ""
       ) {
         toast({
-          title: "Error",
-          description: "All credit card fields are required",
+          title: t("common.error"),
+          description: t("credentials.creditCardFieldsRequired"),
           variant: "destructive",
         });
         return;
@@ -743,8 +741,8 @@ function CredentialsModal({
       const cardExpirationDateParts = cardExpirationDate.split("/");
       if (cardExpirationDateParts.length !== 2) {
         toast({
-          title: "Error",
-          description: "Invalid card expiration date",
+          title: t("common.error"),
+          description: t("credentials.invalidExpiration"),
           variant: "destructive",
         });
         return;
@@ -753,8 +751,8 @@ function CredentialsModal({
       const cardExpirationYear = cardExpirationDateParts[1];
       if (!cardExpirationMonth || !cardExpirationYear) {
         toast({
-          title: "Error",
-          description: "Invalid card expiration date",
+          title: t("common.error"),
+          description: t("credentials.invalidExpiration"),
           variant: "destructive",
         });
         return;
@@ -779,8 +777,8 @@ function CredentialsModal({
 
       if (secretValue === "") {
         toast({
-          title: "Error",
-          description: "Secret value is required",
+          title: t("common.error"),
+          description: t("credentials.secretRequired"),
           variant: "destructive",
         });
         return;
@@ -810,7 +808,7 @@ function CredentialsModal({
       return;
     }
     // If we're at the last message, stay there
-    if (testMessageIndex >= TEST_STATUS_MESSAGES.length - 1) {
+    if (testMessageIndex >= TEST_STATUS_MESSAGE_KEYS.length - 1) {
       return;
     }
     const timeout = setTimeout(() => {
@@ -849,22 +847,22 @@ function CredentialsModal({
                     htmlFor="test-and-save"
                     className="cursor-pointer text-sm font-medium"
                   >
-                    Save browser session for future logins
+                    {t("credentials.saveBrowserSession")}
                   </Label>
-                  <HelpTooltip content="Skyvern will log in using your credentials, verify success, and save the browser session. Future workflow runs will skip the login form entirely because the saved session is already authenticated." />
+                  <HelpTooltip content={t("credentials.testLoginTooltip")} />
                 </div>
 
                 {isTestInProgress && (
                   <div className="flex items-center gap-2 pl-7 text-sm text-muted-foreground">
                     <ReloadIcon className="size-4 animate-spin" />
-                    <span>{TEST_STATUS_MESSAGES[testMessageIndex]}</span>
+                    <span>{t(TEST_STATUS_MESSAGE_KEYS[testMessageIndex] ?? "credentials.testingLogin")}</span>
                   </div>
                 )}
                 {testStatus === "completed" && (
                   <div className="flex items-center gap-2 pl-7 text-sm text-green-400">
                     <CheckCircledIcon className="size-4" />
                     <span>
-                      {`Login test passed — saved browser session available for workflows using ${getHostname(testUrl) ?? testUrl}`}
+                      {`${t("credentials.testPassedSessionAvailable")} ${getHostname(testUrl) ?? testUrl}`}
                     </span>
                   </div>
                 )}
@@ -872,7 +870,7 @@ function CredentialsModal({
                   <div className="space-y-1 pl-7">
                     <div className="flex items-center gap-2 text-sm text-destructive">
                       <CrossCircledIcon className="size-4" />
-                      <span>Browser profile was not saved</span>
+                      <span>{t("credentials.browserProfileNotSaved")}</span>
                     </div>
                     {testFailureReason && (
                       <p className="text-xs text-destructive/70">
@@ -887,8 +885,8 @@ function CredentialsModal({
                       <CrossCircledIcon className="size-4" />
                       <span>
                         {testUrl
-                          ? `Unable to save browser session for ${getHostname(testUrl) ?? testUrl}`
-                          : "Unable to save browser session"}
+                          ? `${t("credentials.unableSaveSessionFor")} ${getHostname(testUrl) ?? testUrl}`
+                          : t("credentials.unableSaveSession")}
                       </span>
                     </div>
                     {testFailureReason && (
@@ -931,8 +929,8 @@ function CredentialsModal({
   const handleTest = () => {
     if (testUrl.trim() === "") {
       toast({
-        title: "Error",
-        description: "Login URL is required to test credentials",
+        title: t("common.error"),
+        description: t("credentials.loginUrlRequired"),
         variant: "destructive",
       });
       return;
@@ -942,8 +940,8 @@ function CredentialsModal({
       !testUrl.trim().startsWith("https://")
     ) {
       toast({
-        title: "Error",
-        description: "Login URL must start with http:// or https://",
+        title: t("common.error"),
+        description: t("credentials.invalidUrl"),
         variant: "destructive",
       });
       return;
@@ -953,8 +951,8 @@ function CredentialsModal({
     const password = passwordCredentialValues.password.trim();
     if (username === "" || password === "") {
       toast({
-        title: "Error",
-        description: "Username and password are required to test",
+        title: t("common.error"),
+        description: t("credentials.credentialsRequired"),
         variant: "destructive",
       });
       return;
@@ -995,10 +993,10 @@ function CredentialsModal({
     testWorkflowRunIdRef.current = null;
     setTestCredentialId(null);
     toast({
-      title: "Test canceled",
-      description: "The credential test has been canceled.",
+      title: t("credentials.testCanceled"),
+      description: t("credentials.testCanceledDesc"),
     });
-  }, [credentialGetter]);
+  }, [credentialGetter, t]);
 
   // Whether the Test button should be shown
   const showTestButton = testAndSave && type === CredentialModalTypes.PASSWORD;
@@ -1049,15 +1047,14 @@ function CredentialsModal({
       <DialogContent className="w-[700px] max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="font-bold">
-            {isEditMode ? "Edit Credential" : "Add Credential"}
+            {isEditMode ? t("credentials.editCredential") : t("credentials.addCredential")}
           </DialogTitle>
         </DialogHeader>
         {isEditMode && editingGroups.values && (
           <Alert>
             <InfoCircledIcon className="size-4" />
             <AlertDescription>
-              For security, saved values are never retrieved. All credential
-              fields must be filled in to save your changes.
+              {t("credentials.securityNote")} {t("credentials.allFieldsRequired")}
             </AlertDescription>
           </Alert>
         )}
@@ -1068,7 +1065,7 @@ function CredentialsModal({
             {showTestButton &&
               (isTestInProgress ? (
                 <Button variant="destructive" onClick={cancelTest}>
-                  Cancel Test
+                  {t("credentials.cancelTest")}
                 </Button>
               ) : (
                 <Button
@@ -1076,7 +1073,7 @@ function CredentialsModal({
                   onClick={handleTest}
                   disabled={!canTest}
                 >
-                  {isTestComplete ? "Retest" : "Test"}
+                  {isTestComplete ? t("credentials.retest") : t("credentials.test")}
                 </Button>
               ))}
             <Button
@@ -1091,7 +1088,7 @@ function CredentialsModal({
               renameCredentialMutation.isPending ? (
                 <ReloadIcon className="mr-2 size-4 animate-spin" />
               ) : null}
-              {isEditMode ? "Update" : "Save"}
+              {isEditMode ? t("credentials.update") : t("common.save")}
             </Button>
           </div>
         </DialogFooter>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { type Status as WorkflowRunStatus } from "@/api/types";
+import { useI18n } from "@/i18n/useI18n";
 
 const deadStatuses = [
   "canceled",
@@ -31,6 +32,7 @@ interface Props {
 }
 
 function WorkflowRunStatusAlert({ status, title, visible }: Props) {
+  const { t } = useI18n();
   const [notifyIsOpen, setNotifyIsOpen] = useState(false);
   const [statusesWatched, setStatusesWatched] = useState<Set<WatchableStatus>>(
     new Set(),
@@ -171,7 +173,7 @@ function WorkflowRunStatusAlert({ status, title, visible }: Props) {
           }}
         >
           <BellIcon className="mr-2 h-4 w-4" />
-          {notifySuffix ? `Notify ${notifySuffix}` : "Notify"}
+          {notifySuffix ? `${t("workflows.notify")} ${notifySuffix}` : t("workflows.notify")}
           {notifyIsOpen ? (
             <ChevronUpIcon className="ml-2 h-4 w-4" />
           ) : (
@@ -229,7 +231,7 @@ function WorkflowRunStatusAlert({ status, title, visible }: Props) {
                     }}
                   />
                   <label htmlFor="any-ending" className="cursor-pointer">
-                    all ending
+                    {t("workflows.allEnding")}
                   </label>
                 </div>
                 {deadStatuses.map((s) => (
@@ -258,7 +260,7 @@ function WorkflowRunStatusAlert({ status, title, visible }: Props) {
             </div>
           )}
         </Button>
-        <HelpTooltip content="When this workflow changes to a particular status, notify me via OS notifications and a sound." />
+        <HelpTooltip content={t("workflows.notifyTooltip")} />
       </div>
     </div>
   );

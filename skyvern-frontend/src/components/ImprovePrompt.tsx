@@ -23,6 +23,7 @@ import { SwitchBar } from "@/components/SwitchBar";
 import { toast } from "@/components/ui/use-toast";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { ImprovePromptForWorkflowResponse } from "@/routes/workflows/types/workflowTypes";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
   context?: Record<string, unknown>;
@@ -36,6 +37,7 @@ interface Props {
 }
 
 function ImprovePrompt(props: Props) {
+  const { t } = useI18n();
   const { size = "large" } = props;
   const credentialGetter = useCredentialGetter();
   const [showImproveDialog, setShowImproveDialog] = useState(false);
@@ -69,8 +71,8 @@ function ImprovePrompt(props: Props) {
         toast({
           variant: "default",
           title:
-            "We're sorry - we could not improve upon the prompt at this time.",
-          description: `Please try again later.\n\n[${error}]`,
+            t("prompt.couldNotImprove"),
+          description: error,
         });
 
         return;
@@ -86,7 +88,7 @@ function ImprovePrompt(props: Props) {
 
       toast({
         variant: "destructive",
-        title: "Error improving prompt",
+        title: t("prompt.errorImproving"),
         description: error.message,
       });
     },
@@ -118,7 +120,7 @@ function ImprovePrompt(props: Props) {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Have AI improve your prompt!</p>
+              <p>{t("prompt.haveAiImprove")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -126,23 +128,23 @@ function ImprovePrompt(props: Props) {
       <Dialog open={showImproveDialog} onOpenChange={setShowImproveDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Choose Your Prompt</DialogTitle>
+            <DialogTitle>{t("prompt.choosePrompt")}</DialogTitle>
             <DialogDescription>
-              Select which version of the prompt you'd like to use
+              {t("prompt.selectVersion")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <SwitchBar
               options={[
-                { label: "Improved", value: "improved" },
-                { label: "Original", value: "original" },
+                { label: t("prompt.improved"), value: "improved" },
+                { label: t("prompt.original"), value: "original" },
               ]}
               value={selectedPromptVersion}
               onChange={(value) =>
                 setSelectedPromptVersion(value as "improved" | "original")
               }
             />
-            <div className="max-h-96 overflow-y-auto rounded-md border border-slate-700 bg-slate-800 p-4">
+            <div className="max-h-96 overflow-y-auto rounded-md border p-4" style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}>
               <p className="whitespace-pre-wrap text-sm">
                 {selectedPromptVersion === "improved"
                   ? improvedPrompt
@@ -157,7 +159,7 @@ function ImprovePrompt(props: Props) {
                 setShowImproveDialog(false);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={() => {
@@ -169,7 +171,7 @@ function ImprovePrompt(props: Props) {
                 setShowImproveDialog(false);
               }}
             >
-              Use This Prompt
+              {t("prompt.useThisPrompt")}
             </Button>
           </DialogFooter>
         </DialogContent>

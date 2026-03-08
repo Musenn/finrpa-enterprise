@@ -19,8 +19,10 @@ import {
   type DebugSessionRun,
 } from "../hooks/useDebugSessionRunsQuery";
 import { toast } from "@/components/ui/use-toast";
+import { useI18n } from "@/i18n/useI18n";
 
 function DebuggerBlockRuns() {
+  const { t } = useI18n();
   const { workflowPermanentId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -53,8 +55,8 @@ function DebuggerBlockRuns() {
     if (!block) {
       toast({
         variant: "destructive",
-        title: "Block not found",
-        description: `The block with label '${blockLabel}' is no longer found in the workflow.`,
+        title: t("workflows.blockNotFound"),
+        description: `${t("workflows.blockNotFoundDesc")} (${blockLabel})`,
       });
 
       return;

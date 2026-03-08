@@ -8,12 +8,10 @@ function Sidebar() {
   return (
     <aside
       className={cn(
-        "glass-sidebar fixed hidden h-screen min-h-screen lg:block",
-        {
-          "w-64": !collapsed,
-          "w-20": collapsed,
-        },
+        "glass-sidebar fixed left-3 top-3 hidden lg:block",
+        collapsed ? "w-16" : "w-60",
       )}
+      style={{ height: "calc(100vh - 24px)" }}
     >
       <SidebarContent useCollapsedState />
     </aside>

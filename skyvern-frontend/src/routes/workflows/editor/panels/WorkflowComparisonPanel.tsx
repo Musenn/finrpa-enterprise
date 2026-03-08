@@ -15,6 +15,7 @@ import { FlowRenderer } from "../FlowRenderer";
 import { getElements } from "../workflowEditorUtils";
 import { ProxyLocation } from "@/api/types";
 import { AppNode } from "../nodes";
+import { useI18n } from "@/i18n/useI18n";
 
 type BlockComparison = {
   leftBlock?: WorkflowBlock;
@@ -272,6 +273,7 @@ function WorkflowComparisonPanel({
   mode = "history",
   onCopilotReviewClose,
 }: Props) {
+  const { t } = useI18n();
   const comparisons = useMemo(() => {
     const blocks1 = version1?.workflow_definition?.blocks || [];
     const blocks2 = version2?.workflow_definition?.blocks || [];
@@ -357,8 +359,9 @@ function WorkflowComparisonPanel({
           <button
             type="button"
             onClick={() => onCopilotReviewClose("close")}
-            className="absolute right-4 top-4 rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
-            title="Close (Esc)"
+            className="absolute right-4 top-4 rounded p-1"
+            style={{ color: "var(--finrpa-text-muted)" }}
+            title={t("editor.closeEsc")}
           >
             <Cross2Icon className="h-5 w-5" />
           </button>
@@ -370,7 +373,7 @@ function WorkflowComparisonPanel({
             {version1.title}
           </h2>
           <h3 className="text-center text-lg font-medium text-muted-foreground">
-            {mode === "copilot" ? "Copilot Review" : "Version Comparison"}
+            {mode === "copilot" ? t("editor.copilotReview") : t("editor.versionComparison")}
           </h3>
           <h2 className="text-center text-xl font-semibold">
             {version2.title}
@@ -388,19 +391,19 @@ function WorkflowComparisonPanel({
           <div className="flex justify-center gap-3 text-sm">
             <div className="flex items-center gap-1">
               <div className="h-3 w-3 rounded-full bg-green-300"></div>
-              <span>Identical ({stats.identical})</span>
+              <span>{t("editor.identical")} ({stats.identical})</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="h-3 w-3 rounded-full bg-yellow-400"></div>
-              <span>Modified ({stats.modified})</span>
+              <span>{t("editor.modified")} ({stats.modified})</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="h-3 w-3 rounded-full bg-orange-700"></div>
-              <span>Added ({stats.added})</span>
+              <span>{t("editor.added")} ({stats.added})</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="h-3 w-3 rounded-full bg-orange-700"></div>
-              <span>Removed ({stats.removed})</span>
+              <span>{t("editor.removed")} ({stats.removed})</span>
             </div>
           </div>
           {mode === "history" ? (
@@ -420,7 +423,7 @@ function WorkflowComparisonPanel({
                 onClick={() => onSelectState(version1)}
                 className="text-xs"
               >
-                Select this variant
+                {t("editor.selectThisVariant")}
               </Button>
             )}
           </div>
@@ -433,14 +436,14 @@ function WorkflowComparisonPanel({
                   onClick={() => onCopilotReviewClose?.("reject")}
                   className="text-xs"
                 >
-                  Reject
+                  {t("editor.reject")}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => onCopilotReviewClose?.("approve")}
                   className="bg-green-600 text-xs hover:bg-green-700"
                 >
-                  Accept
+                  {t("editor.accept")}
                 </Button>
               </>
             )}
@@ -452,7 +455,7 @@ function WorkflowComparisonPanel({
                 onClick={() => onSelectState(version2)}
                 className="text-xs"
               >
-                Select this variant
+                {t("editor.selectThisVariant")}
               </Button>
             )}
           </div>

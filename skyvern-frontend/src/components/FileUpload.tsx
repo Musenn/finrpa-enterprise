@@ -9,6 +9,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { toast } from "./ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { useI18n } from "@/i18n/useI18n";
 
 export type FileInputValue =
   | {
@@ -25,16 +26,8 @@ type Props = {
 
 const FILE_SIZE_LIMIT_IN_BYTES = 10 * 1024 * 1024; // 10 MB
 
-function showFileSizeError() {
-  toast({
-    variant: "destructive",
-    title: "File size limit exceeded",
-    description:
-      "The file you are trying to upload exceeds the 10MB limit, please try again with a different file",
-  });
-}
-
 function FileUpload({ value, onChange }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const [file, setFile] = useState<File | null>(null);
   const inputId = useId();
@@ -68,8 +61,8 @@ function FileUpload({ value, onChange }: Props) {
       setFile(null);
       toast({
         variant: "destructive",
-        title: "Failed to upload file",
-        description: `An error occurred while uploading the file: ${error.message}`,
+        title: t("common.failedUploadFile"),
+        description: error.message,
       });
     },
   });
@@ -78,7 +71,11 @@ function FileUpload({ value, onChange }: Props) {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0] as File;
       if (file.size > FILE_SIZE_LIMIT_IN_BYTES) {
-        showFileSizeError();
+        toast({
+          variant: "destructive",
+          title: t("common.fileSizeLimitExceeded"),
+          description: t("common.fileSizeLimitDesc"),
+        });
         return;
       }
       setFile(file);
@@ -129,7 +126,7 @@ function FileUpload({ value, onChange }: Props) {
           <Label
             htmlFor={inputId}
             className={cn(
-              "flex w-full cursor-pointer items-center justify-center border border-dashed py-8 hover:border-slate-500",
+              "flex w-full cursor-pointer items-center justify-center border border-dashed py-8",
             )}
             onDragOver={(event) => {
               event.preventDefault();
@@ -143,7 +140,11 @@ function FileUpload({ value, onChange }: Props) {
               ) {
                 const file = event.dataTransfer.files[0] as File;
                 if (file.size > FILE_SIZE_LIMIT_IN_BYTES) {
-                  showFileSizeError();
+                  toast({
+          variant: "destructive",
+          title: t("common.fileSizeLimitExceeded"),
+          description: t("common.fileSizeLimitDesc"),
+        });
                   return;
                 }
                 setFile(file);

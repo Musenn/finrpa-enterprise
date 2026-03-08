@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { getClient } from "@/api/AxiosClient";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { type BrowserSession } from "@/routes/workflows/types/browserSessionTypes";
+import { useI18n } from "@/i18n/useI18n";
 
 const PREVIEWABLE_EXTENSIONS = new Set([
   "pdf",
@@ -51,6 +52,7 @@ function downloadFile(url: string, filename: string) {
 }
 
 function BrowserSessionDownloads() {
+  const { t } = useI18n();
   const { browserSessionId } = useParams();
   const credentialGetter = useCredentialGetter();
 
@@ -75,7 +77,7 @@ function BrowserSessionDownloads() {
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <div className="text-lg">Loading downloads...</div>
+        <div className="text-lg">{t("browserSessions.loadingDownloads")}</div>
       </div>
     );
   }
@@ -84,7 +86,7 @@ function BrowserSessionDownloads() {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-lg text-red-500">
-          Error loading downloads: {error.message}
+          {t("browserSessions.errorLoadingDownloads")}: {error.message}
         </div>
       </div>
     );
@@ -94,9 +96,9 @@ function BrowserSessionDownloads() {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-center">
-          <div className="mb-2 text-lg text-gray-500">No downloaded files</div>
+          <div className="mb-2 text-lg text-gray-500">{t("browserSessions.noDownloadedFiles")}</div>
           <div className="text-sm text-gray-400">
-            Files downloaded during this browser session will appear here
+            {t("browserSessions.downloadedFilesHint")}
           </div>
         </div>
       </div>
@@ -106,9 +108,9 @@ function BrowserSessionDownloads() {
   return (
     <div className="h-full w-full overflow-auto p-4">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold">Downloaded Files</h2>
+        <h2 className="text-xl font-semibold">{t("browserSessions.downloadedFiles")}</h2>
         <p className="text-sm text-gray-500">
-          Files downloaded during this browser session
+          {t("browserSessions.downloadedFilesHint")}
         </p>
       </div>
 
@@ -116,7 +118,7 @@ function BrowserSessionDownloads() {
         {downloadedFiles.map((file, index) => {
           const urlPath = file.url.split("?")[0] ?? file.url;
           const filename =
-            file.filename || urlPath.split("/").pop() || `File ${index + 1}`;
+            file.filename || urlPath.split("/").pop() || `${t("browserSessions.file")} ${index + 1}`;
           const previewable = file.url && isPreviewable(filename);
 
           return (
@@ -143,28 +145,28 @@ function BrowserSessionDownloads() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex flex-1 items-center justify-center gap-1 rounded border px-2 py-1 text-xs hover:bg-muted"
-                      title={`Preview ${filename}`}
+                      title={`${t("browserSessions.preview")} ${filename}`}
                     >
                       <EyeOpenIcon className="size-3" />
-                      Preview
+                      {t("browserSessions.preview")}
                     </a>
                   ) : (
                     <button
                       disabled
                       className="flex flex-1 cursor-not-allowed items-center justify-center gap-1 rounded border px-2 py-1 text-xs opacity-40"
-                      title="Preview not available for this file type"
+                      title={t("browserSessions.previewNotAvailable")}
                     >
                       <EyeOpenIcon className="size-3" />
-                      Preview
+                      {t("browserSessions.preview")}
                     </button>
                   )}
                   <button
                     onClick={() => downloadFile(file.url, filename)}
                     className="flex flex-1 items-center justify-center gap-1 rounded border px-2 py-1 text-xs hover:bg-muted"
-                    title={`Download ${filename}`}
+                    title={`${t("common.download")} ${filename}`}
                   >
                     <DownloadIcon className="size-3" />
-                    Download
+                    {t("common.download")}
                   </button>
                 </div>
               )}

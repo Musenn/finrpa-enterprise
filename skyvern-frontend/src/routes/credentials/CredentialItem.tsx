@@ -17,23 +17,25 @@ import { DeleteCredentialButton } from "./DeleteCredentialButton";
 import { getHostname } from "@/util/getHostname";
 import { CredentialsModal } from "./CredentialsModal";
 import { credentialTypeToModalType } from "./useCredentialModalState";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   credential: CredentialApiResponse;
 };
 
 function CredentialItem({ credential }: Props) {
+  const { t } = useI18n();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const credentialData = credential.credential;
   const modalType = credentialTypeToModalType(credential.credential_type);
   const getTotpTypeDisplay = (totpType: string) => {
     switch (totpType) {
       case "authenticator":
-        return "Authenticator App";
+        return t("credentials.authenticatorApp");
       case "email":
-        return "Email";
+        return t("credentials.email");
       case "text":
-        return "Text Message";
+        return t("credentials.textMessage");
       case "none":
       default:
         return "";
@@ -47,10 +49,10 @@ function CredentialItem({ credential }: Props) {
       <div className="border-l pl-5">
         <div className="flex gap-5">
           <div className="shrink-0 space-y-2">
-            <p className="text-sm text-slate-400">Username/Email</p>
-            <p className="text-sm text-slate-400">Password</p>
+            <p className="text-sm text-slate-400">{t("credentials.username")}</p>
+            <p className="text-sm text-slate-400">{t("credentials.password")}</p>
             {credentialData.totp_type !== "none" && (
-              <p className="text-sm text-slate-400">2FA Type</p>
+              <p className="text-sm text-slate-400">{t("credentials.twoFAType")}</p>
             )}
           </div>
           <div className="space-y-2">
@@ -70,8 +72,8 @@ function CredentialItem({ credential }: Props) {
       <div className="flex gap-5 border-l pl-5">
         <div className="flex gap-5">
           <div className="shrink-0 space-y-2">
-            <p className="text-sm text-slate-400">Card Number</p>
-            <p className="text-sm text-slate-400">Brand</p>
+            <p className="text-sm text-slate-400">{t("credentials.cardNumber")}</p>
+            <p className="text-sm text-slate-400">{t("credentials.cardBrand")}</p>
           </div>
         </div>
         <div className="flex gap-5">
@@ -88,9 +90,9 @@ function CredentialItem({ credential }: Props) {
     credentialDetails = (
       <div className="flex gap-5 border-l pl-5">
         <div className="shrink-0 space-y-2">
-          <p className="text-sm text-slate-400">Secret Value</p>
+          <p className="text-sm text-slate-400">{t("credentials.secretValue")}</p>
           {credentialData.secret_label ? (
-            <p className="text-sm text-slate-400">Type</p>
+            <p className="text-sm text-slate-400">{t("common.type")}</p>
           ) : null}
         </div>
         <div className="space-y-2">
@@ -113,7 +115,7 @@ function CredentialItem({ credential }: Props) {
         {credential.browser_profile_id && (
           <div className="flex items-center gap-1 text-xs">
             <span className="rounded bg-green-900/40 px-1.5 py-0.5 text-green-400">
-              saved-profile
+              {t("credentials.savedProfile")}
             </span>
             {credential.tested_url && (
               <span className="text-muted-foreground">
@@ -138,7 +140,7 @@ function CredentialItem({ credential }: Props) {
                 <Pencil1Icon className="size-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit Credential</TooltipContent>
+            <TooltipContent>{t("credentials.editCredential")}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <DeleteCredentialButton credential={credential} />

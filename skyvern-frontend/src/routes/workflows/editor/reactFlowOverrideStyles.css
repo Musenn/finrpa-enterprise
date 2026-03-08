@@ -78,6 +78,6 @@
 }
 
 .react-flow__attribution {
-  background-color: rgb(2 6 23);
-  color: white;
+  background-color: rgba(26, 58, 92, 0.06);
+  color: var(--finrpa-text-muted);
 }

@@ -14,21 +14,27 @@ import { ScrollArea, ScrollAreaViewport } from "@/components/ui/scroll-area";
 import { WorkflowParameterInput } from "@/routes/workflows/WorkflowParameterInput";
 import { getLabelForWorkflowParameterType } from "@/routes/workflows/editor/workflowEditorUtils";
 import type { WorkflowParameter } from "@/routes/workflows/types/workflowTypes";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
 /**
  * Validates a parameter value based on its type.
  * Matches the validation logic in RunWorkflowForm.
  */
-function validateParameterValue(value: unknown, type: string): string | null {
+function validateParameterValue(
+  value: unknown,
+  type: string,
+  t: (key: MessageKey, params?: Record<string, string | number>) => string,
+): string | null {
   switch (type) {
     case "json":
       if (value === null || value === undefined) {
-        return "This field is required";
+        return t("common.fieldRequired");
       }
       if (typeof value === "string") {
         const trimmed = value.trim();
         if (trimmed === "") {
-          return "This field is required";
+          return t("common.fieldRequired");
         }
         try {
           JSON.parse(trimmed);
@@ -42,14 +48,14 @@ function validateParameterValue(value: unknown, type: string): string | null {
 
     case "boolean":
       if (value === null || value === undefined) {
-        return "This field is required";
+        return t("common.fieldRequired");
       }
       return null;
 
     case "integer":
     case "float":
       if (value === null || value === undefined || Number.isNaN(value)) {
-        return "This field is required";
+        return t("common.fieldRequired");
       }
       return null;
 
@@ -63,7 +69,7 @@ function validateParameterValue(value: unknown, type: string): string | null {
           "s3uri" in value &&
           !(value as { s3uri: unknown }).s3uri)
       ) {
-        return "This field is required";
+        return t("common.fieldRequired");
       }
       return null;
 
@@ -121,6 +127,7 @@ function BlockParametersDialog({
   onSubmit,
   isLoading = false,
 }: BlockParametersDialogProps) {
+  const { t } = useI18n();
   const [values, setValues] = useState<Record<string, unknown>>({});
 
   // Reset values when dialog opens
@@ -139,6 +146,7 @@ function BlockParametersDialog({
       const error = validateParameterValue(
         values[param.key],
         param.workflow_parameter_type,
+        t,
       );
       if (error) {
         errors[param.key] = error;
@@ -166,9 +174,9 @@ function BlockParametersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Enter Parameter Values</DialogTitle>
+          <DialogTitle>{t("editor.enterParameterValues")}</DialogTitle>
           <DialogDescription>
-            The block "{blockLabel}" requires the following parameters to run.
+            {t("editor.blockRequiresParams", { blockLabel })}
           </DialogDescription>
         </DialogHeader>
 
@@ -186,14 +194,14 @@ function BlockParametersDialog({
                     >
                       {param.key}
                     </Label>
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                       {getLabelForWorkflowParameterType(
                         param.workflow_parameter_type,
                       )}
                     </span>
                   </div>
                   {param.description && (
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                       {param.description}
                     </p>
                   )}
@@ -221,7 +229,7 @@ function BlockParametersDialog({
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -230,10 +238,10 @@ function BlockParametersDialog({
             {isLoading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Running...
+                {t("editor.running")}
               </>
             ) : (
-              "Run Block"
+              t("editor.runBlock")
             )}
           </Button>
         </DialogFooter>

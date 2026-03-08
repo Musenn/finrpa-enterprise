@@ -9,6 +9,8 @@ import { StatusBadge } from "@/components/enterprise/StatusBadge";
 import { Timeline, type TimelineItem } from "@/components/enterprise/Timeline";
 import { ScreenshotDiff } from "@/components/enterprise/ScreenshotDiff";
 import { Icon } from "@/components/Icon";
+import { useI18n } from "@/i18n/useI18n";
+import { authFetch } from "@/util/authFetch";
 
 type AuditLogEntry = {
   audit_log_id: string;
@@ -40,7 +42,7 @@ function demoLogs(): AuditLogEntry[] {
       task_id: "task_101",
       action_index: 1,
       action_type: "CLICK",
-      target_element: "Login button",
+      target_element: "登录按钮",
       input_value: "",
       page_url: "https://bank.example.com/login",
       duration_ms: 450,
@@ -54,8 +56,8 @@ function demoLogs(): AuditLogEntry[] {
       task_id: "task_101",
       action_index: 2,
       action_type: "INPUT_TEXT",
-      target_element: "Username field",
-      input_value: "operator_zhang",
+      target_element: "用户名输入框",
+      input_value: "zhangwei",
       page_url: "https://bank.example.com/login",
       duration_ms: 230,
       executor: "agent",
@@ -68,7 +70,7 @@ function demoLogs(): AuditLogEntry[] {
       task_id: "task_101",
       action_index: 3,
       action_type: "INPUT_TEXT",
-      target_element: "Password field",
+      target_element: "密码输入框",
       input_value: "********",
       page_url: "https://bank.example.com/login",
       duration_ms: 180,
@@ -82,7 +84,7 @@ function demoLogs(): AuditLogEntry[] {
       task_id: "task_102",
       action_index: 1,
       action_type: "NAVIGATE",
-      target_element: "Transfer page",
+      target_element: "转账页面",
       input_value: "",
       page_url: "https://bank.example.com/transfer",
       duration_ms: 1200,
@@ -96,13 +98,13 @@ function demoLogs(): AuditLogEntry[] {
       task_id: "task_102",
       action_index: 2,
       action_type: "INPUT_TEXT",
-      target_element: "Amount field",
+      target_element: "金额输入框",
       input_value: "500,000.00",
       page_url: "https://bank.example.com/transfer",
       duration_ms: 320,
       executor: "agent",
       execution_result: "failed",
-      error_message: "Element became stale during input",
+      error_message: "输入过程中元素状态失效",
       has_approval: true,
       created_at: "2026-03-07T10:15:05",
     },
@@ -159,6 +161,7 @@ function LogTimelineItem({
 }
 
 export function AuditLogsPage() {
+  const { t } = useI18n();
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [filterType, setFilterType] = useState<string>("all");
@@ -166,7 +169,7 @@ export function AuditLogsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const resp = await fetch("/api/v1/enterprise/audit/logs");
+        const resp = await authFetch("/api/v1/enterprise/audit/logs");
         if (resp.ok) {
           const data = await resp.json();
           setLogs(data.items ?? data);
@@ -201,7 +204,7 @@ export function AuditLogsPage() {
         <div className="flex items-center gap-3">
           <Icon name="audit" size={24} color="var(--finrpa-blue)" />
           <h1 className="text-xl font-bold" style={{ color: "var(--finrpa-blue)" }}>
-            Audit Logs
+            {t("audit.title")}
           </h1>
         </div>
         <div className="flex items-center gap-3">
@@ -211,9 +214,9 @@ export function AuditLogsPage() {
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
           >
-            <option value="all">All Types</option>
-            {actionTypes.map((t) => (
-              <option key={t} value={t}>{t}</option>
+            <option value="all">{t("audit.allTypes")}</option>
+            {actionTypes.map((actionType) => (
+              <option key={actionType} value={actionType}>{actionType}</option>
             ))}
           </select>
         </div>
@@ -224,7 +227,7 @@ export function AuditLogsPage() {
           <div className="mb-4 flex items-center gap-3">
             <Icon name="task" size={20} color="var(--finrpa-blue)" />
             <h3 className="text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
-              Task: {group.task_id}
+              {t("audit.task")}: {group.task_id}
             </h3>
             <StatusBadge
               status={
@@ -234,7 +237,7 @@ export function AuditLogsPage() {
               }
             />
             <span className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
-              {group.logs.length} actions
+              {t("audit.actionCount", { count: group.logs.length })}
             </span>
           </div>
           <div className="space-y-2">

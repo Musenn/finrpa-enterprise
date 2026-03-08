@@ -8,6 +8,7 @@ import { useFirstParam } from "@/hooks/useFirstParam";
 import { getRuntimeApiKey } from "@/util/env";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useI18n } from "@/i18n/useI18n";
 
 type StreamMessage = {
   task_id: string;
@@ -24,6 +25,7 @@ let socket: WebSocket | null = null;
 const wssBaseUrl = import.meta.env.VITE_WSS_BASE_URL;
 
 function WorkflowRunStream(props?: Props) {
+  const { t } = useI18n();
   const alwaysShowStream = props?.alwaysShowStream ?? false;
   const workflowRunId = useFirstParam("workflowRunId", "runId");
   const { data: workflowRun } = useWorkflowRunWithWorkflowQuery();
@@ -92,14 +94,14 @@ function WorkflowRunStream(props?: Props) {
               message.status === "terminated"
             ) {
               toast({
-                title: "Run Failed",
-                description: "The workflow run has failed.",
+                title: t("workflows.runFailed"),
+                description: t("workflows.runFailedDesc"),
                 variant: "destructive",
               });
             } else if (message.status === "completed") {
               toast({
-                title: "Run Completed",
-                description: "The workflow run has been completed.",
+                title: t("workflows.runCompleted"),
+                description: t("workflows.runCompletedDesc"),
                 variant: "success",
               });
             }
@@ -131,25 +133,25 @@ function WorkflowRunStream(props?: Props) {
 
   if (workflowRun?.status === Status.Created) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-8 rounded-md bg-slate-900 py-8 text-lg">
-        <span>Workflow has been created.</span>
-        <span>Stream will start when the workflow is running.</span>
+      <div className="flex h-full w-full flex-col items-center justify-center gap-8 rounded-md py-8 text-lg" style={{ background: "var(--glass-bg)" }}>
+        <span>{t("workflows.streamCreated")}</span>
+        <span>{t("workflows.streamWillStart")}</span>
       </div>
     );
   }
   if (workflowRun?.status === Status.Queued) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-8 rounded-md bg-slate-900 py-8 text-lg">
-        <span>Your workflow run is queued.</span>
-        <span>Stream will start when the workflow is running.</span>
+      <div className="flex h-full w-full flex-col items-center justify-center gap-8 rounded-md py-8 text-lg" style={{ background: "var(--glass-bg)" }}>
+        <span>{t("workflows.streamQueued")}</span>
+        <span>{t("workflows.streamWillStart")}</span>
       </div>
     );
   }
 
   if (workflowRun?.status === Status.Running && streamImgSrc.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-md bg-slate-900 py-8 text-lg">
-        Starting the stream...
+      <div className="flex h-full w-full items-center justify-center rounded-md py-8 text-lg" style={{ background: "var(--glass-bg)" }}>
+        {t("workflows.streamStarting")}
       </div>
     );
   }
@@ -179,7 +181,7 @@ function WorkflowRunStream(props?: Props) {
 
     return (
       <div className="flex h-full w-full items-center justify-center">
-        Waiting for stream...
+        {t("workflows.streamWaiting")}
       </div>
     );
   }

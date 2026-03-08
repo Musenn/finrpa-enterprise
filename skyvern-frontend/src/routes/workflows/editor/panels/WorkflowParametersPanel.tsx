@@ -21,6 +21,7 @@ import {
 } from "../workflowEditorUtils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { AppNode } from "../nodes";
+import { useI18n } from "@/i18n/useI18n";
 
 const WORKFLOW_EDIT_PANEL_WIDTH = 20 * 16;
 const WORKFLOW_EDIT_PANEL_GAP = 1 * 16;
@@ -30,6 +31,7 @@ interface Props {
 }
 
 function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
+  const { t } = useI18n();
   const setHasChanges = useWorkflowHasChangesStore(
     (state) => state.setHasChanges,
   );
@@ -87,15 +89,15 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
 
   return (
     <div
-      className="relative z-10 w-[25rem] rounded-xl border border-slate-700 bg-slate-950 p-5 shadow-xl"
+      className="relative z-10 w-[25rem] rounded-xl border p-5 shadow-xl"
+      style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}
       onMouseDownCapture={() => onMouseDownCapture?.()}
     >
       <div className="space-y-4">
         <header>
-          <h1 className="text-lg">Parameters</h1>
-          <span className="text-sm text-slate-400">
-            Create placeholder values that you can link in nodes. You will be
-            prompted to fill them in before running your workflow.
+          <h1 className="text-lg">{t("workflows.parameters")}</h1>
+          <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("editor.parametersDescription")}
           </span>
         </header>
         <Button
@@ -109,7 +111,7 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
           }}
         >
           <PlusIcon className="mr-2 h-6 w-6" />
-          Add Parameter
+          {t("editor.addParameter")}
         </Button>
 
         <ScrollArea>
@@ -126,11 +128,11 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
                         {parameter.key}
                       </span>
                       {parameter.parameterType === "workflow" ? (
-                        <span className="text-sm text-slate-400">
+                        <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                           {getLabelForWorkflowParameterType(parameter.dataType)}
                         </span>
                       ) : (
-                        <span className="text-sm text-slate-400">
+                        <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                           {parameter.parameterType === "onepassword" ||
                           parameter.parameterType === "secret" ||
                           parameter.parameterType === "creditCardData"
@@ -182,8 +184,8 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
             setDeleteDialogState({ open: false, parameterKey: null });
           }
         }}
-        title="Delete Parameter"
-        description={`Are you sure you want to delete "${deleteDialogState.parameterKey}"?`}
+        title={t("editor.deleteParameter")}
+        description={t("editor.confirmDeleteParameter", { key: deleteDialogState.parameterKey ?? "" })}
         affectedBlocks={affectedBlocksForDelete}
         onConfirm={() => {
           if (deleteDialogState.parameterKey) {
@@ -200,7 +202,7 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
           }}
         >
           {operationPanelState.operation === "add" && (
-            <div className="w-80 rounded-xl border border-slate-700 bg-slate-950 p-5 px-2 shadow-xl">
+            <div className="w-80 rounded-xl border p-5 px-2 shadow-xl" style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}>
               <WorkflowParameterEditPanel
                 type={operationPanelState.type}
                 onSave={(parameter) => {
@@ -224,7 +226,7 @@ function WorkflowParametersPanel({ onMouseDownCapture }: Props) {
           )}
           {operationPanelState.operation === "edit" &&
             operationPanelState.parameter && (
-              <div className="w-80 rounded-xl border border-slate-700 bg-slate-950 p-5 px-2 shadow-xl">
+              <div className="w-80 rounded-xl border p-5 px-2 shadow-xl" style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}>
                 <WorkflowParameterEditPanel
                   key={operationPanelState.parameter?.key}
                   type={operationPanelState.type}

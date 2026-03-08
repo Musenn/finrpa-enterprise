@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   value?: string;
@@ -16,6 +17,7 @@ type Props = {
 };
 
 function SourceParameterKeySelector({ value, onChange }: Props) {
+  const { t } = useI18n();
   const { parameters: workflowParameters } = useWorkflowParametersStore();
   const nodes = useNodes<AppNode>();
   const contextParameterKeys = workflowParameters
@@ -28,7 +30,7 @@ function SourceParameterKeySelector({ value, onChange }: Props) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
-        <SelectValue placeholder="Select a parameter" />
+        <SelectValue placeholder={t("workflows.selectParameter")} />
       </SelectTrigger>
       <SelectContent>
         {[...contextParameterKeys, ...outputParameterKeys].map(

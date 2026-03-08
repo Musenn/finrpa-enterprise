@@ -38,6 +38,7 @@ import {
   WorkflowRunOverviewActiveElement,
 } from "./WorkflowRunOverview";
 import { ThoughtCard } from "./ThoughtCard";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   activeItem: WorkflowRunOverviewActiveElement;
@@ -234,6 +235,7 @@ function WorkflowRunTimelineBlockItem({
   onThoughtCardClick,
   finallyBlockLabel,
 }: Props) {
+  const { t } = useI18n();
   const actions = block.actions ?? [];
   const isFinallyBlock = finallyBlockLabel && block.label === finallyBlockLabel;
 
@@ -355,18 +357,20 @@ function WorkflowRunTimelineBlockItem({
     <div
       className={cn({
         "ml-3 pl-3": depth > 0,
-        "border-l border-slate-700": depth === 1,
+        "border-l": depth === 1,
       })}
+      style={depth === 1 ? { borderColor: "var(--glass-border)" } : undefined}
     >
       <div
         className={cn(
-          "cursor-pointer space-y-4 rounded border border-slate-600 p-4",
+          "cursor-pointer space-y-4 rounded border p-4",
           {
-            "border-slate-50":
+            "border-2":
               isWorkflowRunBlock(activeItem) &&
               activeItem.workflow_run_block_id === block.workflow_run_block_id,
           },
         )}
+        style={{ borderColor: "var(--glass-border)" }}
         onClick={(event) => {
           event.stopPropagation();
           onBlockItemClick(block);
@@ -387,12 +391,12 @@ function WorkflowRunTimelineBlockItem({
                 <span className="text-sm">
                   {workflowBlockTitle[block.block_type]}
                 </span>
-                <span className="flex gap-2 text-xs text-slate-400">
+                <span className="flex gap-2 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   {block.label}
                 </span>
                 {isFinallyBlock && (
                   <span className="w-fit rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-medium text-black">
-                    Execute on any outcome
+                    {t("workflows.executeOnAnyOutcome")}
                   </span>
                 )}
               </div>
@@ -417,13 +421,13 @@ function WorkflowRunTimelineBlockItem({
                     >
                       <div className="flex gap-1">
                         <ExternalLinkIcon className="size-4" />
-                        <span className="text-xs">Diagnostics</span>
+                        <span className="text-xs">{t("tasks.diagnostics")}</span>
                       </div>
                     </Link>
                   ) : (
                     <>
                       <CubeIcon className="size-4" />
-                      <span className="text-xs">Block</span>
+                      <span className="text-xs">{t("workflows.block")}</span>
                     </>
                   )}
                 </div>
@@ -436,22 +440,22 @@ function WorkflowRunTimelineBlockItem({
             </div>
           </div>
           {block.description ? (
-            <div className="text-xs text-slate-400">{block.description}</div>
+            <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>{block.description}</div>
           ) : null}
           {isLoopBlock && (
             <div className="space-y-2 rounded bg-slate-elevation5 px-3 py-2 text-xs">
-              <div className="text-slate-300">
-                Iterable values:{" "}
-                <span className="font-medium text-slate-200">
+              <div style={{ color: "var(--finrpa-text-secondary)" }}>
+                {t("workflows.iterableValues")}{" "}
+                <span className="font-medium" style={{ color: "var(--finrpa-text-primary)" }}>
                   {loopValues.length}
                 </span>
               </div>
               {loopValues.length > 0 && (
                 <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
                   {loopValues.map((value, index) => (
-                    <div key={index} className="text-slate-400">
-                      <span className="mr-1 text-slate-500">[{index}]</span>
-                      <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono text-slate-300">
+                    <div key={index} style={{ color: "var(--finrpa-text-muted)" }}>
+                      <span className="mr-1" style={{ color: "var(--finrpa-text-muted)" }}>[{index}]</span>
+                      <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono" style={{ color: "var(--finrpa-text-secondary)" }}>
                         {truncateValue(stringifyTimelineValue(value), 120)}
                       </code>
                     </div>
@@ -472,11 +476,11 @@ function WorkflowRunTimelineBlockItem({
                         "rounded border px-2 py-1.5",
                         evaluation.is_matched
                           ? "border-success/50 bg-success/10"
-                          : "border-slate-600 bg-slate-elevation3",
+                          : "bg-slate-elevation3",
                       )}
                     >
                       {evaluation.is_default ? (
-                        <div className="text-slate-300">
+                        <div style={{ color: "var(--finrpa-text-secondary)" }}>
                           <span className="font-medium">Default branch</span>
                           {evaluation.is_matched && (
                             <span className="ml-2 text-success">✓ Matched</span>
@@ -484,23 +488,23 @@ function WorkflowRunTimelineBlockItem({
                         </div>
                       ) : (
                         <div className="space-y-1">
-                          <div className="text-slate-400">
-                            <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono text-slate-300">
+                          <div style={{ color: "var(--finrpa-text-muted)" }}>
+                            <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono" style={{ color: "var(--finrpa-text-secondary)" }}>
                               {evaluation.original_expression}
                             </code>
                           </div>
                           {evaluation.rendered_expression &&
                             evaluation.rendered_expression !==
                               evaluation.original_expression && (
-                              <div className="text-slate-400">
+                              <div style={{ color: "var(--finrpa-text-muted)" }}>
                                 → rendered to{" "}
-                                <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono text-slate-200">
+                                <code className="rounded bg-slate-elevation1 px-1 py-0.5 font-mono" style={{ color: "var(--finrpa-text-primary)" }}>
                                   {evaluation.rendered_expression}
                                 </code>
                               </div>
                             )}
                           <div className="flex items-center gap-2">
-                            <span className="text-slate-400">evaluated to</span>
+                            <span style={{ color: "var(--finrpa-text-muted)" }}>evaluated to</span>
                             <span
                               className={cn(
                                 "font-medium",
@@ -518,9 +522,9 @@ function WorkflowRunTimelineBlockItem({
                         </div>
                       )}
                       {evaluation.is_matched && evaluation.next_block_label && (
-                        <div className="mt-1 text-slate-400">
+                        <div className="mt-1" style={{ color: "var(--finrpa-text-muted)" }}>
                           → Executing next block:{" "}
-                          <span className="font-medium text-slate-300">
+                          <span className="font-medium" style={{ color: "var(--finrpa-text-secondary)" }}>
                             {evaluation.next_block_label}
                           </span>
                         </div>
@@ -533,23 +537,23 @@ function WorkflowRunTimelineBlockItem({
                 <>
                   {block.executed_branch_expression !== null &&
                   block.executed_branch_expression !== undefined ? (
-                    <div className="text-slate-300">
+                    <div style={{ color: "var(--finrpa-text-secondary)" }}>
                       Condition{" "}
-                      <code className="rounded bg-slate-elevation3 px-1.5 py-0.5 font-mono text-slate-200">
+                      <code className="rounded bg-slate-elevation3 px-1.5 py-0.5 font-mono" style={{ color: "var(--finrpa-text-primary)" }}>
                         {block.executed_branch_expression}
                       </code>{" "}
                       evaluated to{" "}
                       <span className="font-medium text-success">True</span>
                     </div>
                   ) : (
-                    <div className="text-slate-300">
+                    <div style={{ color: "var(--finrpa-text-secondary)" }}>
                       No conditions matched, executing default branch
                     </div>
                   )}
                   {block.executed_branch_next_block && (
-                    <div className="text-slate-400">
+                    <div style={{ color: "var(--finrpa-text-muted)" }}>
                       → Executing next block:{" "}
-                      <span className="font-medium text-slate-300">
+                      <span className="font-medium" style={{ color: "var(--finrpa-text-secondary)" }}>
                         {block.executed_branch_next_block}
                       </span>
                     </div>
@@ -618,17 +622,17 @@ function WorkflowRunTimelineBlockItem({
                     });
                   }}
                 >
-                  <div className="rounded border border-slate-700 bg-slate-elevation4">
+                  <div className="rounded border bg-slate-elevation4" style={{ borderColor: "var(--glass-border)" }}>
                     <CollapsibleTrigger asChild>
                       <button
                         className="group flex w-full items-center justify-between gap-2 px-2 py-1 text-left"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <div className="flex items-center gap-1.5">
-                          <ChevronRightIcon className="size-4 text-slate-300 transition-transform group-data-[state=open]:rotate-90" />
-                          <span className="text-xs text-slate-200">{`Iteration ${iterationNumber}`}</span>
+                          <ChevronRightIcon className="size-4 transition-transform group-data-[state=open]:rotate-90" style={{ color: "var(--finrpa-text-secondary)" }} />
+                          <span className="text-xs" style={{ color: "var(--finrpa-text-primary)" }}>{`${t("workflows.iteration")} ${iterationNumber}`}</span>
                         </div>
-                        <code className="max-w-[70%] truncate rounded bg-slate-elevation1 px-1 py-0.5 text-[11px] text-slate-300">
+                        <code className="max-w-[70%] truncate rounded bg-slate-elevation1 px-1 py-0.5 text-[11px]" style={{ color: "var(--finrpa-text-secondary)" }}>
                           current_value: {currentValuePreview}
                         </code>
                       </button>
@@ -653,22 +657,22 @@ function WorkflowRunTimelineBlockItem({
 
         {hasNestedChildren && isConditionalBlock && (
           <Collapsible open={childrenOpen} onOpenChange={setChildrenOpen}>
-            <div className="rounded border border-slate-700 bg-slate-elevation4 px-2 py-1.5">
+            <div className="rounded border bg-slate-elevation4 px-2 py-1.5" style={{ borderColor: "var(--glass-border)" }}>
               <CollapsibleTrigger asChild>
                 <button
                   className="flex w-full items-center justify-between gap-2 text-left"
                   onClick={(event) => event.stopPropagation()}
                 >
-                  <div className="flex items-center gap-1.5 text-xs text-slate-200">
+                  <div className="flex items-center gap-1.5 text-xs" style={{ color: "var(--finrpa-text-primary)" }}>
                     {childrenOpen ? (
                       <ChevronDownIcon className="size-4" />
                     ) : (
                       <ChevronRightIcon className="size-4" />
                     )}
-                    <span>{`Executed branch blocks (${subItems.length})`}</span>
+                    <span>{`${t("workflows.executedBranchBlocks")} (${subItems.length})`}</span>
                   </div>
                   {block.executed_branch_next_block && (
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px]" style={{ color: "var(--finrpa-text-muted)" }}>
                       next: {block.executed_branch_next_block}
                     </span>
                   )}

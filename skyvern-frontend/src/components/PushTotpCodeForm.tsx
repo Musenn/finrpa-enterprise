@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { AutoResizingTextarea } from "@/components/AutoResizingTextarea/AutoResizingTextarea";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   className?: string;
@@ -37,6 +38,7 @@ function PushTotpCodeForm({
   showAdvancedFields = false,
   onSuccess,
 }: Props) {
+  const { t } = useI18n();
   const [identifier, setIdentifier] = useState(defaultIdentifier?.trim() ?? "");
   const [content, setContent] = useState("");
   const [workflowRunId, setWorkflowRunId] = useState(
@@ -107,8 +109,8 @@ function PushTotpCodeForm({
     },
     onSuccess: () => {
       toast({
-        title: "2FA code sent",
-        description: "Skyvern will process it shortly.",
+        title: t("totp.codeSent"),
+        description: t("credentials.willProcess"),
       });
       setContent("");
       onSuccess?.();
@@ -116,8 +118,8 @@ function PushTotpCodeForm({
     onError: () => {
       toast({
         variant: "destructive",
-        title: "Failed to send code",
-        description: "Check the identifier and message format, then retry.",
+        title: t("totp.failedSend"),
+        description: t("totp.checkFormat"),
       });
     },
   });
@@ -154,10 +156,10 @@ function PushTotpCodeForm({
       autoComplete="off"
     >
       <div className="space-y-1">
-        <Label htmlFor="totp-identifier-input">Identifier</Label>
+        <Label htmlFor="totp-identifier-input">{t("totp.identifier")}</Label>
         <Input
           id="totp-identifier-input"
-          placeholder="Email or phone receiving the code"
+          placeholder={t("totp.identifierPlaceholder")}
           autoComplete="off"
           value={identifier}
           onChange={(event) => setIdentifier(event.target.value)}
@@ -165,18 +167,17 @@ function PushTotpCodeForm({
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="totp-content-input">Verification content</Label>
+        <Label htmlFor="totp-content-input">{t("totp.verificationContent")}</Label>
         <AutoResizingTextarea
           id="totp-content-input"
-          placeholder="Paste the full email/SMS body or the 6-digit code"
+          placeholder={t("totp.contentPlaceholder")}
           value={content}
           onChange={(event) => setContent(event.target.value)}
           readOnly={mutation.isPending}
           className="min-h-[4.5rem]"
         />
-        <p className="text-xs text-slate-400">
-          We only store this to help the current login. Avoid pasting unrelated
-          sensitive data.
+        <p className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+          {t("totp.privacyNote")}
         </p>
       </div>
 
@@ -187,12 +188,12 @@ function PushTotpCodeForm({
             onClick={() => setAdvancedOpen((current) => !current)}
             className="text-xs text-blue-300 underline-offset-2 hover:text-blue-200"
           >
-            {advancedOpen ? "Hide optional metadata" : "Add optional metadata"}
+            {advancedOpen ? t("totp.hideMetadata") : t("totp.addMetadata")}
           </button>
           {advancedOpen && (
             <div className="grid gap-3 md:grid-cols-3">
               <div className="space-y-1">
-                <Label htmlFor="totp-workflow-run-input">Workflow run ID</Label>
+                <Label htmlFor="totp-workflow-run-input">{t("totp.workflowRunId")}</Label>
                 <Input
                   id="totp-workflow-run-input"
                   placeholder="wr_123"
@@ -203,7 +204,7 @@ function PushTotpCodeForm({
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="totp-workflow-id-input">Workflow ID</Label>
+                <Label htmlFor="totp-workflow-id-input">{t("totp.workflowId")}</Label>
                 <Input
                   id="totp-workflow-id-input"
                   placeholder="wf_123"
@@ -214,7 +215,7 @@ function PushTotpCodeForm({
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="totp-task-id-input">Task ID</Label>
+                <Label htmlFor="totp-task-id-input">{t("totp.taskId")}</Label>
                 <Input
                   id="totp-task-id-input"
                   placeholder="tsk_123"
@@ -230,7 +231,7 @@ function PushTotpCodeForm({
       )}
 
       <Button type="submit" disabled={!canSubmit || mutation.isPending}>
-        {mutation.isPending ? "Sending…" : "Send 2FA Code"}
+        {mutation.isPending ? t("totp.sending") : t("totp.sendCode")}
       </Button>
     </form>
   );

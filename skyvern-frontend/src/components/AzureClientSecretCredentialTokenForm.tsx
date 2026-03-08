@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { useAzureClientCredentialToken } from "@/hooks/useAzureClientCredentialToken";
 import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
+import { useI18n } from "@/i18n/useI18n";
 
 const AzureClientSecretCredentialSchema = z
   .object({
@@ -32,6 +33,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 export function AzureClientSecretCredentialTokenForm() {
+  const { t } = useI18n();
   const [showClientSecret, setShowClientSecret] = useState(false);
   const {
     azureOrganizationAuthToken,
@@ -70,20 +72,19 @@ export function AzureClientSecretCredentialTokenForm() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium">
-            Azure Client Secret Credential
+            {t("settings.azureCredential")}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Configure your Azure Client Secret Credential to give access to your
-            Azure account.
+            {t("settings.azureCredentialDesc")}
           </p>
         </div>
         {azureOrganizationAuthToken && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-sm text-muted-foreground">{t("settings.status")}:</span>
             <span
               className={`text-sm ${azureOrganizationAuthToken.valid ? "text-green-600" : "text-red-600"}`}
             >
-              {azureOrganizationAuthToken.valid ? "Active" : "Inactive"}
+              {azureOrganizationAuthToken.valid ? t("settings.active") : t("settings.inactive")}
             </span>
           </div>
         )}
@@ -96,7 +97,7 @@ export function AzureClientSecretCredentialTokenForm() {
             name="credential.tenant_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tenant ID</FormLabel>
+                <FormLabel>{t("settings.tenantId")}</FormLabel>
                 <div className="relative">
                   <FormControl>
                     <Input
@@ -116,7 +117,7 @@ export function AzureClientSecretCredentialTokenForm() {
             name="credential.client_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Client ID</FormLabel>
+                <FormLabel>{t("settings.clientId")}</FormLabel>
                 <div className="relative">
                   <FormControl>
                     <Input
@@ -136,7 +137,7 @@ export function AzureClientSecretCredentialTokenForm() {
             name="credential.client_secret"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Client Secret</FormLabel>
+                <FormLabel>{t("settings.clientSecret")}</FormLabel>
                 <div className="relative">
                   <FormControl>
                     <Input
@@ -168,11 +169,11 @@ export function AzureClientSecretCredentialTokenForm() {
 
           <div className="flex items-center gap-4">
             <Button type="submit" disabled={isLoading || isUpdating}>
-              {isUpdating ? "Updating..." : "Update Credential"}
+              {isUpdating ? t("settings.updating") : t("settings.updateCredential")}
             </Button>
             {azureOrganizationAuthToken && (
               <div className="text-sm text-muted-foreground">
-                Last updated:{" "}
+                {t("settings.lastUpdated")}{" "}
                 {new Date(
                   azureOrganizationAuthToken.modified_at,
                 ).toLocaleDateString()}
@@ -184,12 +185,12 @@ export function AzureClientSecretCredentialTokenForm() {
 
       {azureOrganizationAuthToken && (
         <div className="rounded-md bg-muted p-4">
-          <h4 className="mb-2 text-sm font-medium">Credential Information</h4>
+          <h4 className="mb-2 text-sm font-medium">{t("settings.credentialInfo")}</h4>
           <div className="space-y-1 text-sm text-muted-foreground">
             <div>ID: {azureOrganizationAuthToken.id}</div>
-            <div>Type: {azureOrganizationAuthToken.token_type}</div>
+            <div>{t("common.type")}: {azureOrganizationAuthToken.token_type}</div>
             <div>
-              Created:{" "}
+              {t("settings.created")}{" "}
               {new Date(
                 azureOrganizationAuthToken.created_at,
               ).toLocaleDateString()}

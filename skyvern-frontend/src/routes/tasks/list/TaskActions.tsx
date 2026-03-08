@@ -42,6 +42,7 @@ import {
   taskTemplateFormSchema,
 } from "../create/TaskTemplateFormSchema";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n/useI18n";
 
 function createTaskTemplateRequestObject(
   values: TaskTemplateFormValues,
@@ -88,6 +89,7 @@ type Props = {
 };
 
 function TaskActions({ task }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const id = useId();
   const queryClient = useQueryClient();
@@ -117,15 +119,15 @@ function TaskActions({ task }: Props) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "There was an error while saving changes",
+        title: t("tasks.errorSaving"),
         description: error.message,
       });
     },
     onSuccess: () => {
       toast({
         variant: "success",
-        title: "Template saved",
-        description: "Template saved successfully",
+        title: t("tasks.templateSaved"),
+        description: t("tasks.templateSavedSuccessfully"),
       });
       queryClient.invalidateQueries({
         queryKey: ["workflows"],
@@ -148,7 +150,7 @@ function TaskActions({ task }: Props) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Task Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("tasks.actions")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DialogTrigger asChild>
               <DropdownMenuItem
@@ -156,7 +158,7 @@ function TaskActions({ task }: Props) {
                   setOpen(true);
                 }}
               >
-                Save as Template
+                {t("tasks.saveAsTemplate")}
               </DropdownMenuItem>
             </DialogTrigger>
             <DropdownMenuItem
@@ -164,15 +166,15 @@ function TaskActions({ task }: Props) {
                 navigate(`/tasks/create/retry/${task.task_id}`);
               }}
             >
-              Rerun Task
+              {t("tasks.rerun")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Save Task as Template</DialogTitle>
+            <DialogTitle>{t("tasks.saveAsTemplate")}</DialogTitle>
             <DialogDescription>
-              Save this task definition as a template that can be used later.
+              {t("tasks.saveAsTemplateDesc")}
             </DialogDescription>
           </DialogHeader>
           <Separator />
@@ -187,9 +189,9 @@ function TaskActions({ task }: Props) {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title *</FormLabel>
+                    <FormLabel>{t("tasks.taskName")} *</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Task title" />
+                      <Input {...field} placeholder={t("tasks.taskNamePlaceholder")} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -200,12 +202,12 @@ function TaskActions({ task }: Props) {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t("common.description")}</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         rows={5}
-                        placeholder="Task description"
+                        placeholder={t("tasks.taskDescPurpose")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -219,7 +221,7 @@ function TaskActions({ task }: Props) {
               {mutation.isPending && (
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Save
+              {t("common.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

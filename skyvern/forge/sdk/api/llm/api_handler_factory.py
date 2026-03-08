@@ -61,6 +61,40 @@ EXTRACT_ACTION_DEFAULT_THINKING_BUDGET = settings.EXTRACT_ACTION_THINKING_BUDGET
 DEFAULT_THINKING_BUDGET = settings.DEFAULT_THINKING_BUDGET
 
 
+async def _stream_and_collect(**kwargs: Any) -> ModelResponse:
+    """Call litellm.acompletion with stream=True and collect chunks into a ModelResponse.
+
+    Used for API providers that only support SSE (streaming) format.
+    """
+    kwargs["stream"] = True
+    stream = await litellm.acompletion(**kwargs)
+    collected_content = ""
+    model_name = ""
+    usage_data: dict[str, Any] = {}
+    finish_reason = None
+    async for chunk in stream:
+        if chunk.model:
+            model_name = chunk.model
+        if chunk.choices:
+            delta = chunk.choices[0].delta
+            if delta.content:
+                collected_content += delta.content
+            if chunk.choices[0].finish_reason:
+                finish_reason = chunk.choices[0].finish_reason
+        if hasattr(chunk, "usage") and chunk.usage:
+            usage_data = chunk.usage.model_dump() if hasattr(chunk.usage, "model_dump") else {}
+    response = ModelResponse(
+        model=model_name or kwargs.get("model", ""),
+        choices=[{
+            "index": 0,
+            "message": {"role": "assistant", "content": collected_content},
+            "finish_reason": finish_reason or "stop",
+        }],
+        usage=usage_data if usage_data else {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+    )
+    return response
+
+
 def _safe_model_dump_json(response: ModelResponse, indent: int = 2) -> str:
     """
     Call model_dump_json() while suppressing Pydantic serialization warnings.
@@ -1104,12 +1138,20 @@ class LLMAPIHandlerFactory:
                 try:
                     # TODO (kerem): add a retry mechanism to this call (acompletion_with_retries)
                     # TODO (kerem): use litellm fallbacks? https://litellm.vercel.app/docs/tutorials/fallbacks#how-does-completion_with_fallbacks-work
-                    response = await litellm.acompletion(
-                        model=model_name,
-                        messages=active_messages,
-                        drop_params=True,  # Drop unsupported parameters gracefully
-                        **active_parameters,
-                    )
+                    if getattr(llm_config, "force_stream", False):
+                        response = await _stream_and_collect(
+                            model=model_name,
+                            messages=active_messages,
+                            drop_params=True,
+                            **active_parameters,
+                        )
+                    else:
+                        response = await litellm.acompletion(
+                            model=model_name,
+                            messages=active_messages,
+                            drop_params=True,  # Drop unsupported parameters gracefully
+                            **active_parameters,
+                        )
                 except litellm.exceptions.APIError as e:
                     raise LLMProviderErrorRetryableTask(llm_key) from e
                 except litellm.exceptions.ContextWindowExceededError as e:

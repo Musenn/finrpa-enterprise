@@ -67,7 +67,7 @@ function WorkflowBlockInputSet(props: Props) {
             );
           })
         ) : (
-          <span className="flex items-center gap-2 text-slate-400">&nbsp;</span>
+          <span className="flex items-center gap-2" style={{ color: "var(--finrpa-text-muted)" }}>&nbsp;</span>
         )}
       </div>
       <div className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center">

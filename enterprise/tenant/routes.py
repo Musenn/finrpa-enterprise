@@ -8,7 +8,6 @@ Provides:
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from enterprise.auth.dependencies import CurrentUser, require_admin
 from enterprise.auth.models import (
@@ -30,9 +29,9 @@ LOG = structlog.get_logger()
 router = APIRouter(prefix="/enterprise", tags=["Enterprise Tenant"])
 
 
-async def _get_db_session() -> AsyncSession:
+def _get_db_session():
     from skyvern.forge import app as forge_app
-    return forge_app.DATABASE.get_async_session()
+    return forge_app.DATABASE.Session()
 
 
 @router.get("/tasks")
@@ -49,7 +48,7 @@ async def list_tasks(user: CurrentUser) -> dict:
             detail="Tenant context not available",
         )
 
-    async with await _get_db_session() as session:
+    async with _get_db_session() as session:
         query = select(TaskExtensionModel)
 
         # Apply organization filter
@@ -105,7 +104,7 @@ async def diagnose_visibility(
     Admin-only endpoint for troubleshooting permission issues.
     Returns which departments and business lines the target user can see.
     """
-    async with await _get_db_session() as session:
+    async with _get_db_session() as session:
         # Verify target user exists
         user_stmt = select(EnterpriseUserModel).where(
             EnterpriseUserModel.user_id == user_id

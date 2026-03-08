@@ -12,12 +12,14 @@ import {
   generateApiCommands,
   type ApiCommandOptions,
 } from "@/util/apiCommands";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
   getOptions: () => ApiCommandOptions;
 }
 
 function CopyApiCommandDropdown({ getOptions }: Props) {
+  const { t } = useI18n();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,7 +35,7 @@ function CopyApiCommandDropdown({ getOptions }: Props) {
             copyText(curl).then(() => {
               toast({
                 variant: "success",
-                title: "Copied to Clipboard",
+                title: t("common.copiedToClipboard"),
                 description:
                   "The cURL command has been copied to your clipboard.",
               });
@@ -48,7 +50,7 @@ function CopyApiCommandDropdown({ getOptions }: Props) {
             copyText(powershell).then(() => {
               toast({
                 variant: "success",
-                title: "Copied to Clipboard",
+                title: t("common.copiedToClipboard"),
                 description:
                   "The PowerShell command has been copied to your clipboard.",
               });

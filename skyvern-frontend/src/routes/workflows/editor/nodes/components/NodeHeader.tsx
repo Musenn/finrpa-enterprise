@@ -52,6 +52,8 @@ import { WorkflowBlockIcon } from "../WorkflowBlockIcon";
 import { workflowBlockTitle } from "../types";
 import { MicroDropdown } from "./MicroDropdown";
 import { BlockParametersDialog } from "./BlockParametersDialog";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
 function isWorkflowParameter(param: Parameter): param is WorkflowParameter {
   return (
@@ -110,7 +112,9 @@ const getPayload = (opts: {
   totpUrl: string | null;
   workflowPermanentId: string;
   workflowSettings: WorkflowSettingsState;
+  t: (key: MessageKey, params?: Record<string, string | number>) => string;
 }): Payload | null => {
+  const { t } = opts;
   const webhook_url = opts.workflowSettings.webhookCallbackUrl.trim();
 
   let extraHttpHeaders = null;
@@ -125,24 +129,24 @@ const getPayload = (opts: {
   } catch (e: unknown) {
     toast({
       variant: "warning",
-      title: "Extra HTTP Headers",
-      description: "Invalid extra HTTP Headers JSON",
+      title: t("editor.extraHttpHeaders"),
+      description: t("editor.invalidExtraHttpHeaders"),
     });
   }
 
   if (!opts.browserSessionId) {
     toast({
       variant: "warning",
-      title: "Error",
-      description: "No browser session ID found",
+      title: t("common.error"),
+      description: t("editor.noBrowserSessionId"),
     });
 
     return null;
   } else {
     toast({
       variant: "default",
-      title: "Success",
-      description: `Browser session ID found: ${opts.browserSessionId}`,
+      title: t("common.success"),
+      description: `${t("editor.browserSessionIdFound")}: ${opts.browserSessionId}`,
     });
   }
 
@@ -176,6 +180,7 @@ function NodeHeader({
   transmutations,
   type,
 }: Props) {
+  const { t } = useI18n();
   const log = useLogging();
   const {
     blockLabel: urlBlockLabel,
@@ -285,13 +290,13 @@ function NodeHeader({
       if (statusIsAFailureType(workflowRun)) {
         toast({
           variant: "destructive",
-          title: `Workflow Block ${urlBlockLabel}: ${workflowRun.status}`,
-          description: `Reason: ${workflowRun.failure_reason}`,
+          title: t("editor.workflowBlockStatus", { blockLabel: urlBlockLabel ?? "", status: workflowRun.status }),
+          description: t("editor.reason", { reason: workflowRun.failure_reason ?? "" }),
         });
       } else if (statusIsFinalized(workflowRun)) {
         toast({
           variant: "success",
-          title: `Workflow Block ${urlBlockLabel}: ${workflowRun.status}`,
+          title: t("editor.workflowBlockStatus", { blockLabel: urlBlockLabel ?? "", status: workflowRun.status }),
         });
       }
     }
@@ -317,8 +322,8 @@ function NodeHeader({
         log.error("Run block: there is no workflowPermanentId");
         toast({
           variant: "destructive",
-          title: "Failed to start workflow block run",
-          description: "There is no workflowPermanentId",
+          title: t("editor.failedStartBlockRun"),
+          description: t("editor.noWorkflowPermanentId"),
         });
         return;
       }
@@ -331,8 +336,8 @@ function NodeHeader({
         log.error("Run block: there is no debug session, yet");
         toast({
           variant: "destructive",
-          title: "Failed to start workflow block run",
-          description: "There is no debug session, yet",
+          title: t("editor.failedStartBlockRun"),
+          description: t("editor.noDebugSession"),
         });
         return;
       }
@@ -373,6 +378,7 @@ function NodeHeader({
         totpUrl,
         workflowPermanentId,
         workflowSettings: workflowSettingsStore,
+        t,
       });
 
       if (!body) {
@@ -384,8 +390,8 @@ function NodeHeader({
         });
         toast({
           variant: "destructive",
-          title: "Failed to start workflow block run",
-          description: "Could not construct run payload",
+          title: t("editor.failedStartBlockRun"),
+          description: t("editor.couldNotConstructPayload"),
         });
         return;
       }
@@ -412,8 +418,8 @@ function NodeHeader({
         });
         toast({
           variant: "destructive",
-          title: "Failed to start workflow block run",
-          description: "No response",
+          title: t("editor.failedStartBlockRun"),
+          description: t("editor.noResponse"),
         });
         return;
       }
@@ -428,8 +434,8 @@ function NodeHeader({
 
       toast({
         variant: "success",
-        title: "Workflow block run started",
-        description: "The workflow block run has been started successfully",
+        title: t("editor.blockRunStarted"),
+        description: t("editor.blockRunStartedDesc"),
       });
 
       navigate(
@@ -448,7 +454,7 @@ function NodeHeader({
       });
       toast({
         variant: "destructive",
-        title: "Failed to start workflow block run",
+        title: t("editor.failedStartBlockRun"),
         description: detail ?? error.message,
       });
     },
@@ -463,8 +469,8 @@ function NodeHeader({
         });
         toast({
           variant: "destructive",
-          title: "Failed to cancel workflow block run",
-          description: "Missing debug session",
+          title: t("editor.failedCancelBlockRun"),
+          description: t("editor.missingDebugSession"),
         });
         return;
       }
@@ -484,8 +490,8 @@ function NodeHeader({
       });
       toast({
         variant: "success",
-        title: "Workflow Canceled",
-        description: "The workflow has been successfully canceled.",
+        title: t("editor.workflowCanceled"),
+        description: t("editor.workflowCanceledDesc"),
       });
     },
     onError: (error: AxiosError) => {
@@ -500,7 +506,7 @@ function NodeHeader({
       });
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("common.error"),
         description: detail ?? error.message,
       });
     },
@@ -564,7 +570,7 @@ function NodeHeader({
             "opacity-50": thisBlockIsPlaying,
           })}
         >
-          <div className="flex h-[2.75rem] w-[2.75rem] items-center justify-center rounded border border-slate-600">
+          <div className="flex h-[2.75rem] w-[2.75rem] items-center justify-center rounded border" style={{ borderColor: "var(--glass-border)" }}>
             <WorkflowBlockIcon workflowBlockType={type} className="size-6" />
           </div>
           <div className="flex flex-col gap-1">
@@ -579,7 +585,7 @@ function NodeHeader({
             <div className="flex items-center gap-2">
               {transmutations && transmutations.others.length ? (
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                     {transmutations.blockTitle}
                   </span>
                   <NoticeMe trigger="viewport">
@@ -604,11 +610,11 @@ function NodeHeader({
                   </NoticeMe>
                 </div>
               ) : (
-                <span className="text-xs text-slate-400">{blockTitle}</span>
+                <span className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>{blockTitle}</span>
               )}
               {workflowSettingsStore.finallyBlockLabel === blockLabel && (
                 <span className="rounded bg-amber-600/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
-                  Runs on any outcome
+                  {t("editor.runsOnAnyOutcome")}
                 </span>
               )}
             </div>

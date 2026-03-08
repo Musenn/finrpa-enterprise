@@ -14,9 +14,11 @@ import { NodeHeader } from "../components/NodeHeader";
 import { useParams } from "react-router-dom";
 import { statusIsRunningOrQueued } from "@/routes/tasks/types";
 import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuery";
+import { useI18n } from "@/i18n/useI18n";
 import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 
 function URLNode({ id, data, type }: NodeProps<URLNode>) {
+  const { t } = useI18n();
   const [facing, setFacing] = useState<"front" | "back">("front");
   const blockScriptStore = useBlockScriptStore();
   const { editable, label } = data;
@@ -56,7 +58,7 @@ function URLNode({ id, data, type }: NodeProps<URLNode>) {
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
               "pointer-events-none": thisBlockIsPlaying,
-              "bg-slate-950 outline outline-2 outline-slate-300":
+              "outline outline-2 outline-primary":
                 thisBlockIsTargetted,
             },
           )}
@@ -72,9 +74,9 @@ function URLNode({ id, data, type }: NodeProps<URLNode>) {
           <div className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label className="text-xs text-slate-300">URL</Label>
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                     Tip: Use the {"+"} button to add parameters!
                   </div>
                 ) : null}

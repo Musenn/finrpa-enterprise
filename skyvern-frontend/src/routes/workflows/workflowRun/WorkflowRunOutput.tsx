@@ -13,15 +13,17 @@ import { Status } from "@/api/types";
 import { AutoResizingTextarea } from "@/components/AutoResizingTextarea/AutoResizingTextarea";
 import { isTaskVariantBlock } from "../types/workflowTypes";
 import { statusIsAFailureType } from "@/routes/tasks/types";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowRunOutput() {
+  const { t } = useI18n();
   const { data: workflowRunTimeline, isLoading: workflowRunTimelineIsLoading } =
     useWorkflowRunTimelineQuery();
   const [activeItem] = useActiveWorkflowRunItem();
   const { data: workflowRun } = useWorkflowRunWithWorkflowQuery();
 
   if (workflowRunTimelineIsLoading) {
-    return <div>Loading...</div>;
+    return <div>{t("common.loading")}</div>;
   }
 
   if (!workflowRunTimeline) {
@@ -68,7 +70,7 @@ function WorkflowRunOutput() {
       {webhookFailureReasonData ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-lg font-bold">Webhook Failure Reason</h1>
+            <h1 className="text-lg font-bold">{t("tasks.webhookFailureReason")}</h1>
             <div className="space-y-2 text-yellow-600">
               {webhookFailureReasonData}
             </div>
@@ -78,14 +80,14 @@ function WorkflowRunOutput() {
       {activeBlock ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-lg font-bold">Block Outputs</h1>
+            <h1 className="text-lg font-bold">{t("workflows.blockOutputs")}</h1>
             {showFailureReason ? (
               <div className="space-y-2">
-                <h2>Failure Reason</h2>
+                <h2>{t("tasks.failureReason")}</h2>
                 <AutoResizingTextarea
                   value={
                     activeBlock.status === "canceled"
-                      ? "This block was cancelled"
+                      ? t("workflows.blockWasCancelled")
                       : activeBlock.failure_reason ?? ""
                   }
                   readOnly
@@ -93,7 +95,7 @@ function WorkflowRunOutput() {
               </div>
             ) : showExtractedInformation ? (
               <div className="space-y-2">
-                <h2>Extracted Information</h2>
+                <h2>{t("tasks.extractedData")}</h2>
                 <CodeEditor
                   language="json"
                   value={JSON.stringify(
@@ -110,7 +112,7 @@ function WorkflowRunOutput() {
               </div>
             ) : activeBlock.output !== null ? (
               <div className="space-y-2">
-                <h2>Output</h2>
+                <h2>{t("workflows.output")}</h2>
                 <CodeEditor
                   language="json"
                   value={JSON.stringify(activeBlock.output, null, 2)}
@@ -120,7 +122,7 @@ function WorkflowRunOutput() {
                 />
               </div>
             ) : (
-              <div>This block has no outputs</div>
+              <div>{t("workflows.blockNoOutputs")}</div>
             )}
           </div>
         </div>
@@ -128,7 +130,7 @@ function WorkflowRunOutput() {
       {observerOutput ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-lg font-bold">Task 2.0 Output</h1>
+            <h1 className="text-lg font-bold">{t("workflows.task20Output")}</h1>
             <CodeEditor
               language="json"
               value={JSON.stringify(observerOutput, null, 2)}
@@ -141,7 +143,7 @@ function WorkflowRunOutput() {
       ) : null}
       <div className="rounded bg-slate-elevation2 p-6">
         <div className="space-y-4">
-          <h1 className="text-lg font-bold">Workflow Run Outputs</h1>
+          <h1 className="text-lg font-bold">{t("workflows.workflowRunOutputs")}</h1>
           <CodeEditor
             language="json"
             value={outputs ? JSON.stringify(outputs, null, 2) : ""}
@@ -153,7 +155,7 @@ function WorkflowRunOutput() {
       </div>
       <div className="rounded bg-slate-elevation2 p-6">
         <div className="space-y-4">
-          <h1 className="text-lg font-bold">Workflow Run Downloaded Files</h1>
+          <h1 className="text-lg font-bold">{t("workflows.workflowRunDownloadedFiles")}</h1>
           <div className="space-y-2">
             {fileUrls.length > 0 ? (
               fileUrls.map((url) => {
@@ -170,7 +172,7 @@ function WorkflowRunOutput() {
                 );
               })
             ) : (
-              <div>No files downloaded</div>
+              <div>{t("workflows.noFilesDownloaded")}</div>
             )}
           </div>
         </div>

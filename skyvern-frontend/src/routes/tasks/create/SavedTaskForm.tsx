@@ -40,6 +40,7 @@ import {
 } from "@/api/types";
 import { ProxySelector } from "@/components/ProxySelector";
 import { TestWebhookDialog } from "@/components/TestWebhookDialog";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   initialValues: SavedTaskFormValues;
@@ -120,6 +121,7 @@ function createTaskTemplateRequestObject(values: SavedTaskFormValues) {
 type Section = "base" | "extraction" | "advanced";
 
 function SavedTaskForm({ initialValues }: Props) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const credentialGetter = useCredentialGetter();
@@ -187,13 +189,12 @@ function SavedTaskForm({ initialValues }: Props) {
       if (error.response?.status === 402) {
         toast({
           variant: "destructive",
-          title: "Failed to create task",
-          description:
-            "You don't have enough credits to run this task. Go to billing to see your credit balance.",
+          title: t("tasks.failedCreate"),
+          description: t("tasks.insufficientCredits"),
           action: (
-            <ToastAction altText="Go to Billing">
+            <ToastAction altText={t("tasks.goBilling")}>
               <Button asChild>
-                <Link to="billing">Go to Billing</Link>
+                <Link to="billing">{t("tasks.goBilling")}</Link>
               </Button>
             </ToastAction>
           ),
@@ -202,19 +203,19 @@ function SavedTaskForm({ initialValues }: Props) {
       }
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("common.error"),
         description: error.message,
       });
     },
     onSuccess: (response) => {
       toast({
         variant: "success",
-        title: "Task Created",
-        description: `${response.data.task_id} created successfully.`,
+        title: t("tasks.taskCreated"),
+        description: `${response.data.task_id} ${t("tasks.createdSuccessfully")}`,
         action: (
-          <ToastAction altText="View">
+          <ToastAction altText={t("tasks.view")}>
             <Button asChild>
-              <Link to={`/tasks/${response.data.task_id}`}>View</Link>
+              <Link to={`/tasks/${response.data.task_id}`}>{t("tasks.view")}</Link>
             </Button>
           </ToastAction>
         ),
@@ -244,15 +245,15 @@ function SavedTaskForm({ initialValues }: Props) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "There was an error while saving changes",
+        title: t("tasks.errorSaving"),
         description: error.message,
       });
     },
     onSuccess: () => {
       toast({
         variant: "success",
-        title: "Changes saved",
-        description: "Changes saved successfully",
+        title: t("tasks.changesSaved"),
+        description: t("tasks.changesSavedDesc"),
       });
       queryClient.invalidateQueries({
         queryKey: ["savedTasks"],
@@ -298,7 +299,7 @@ function SavedTaskForm({ initialValues }: Props) {
       >
         <TaskFormSection
           index={1}
-          title="Base Content"
+          title={t("tasks.baseContent")}
           active={isActive("base")}
           onClick={() => {
             toggleSection("base");
@@ -322,14 +323,14 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Title</h1>
-                            <h2 className="text-base text-slate-400">
-                              Name of your task
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.taskNameDesc")}
                             </h2>
                           </div>
                         </FormLabel>
                         <div className="w-full">
                           <FormControl>
-                            <Input placeholder="Task Name" {...field} />
+                            <Input placeholder={t("tasks.taskNamePlaceholder")} {...field} />
                           </FormControl>
                           <FormMessage />
                         </div>
@@ -346,15 +347,15 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Description</h1>
-                            <h2 className="text-base text-slate-400">
-                              What is the purpose of the task?
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.taskDescPurpose")}
                             </h2>
                           </div>
                         </FormLabel>
                         <div className="w-full">
                           <FormControl>
                             <AutoResizingTextarea
-                              placeholder="This template is used to..."
+                              placeholder={t("tasks.taskTemplatePlaceholder")}
                               {...field}
                             />
                           </FormControl>
@@ -373,9 +374,9 @@ function SavedTaskForm({ initialValues }: Props) {
                       <div className="flex gap-16">
                         <FormLabel>
                           <div className="w-72">
-                            <h1 className="text-lg">URL</h1>
-                            <h2 className="text-base text-slate-400">
-                              The starting URL for the task
+                            <h1 className="text-lg">{t("tasks.url")}</h1>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.urlDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -398,9 +399,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Navigation Goal</h1>
-                            <h2 className="text-base text-slate-400">
-                              Where should Skyvern go and what should Skyvern
-                              do?
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.navigationGoalDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -408,7 +408,7 @@ function SavedTaskForm({ initialValues }: Props) {
                           <FormControl>
                             <AutoResizingTextarea
                               {...field}
-                              placeholder="Tell Skyvern what to do."
+                              placeholder={t("tasks.navigationGoalPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -429,9 +429,8 @@ function SavedTaskForm({ initialValues }: Props) {
                             <FormLabel>
                               <div className="w-72">
                                 <h1 className="text-lg">Navigation Payload</h1>
-                                <h2 className="text-base text-slate-400">
-                                  Specify important parameters, routes, or
-                                  states
+                                <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                                  {t("tasks.navigationPayloadDesc")}
                                 </h2>
                               </div>
                               <Button
@@ -443,7 +442,7 @@ function SavedTaskForm({ initialValues }: Props) {
                                 }}
                                 size="sm"
                               >
-                                Hide Advanced Settings
+                                {t("tasks.hideAdvanced")}
                               </Button>
                             </FormLabel>
                             <div className="w-full">
@@ -475,7 +474,7 @@ function SavedTaskForm({ initialValues }: Props) {
                       }}
                       size="sm"
                     >
-                      Show Advanced Settings
+                      {t("tasks.showAdvanced")}
                     </Button>
                   </div>
                 )}
@@ -485,7 +484,7 @@ function SavedTaskForm({ initialValues }: Props) {
         </TaskFormSection>
         <TaskFormSection
           index={2}
-          title="Extraction"
+          title={t("tasks.extraction")}
           active={isActive("extraction")}
           onClick={() => {
             toggleSection("extraction");
@@ -507,8 +506,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Data Extraction Goal</h1>
-                            <h2 className="text-base text-slate-400">
-                              What outputs are you looking to get?
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.dataExtractionGoalDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -516,7 +515,7 @@ function SavedTaskForm({ initialValues }: Props) {
                           <FormControl>
                             <AutoResizingTextarea
                               {...field}
-                              placeholder="What data do you need to extract?"
+                              placeholder={t("tasks.dataExtractionGoalPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -535,8 +534,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Data Schema</h1>
-                            <h2 className="text-base text-slate-400">
-                              Specify the output format in JSON
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.dataSchemaDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -567,7 +566,7 @@ function SavedTaskForm({ initialValues }: Props) {
         </TaskFormSection>
         <TaskFormSection
           index={3}
-          title="Advanced Settings"
+          title={t("tasks.advanced")}
           active={isActive("advanced")}
           onClick={() => {
             toggleSection("advanced");
@@ -591,9 +590,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Max Steps Override</h1>
-                            <h2 className="text-base text-slate-400">
-                              Want to allow this task to execute more or less
-                              steps than the default?
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.maxStepsDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -629,9 +627,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Webhook Callback URL</h1>
-                            <h2 className="text-base text-slate-400">
-                              The URL of a webhook endpoint to send the
-                              extracted information
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.webhookUrlDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -657,7 +654,7 @@ function SavedTaskForm({ initialValues }: Props) {
                                     className="self-start"
                                     disabled={!field.value}
                                   >
-                                    Test Webhook
+                                    {t("tasks.testWebhook")}
                                   </Button>
                                 }
                               />
@@ -681,9 +678,8 @@ function SavedTaskForm({ initialValues }: Props) {
                               <div className="flex items-center gap-2 text-lg">
                                 Proxy Location
                               </div>
-                              <h2 className="text-sm text-slate-400">
-                                Route Skyvern through one of our available
-                                proxies.
+                              <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                                {t("tasks.proxyHelper")}
                               </h2>
                             </div>
                           </FormLabel>
@@ -712,9 +708,8 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">Error Messages</h1>
-                            <h2 className="text-base text-slate-400">
-                              Specify any error outputs you would like to be
-                              notified about
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                              {t("tasks.errorCodeMappingDesc")}
                             </h2>
                           </div>
                         </FormLabel>
@@ -744,14 +739,14 @@ function SavedTaskForm({ initialValues }: Props) {
                         <FormLabel>
                           <div className="w-72">
                             <h1 className="text-lg">2FA Identifier</h1>
-                            <h2 className="text-base text-slate-400"></h2>
+                            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}></h2>
                           </div>
                         </FormLabel>
                         <div className="w-full">
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Add an ID that links your TOTP to the task"
+                              placeholder={t("tasks.totpIdentifierPlaceholder")}
                               value={field.value === null ? "" : field.value}
                             />
                           </FormControl>
@@ -806,7 +801,7 @@ function SavedTaskForm({ initialValues }: Props) {
             {saveTaskMutation.isPending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Save Changes
+            {t("tasks.saveChanges")}
           </Button>
           <Button
             type="submit"
@@ -819,7 +814,7 @@ function SavedTaskForm({ initialValues }: Props) {
             ) : (
               <PlayIcon className="mr-2 h-4 w-4" />
             )}
-            Run
+            {t("tasks.run")}
           </Button>
         </div>
       </form>

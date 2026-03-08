@@ -241,10 +241,15 @@ async def export_statistics_csv(
 
     output.seek(0)
 
+    from urllib.parse import quote
+
+    filename = f"dashboard_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+    encoded_filename = f"dashboard_{user.org_id}_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+
     return StreamingResponse(
         iter([output.getvalue()]),
-        media_type="text/csv",
+        media_type="text/csv; charset=utf-8",
         headers={
-            "Content-Disposition": f"attachment; filename=dashboard_{user.org_id}_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+            "Content-Disposition": f"attachment; filename=\"{filename}\"; filename*=UTF-8''{quote(encoded_filename)}"
         },
     )

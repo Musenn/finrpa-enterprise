@@ -13,6 +13,7 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   onAdd: (headers: Record<string, string>) => void;
@@ -23,40 +24,57 @@ const commonHeaders = [
   {
     name: "Content-Type",
     value: "application/json",
-    description: "JSON content",
+    descriptionKey: "editor.headerDescJsonContent" as const,
   },
   {
     name: "Content-Type",
     value: "application/x-www-form-urlencoded",
-    description: "Form data",
+    descriptionKey: "editor.headerDescFormData" as const,
   },
   {
     name: "Authorization",
     value: "Bearer YOUR_TOKEN",
-    description: "Bearer token auth",
+    descriptionKey: "editor.headerDescBearerAuth" as const,
   },
   {
     name: "Authorization",
     value: "Basic YOUR_CREDENTIALS",
-    description: "Basic auth",
+    descriptionKey: "editor.headerDescBasicAuth" as const,
   },
-  { name: "User-Agent", value: "Skyvern/1.0", description: "User agent" },
+  {
+    name: "User-Agent",
+    value: "FinRPA/1.0",
+    descriptionKey: "editor.headerDescUserAgent" as const,
+  },
   {
     name: "Accept",
     value: "application/json",
-    description: "Accept JSON response",
+    descriptionKey: "editor.headerDescAcceptJson" as const,
   },
-  { name: "Accept", value: "*/*", description: "Accept any response" },
-  { name: "X-API-Key", value: "YOUR_API_KEY", description: "API key header" },
-  { name: "Cache-Control", value: "no-cache", description: "No cache" },
+  {
+    name: "Accept",
+    value: "*/*",
+    descriptionKey: "editor.headerDescAcceptAny" as const,
+  },
+  {
+    name: "X-API-Key",
+    value: "YOUR_API_KEY",
+    descriptionKey: "editor.headerDescApiKey" as const,
+  },
+  {
+    name: "Cache-Control",
+    value: "no-cache",
+    descriptionKey: "editor.headerDescNoCache" as const,
+  },
   {
     name: "Referer",
     value: "https://example.com",
-    description: "Referer header",
+    descriptionKey: "editor.headerDescReferer" as const,
   },
 ];
 
 export function QuickHeadersDialog({ onAdd, children }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [selectedHeaders, setSelectedHeaders] = useState<
     Record<string, string>
@@ -102,17 +120,17 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <PlusIcon className="h-5 w-5" />
-            Add Common Headers
+            {t("editor.addCommonHeaders")}
           </DialogTitle>
           <DialogDescription>
-            Quickly add common HTTP headers to your request.
+            {t("editor.addCommonHeadersDesc")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Common Headers */}
           <div>
-            <h4 className="mb-3 text-sm font-medium">Common Headers</h4>
+            <h4 className="mb-3 text-sm font-medium">{t("editor.commonHeaders")}</h4>
             <div className="grid grid-cols-1 gap-2">
               {commonHeaders.map((header, index) => {
                 const isSelected =
@@ -120,9 +138,9 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
                 return (
                   <div
                     key={index}
-                    className={`cursor-pointer rounded-lg border p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                    className={`cursor-pointer rounded-lg border p-3 transition-colors hover:bg-muted ${
                       isSelected
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                        ? "border-blue-500 bg-blue-50"
                         : ""
                     }`}
                     onClick={() =>
@@ -134,18 +152,18 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
                         <Badge variant="outline" className="font-mono text-xs">
                           {header.name}
                         </Badge>
-                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                        <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                           {header.value}
                         </span>
                       </div>
                       {isSelected && (
                         <Badge variant="default" className="text-xs">
-                          Selected
+                          {t("editor.selected")}
                         </Badge>
                       )}
                     </div>
-                    <div className="mt-1 text-xs text-slate-500">
-                      {header.description}
+                    <div className="mt-1 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                      {t(header.descriptionKey)}
                     </div>
                   </div>
                 );
@@ -155,11 +173,11 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
 
           {/* Custom Header */}
           <div>
-            <h4 className="mb-3 text-sm font-medium">Custom Header</h4>
+            <h4 className="mb-3 text-sm font-medium">{t("editor.customHeader")}</h4>
             <div className="flex gap-2">
               <div className="flex-1">
                 <Label htmlFor="custom-key" className="text-xs">
-                  Header Name
+                  {t("editor.headerName")}
                 </Label>
                 <Input
                   id="custom-key"
@@ -171,7 +189,7 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
               </div>
               <div className="flex-1">
                 <Label htmlFor="custom-value" className="text-xs">
-                  Header Value
+                  {t("editor.headerValue")}
                 </Label>
                 <Input
                   id="custom-value"
@@ -198,10 +216,10 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
           {Object.keys(selectedHeaders).length > 0 && (
             <div>
               <h4 className="mb-3 text-sm font-medium">
-                Selected Headers ({Object.keys(selectedHeaders).length})
+                {t("editor.selectedHeaders")} ({Object.keys(selectedHeaders).length})
               </h4>
-              <div className="rounded-lg border bg-slate-50 p-3 dark:bg-slate-800">
-                <pre className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="rounded-lg border p-3" style={{ background: "rgba(26,58,92,0.06)" }}>
+                <pre className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   {JSON.stringify(selectedHeaders, null, 2)}
                 </pre>
               </div>
@@ -211,13 +229,13 @@ export function QuickHeadersDialog({ onAdd, children }: Props) {
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={handleAddHeaders}
             disabled={Object.keys(selectedHeaders).length === 0}
           >
-            Add Headers ({Object.keys(selectedHeaders).length})
+            {t("editor.addHeaders")} ({Object.keys(selectedHeaders).length})
           </Button>
         </DialogFooter>
       </DialogContent>

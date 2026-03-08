@@ -71,11 +71,11 @@ function ActionCard({ action, onClick, active, index }: Props) {
             )}
           </div>
         </div>
-        <div className="text-xs text-slate-400">{action.reasoning}</div>
+        <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>{action.reasoning}</div>
         {action.action_type === ActionTypes.InputText && (
           <>
             <Separator />
-            <div className="text-xs text-slate-400">
+            <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
               Input:{" "}
               {action.action_type === "input_text"
                 ? action.text ?? action.response

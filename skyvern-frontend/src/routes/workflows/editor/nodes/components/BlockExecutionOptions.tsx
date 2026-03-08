@@ -49,7 +49,7 @@ export function BlockExecutionOptions({
         onIncludeActionHistoryInVerificationChange && (
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Label className="text-xs font-normal text-slate-300">
+              <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                 Include Action History
               </Label>
               <HelpTooltip
@@ -77,7 +77,7 @@ export function BlockExecutionOptions({
       {showContinueOnFailure && (
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
-            <Label className="text-xs font-normal text-slate-300">
+            <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
               Continue on Failure
             </Label>
             <HelpTooltip
@@ -104,7 +104,7 @@ export function BlockExecutionOptions({
       {showNextLoopOnFailure && isInsideForLoop && (
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
-            <Label className="text-xs font-normal text-slate-300">
+            <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
               Next Loop on Failure
             </Label>
             <HelpTooltip

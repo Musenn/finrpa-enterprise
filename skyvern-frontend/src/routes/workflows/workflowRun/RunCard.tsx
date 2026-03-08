@@ -37,10 +37,10 @@ function RunCard({
           ? "rounded-lg border-2 border-transparent"
           : "rounded-md border",
         {
-          "cursor-pointer hover:border-slate-50": !!onClick,
+          "cursor-pointer": !!onClick,
           "border-l-destructive": status === "failure",
           "border-l-success": status === "success",
-          "border-slate-50": active,
+          "border-2": active,
         },
         className,
       )}

@@ -16,12 +16,14 @@ import { useRecordingStore } from "@/store/useRecordingStore";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { cn } from "@/util/utils";
 import { toast } from "@/components/ui/use-toast";
+import { useI18n } from "@/i18n/useI18n";
 
 import type { NodeAdderNode } from "./types";
 import { WorkflowAddMenu } from "../../WorkflowAddMenu";
 import { WorkflowAdderBusy } from "../../WorkflowAdderBusy";
 
 function NodeAdderNode({ id, parentId }: NodeProps<NodeAdderNode>) {
+  const { t } = useI18n();
   const edges = useEdges();
   const nodes = useNodes();
   const debugStore = useDebugStore();
@@ -214,8 +216,8 @@ function NodeAdderNode({ id, parentId }: NodeProps<NodeAdderNode>) {
     if (!file.name.toLowerCase().endsWith(".pdf")) {
       toast({
         variant: "destructive",
-        title: "Invalid file type",
-        description: "Please select a PDF file",
+        title: t("editor.invalidFileType"),
+        description: t("editor.pleaseSelectPdf"),
       });
       e.target.value = "";
       return;
@@ -226,14 +228,15 @@ function NodeAdderNode({ id, parentId }: NodeProps<NodeAdderNode>) {
 
   const adder = (
     <div
-      className={cn("rounded-full bg-slate-50 p-2", {
+      className={cn("rounded-full p-2", {
         "cursor-not-allowed bg-[grey]": isDisabled,
       })}
+      style={{ background: isDisabled ? undefined : "var(--glass-bg)" }}
       onClick={() => {
         onAdd();
       }}
     >
-      <PlusIcon className="h-12 w-12 text-slate-950" />
+      <PlusIcon className="h-12 w-12" style={{ color: "var(--finrpa-text-primary)" }} />
     </div>
   );
 

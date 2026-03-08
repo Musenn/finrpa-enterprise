@@ -34,8 +34,16 @@ import { DashboardPage } from "@/routes/enterprise/dashboard/DashboardPage";
 import { ApprovalsPage } from "@/routes/enterprise/approvals/ApprovalsPage";
 import { AuditLogsPage } from "@/routes/enterprise/audit/AuditLogsPage";
 import { PermissionsPage } from "@/routes/enterprise/permissions/PermissionsPage";
+import { LLMMonitorPage } from "@/routes/enterprise/llm/LLMMonitorPage";
+import { LoginPage } from "@/routes/auth/LoginPage";
+import { AuthGuard } from "@/components/AuthGuard";
+import { EnterpriseCredentialProvider } from "@/components/EnterpriseCredentialProvider";
 
 const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "browser-session/:browserSessionId",
     element: <BrowserSession />,
@@ -49,9 +57,13 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <DebugStoreProvider>
-        <RootLayout />
-      </DebugStoreProvider>
+      <AuthGuard>
+        <EnterpriseCredentialProvider>
+          <DebugStoreProvider>
+            <RootLayout />
+          </DebugStoreProvider>
+        </EnterpriseCredentialProvider>
+      </AuthGuard>
     ),
     children: [
       {
@@ -288,6 +300,16 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <PermissionsPage />,
+          },
+        ],
+      },
+      {
+        path: "enterprise/llm",
+        element: <PageLayout />,
+        children: [
+          {
+            index: true,
+            element: <LLMMonitorPage />,
           },
         ],
       },

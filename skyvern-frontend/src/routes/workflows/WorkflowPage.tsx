@@ -57,8 +57,10 @@ import { TableSearchInput } from "@/components/TableSearchInput";
 import { useKeywordSearch } from "./hooks/useKeywordSearch";
 import { useParameterExpansion } from "./hooks/useParameterExpansion";
 import { ParameterDisplayInline } from "./components/ParameterDisplayInline";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowPage() {
+  const { t } = useI18n();
   const { workflowPermanentId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
@@ -141,20 +143,20 @@ function WorkflowPage() {
           <Button asChild variant="secondary">
             <Link to={`/workflows/${workflowPermanentId}/build`}>
               <Pencil2Icon className="mr-2 size-4" />
-              Edit
+              {t("common.edit")}
             </Link>
           </Button>
           <Button asChild>
             <Link to={`/workflows/${workflowPermanentId}/run`}>
               <PlayIcon className="mr-2 size-4" />
-              Run
+              {t("tasks.run")}
             </Link>
           </Button>
         </div>
       </header>
       <div className="space-y-4">
         <header>
-          <h1 className="text-2xl">Past Runs</h1>
+          <h1 className="text-2xl">{t("workflows.pastRuns")}</h1>
         </header>
         <div className="flex items-center justify-between gap-4">
           <TableSearchInput
@@ -165,7 +167,7 @@ function WorkflowPage() {
               params.set("page", "1");
               setSearchParams(params, { replace: true });
             }}
-            placeholder="Search runs by parameter..."
+            placeholder={t("workflows.searchRunsPlaceholder")}
             className="w-48 lg:w-72"
           />
           <StatusFilterDropdown
@@ -177,27 +179,27 @@ function WorkflowPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-1/4">ID</TableHead>
-                <TableHead className="w-1/4">Status</TableHead>
-                <TableHead className="w-1/4">Created At</TableHead>
+                <TableHead className="w-1/4">{t("workflows.tableId")}</TableHead>
+                <TableHead className="w-1/4">{t("common.status")}</TableHead>
+                <TableHead className="w-1/4">{t("tasks.createdAt")}</TableHead>
                 <TableHead className="w-1/4"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4}>Loading...</TableCell>
+                  <TableCell colSpan={4}>{t("common.loading")}</TableCell>
                 </TableRow>
               ) : workflowRuns?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4}>No workflow runs found</TableCell>
+                  <TableCell colSpan={4}>{t("workflows.noRunsFound")}</TableCell>
                 </TableRow>
               ) : (
                 workflowRuns?.map((workflowRun) => {
                   const workflowRunId =
                     workflowRun.script_run === true ? (
                       <div className="flex items-center gap-2">
-                        <Tip content="Ran with code">
+                        <Tip content={t("runs.ranWithCode")}>
                           <LightningBoltIcon className="text-[gold]" />
                         </Tip>
                         <span>{workflowRun.workflow_run_id ?? ""}</span>
@@ -263,8 +265,8 @@ function WorkflowPage() {
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   {isExpanded
-                                    ? "Hide Parameters"
-                                    : "Show Parameters"}
+                                    ? t("runs.hideParameters")
+                                    : t("runs.showParameters")}
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -277,7 +279,7 @@ function WorkflowPage() {
                         <TableRow key={`${workflowRun.workflow_run_id}-params`}>
                           <TableCell
                             colSpan={4}
-                            className="bg-slate-50 dark:bg-slate-900/50"
+                            style={{ background: "rgba(26,58,92,0.06)" }}
                           >
                             <WorkflowRunParameters
                               workflowPermanentId={workflowPermanentId}
@@ -365,6 +367,7 @@ function WorkflowRunParameters({
   searchQuery,
   keywordMatchesParameter,
 }: WorkflowRunParametersProps) {
+  const { t } = useI18n();
   const { data: globalWorkflows } = useGlobalWorkflowsQuery();
   const credentialGetter = useCredentialGetter();
 
@@ -406,8 +409,8 @@ function WorkflowRunParameters({
 
   if (!run || !run.parameters || Object.keys(run.parameters).length === 0) {
     return (
-      <div className="ml-8 py-4 text-sm text-slate-400">
-        No parameters for this run
+      <div className="ml-8 py-4 text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+        {t("runs.noParameters")}
       </div>
     );
   }

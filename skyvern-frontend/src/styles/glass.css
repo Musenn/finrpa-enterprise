@@ -28,12 +28,15 @@
   box-shadow: var(--glass-shadow);
 }
 
-/* === Glass Sidebar === */
+/* === Glass Sidebar — floating panel === */
 .glass-sidebar {
   background: var(--sidebar-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--sidebar-blur));
+  -webkit-backdrop-filter: blur(var(--sidebar-blur));
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--sidebar-radius);
+  box-shadow: var(--sidebar-shadow);
+  z-index: 40;
 }
 
 /* === Glass Nav Item === */
@@ -51,13 +54,14 @@
 }
 
 .glass-nav-item:hover {
-  background: rgba(26, 58, 92, 0.06);
+  background: rgba(26, 58, 92, 0.08);
   color: var(--finrpa-blue);
 }
 
 .glass-nav-item.active {
-  background: rgba(26, 58, 92, 0.08);
+  background: rgba(26, 58, 92, 0.1);
   color: var(--finrpa-blue);
+  font-weight: 600;
   border-left: 3px solid var(--finrpa-gold);
   padding-left: calc(var(--space-md) - 3px);
 }
@@ -96,13 +100,18 @@
 
 /* === Glass Input === */
 .glass-input {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(26, 58, 92, 0.18);
   border-radius: var(--radius-md);
   padding: var(--space-sm) var(--space-md);
   font-size: 14px;
   color: var(--finrpa-text-primary);
-  transition: border-color var(--transition-normal);
+  transition: border-color var(--transition-normal),
+              box-shadow var(--transition-normal);
+}
+
+.glass-input::placeholder {
+  color: var(--finrpa-text-muted);
 }
 
 .glass-input:focus {
@@ -125,26 +134,25 @@
 }
 
 .glass-table th {
-  background: rgba(26, 58, 92, 0.04);
+  background: rgba(26, 58, 92, 0.06);
   color: var(--finrpa-text-secondary);
   font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   padding: var(--space-sm) var(--space-md);
   text-align: left;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid rgba(26, 58, 92, 0.12);
 }
 
 .glass-table td {
   padding: var(--space-sm) var(--space-md);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(26, 58, 92, 0.07);
   color: var(--finrpa-text-primary);
   font-size: 14px;
 }
 
 .glass-table tr:hover td {
-  background: rgba(26, 58, 92, 0.02);
+  background: rgba(26, 58, 92, 0.04);
 }
 
 /* === Section Header === */
@@ -172,4 +180,11 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
+}
+
+/* === Readability Overrides ===
+ * Map Tailwind muted-foreground to our higher-contrast enterprise token.
+ */
+.glass-page .text-muted-foreground {
+  color: var(--finrpa-text-muted) !important;
 }

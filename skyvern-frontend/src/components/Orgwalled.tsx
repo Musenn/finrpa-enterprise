@@ -40,7 +40,7 @@ function OrgWalled({
         {!hideTooltipContent && (
           <TooltipContent>
             <p>
-              This feature is only available to Skyvern organization members
+              This feature is only available to FinRPA organization members
             </p>
           </TooltipContent>
         )}

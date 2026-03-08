@@ -11,10 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowTemplates() {
   const { data: workflowTemplates, isLoading } = useGlobalWorkflowsQuery();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   if (isLoading) {
     return (
@@ -32,7 +34,7 @@ function WorkflowTemplates() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl">Explore Workflows</h1>
+      <h1 className="text-xl">{t("discover.exploreWorkflows")}</h1>
       <Carousel
         opts={{
           align: "start",

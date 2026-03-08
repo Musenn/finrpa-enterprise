@@ -19,8 +19,10 @@ import { statusIsRunningOrQueued } from "@/routes/tasks/types";
 import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuery";
 import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 import { useRecordingStore } from "@/store/useRecordingStore";
+import { useI18n } from "@/i18n/useI18n";
 
 function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
+  const { t } = useI18n();
   const { editable, label } = data;
   const { blockLabel: urlBlockLabel } = useParams();
   const { data: workflowRun } = useWorkflowRunQuery();
@@ -56,7 +58,7 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
         )}
@@ -72,7 +74,7 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Label className="text-sm text-slate-400">Storage Type</Label>
+              <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("editor.storageType")}</Label>
               <HelpTooltip
                 content={helpTooltips["fileUpload"]["storage_type"]}
               />
@@ -85,11 +87,11 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               disabled={!editable}
             >
               <SelectTrigger className="nopan text-xs">
-                <SelectValue placeholder="Select storage type" />
+                <SelectValue placeholder={t("editor.selectStorageType")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="s3">Amazon S3</SelectItem>
-                <SelectItem value="azure">Azure Blob Storage</SelectItem>
+                <SelectItem value="s3">{t("editor.amazonS3")}</SelectItem>
+                <SelectItem value="azure">{t("editor.azureBlobStorage")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -98,8 +100,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
             <>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    AWS Access Key ID
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.awsAccessKeyId")}
                   </Label>
                   <HelpTooltip
                     content={helpTooltips["fileUpload"]["aws_access_key_id"]}
@@ -116,8 +118,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    AWS Secret Access Key
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.awsSecretAccessKey")}
                   </Label>
                   <HelpTooltip
                     content={
@@ -137,7 +139,7 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">S3 Bucket</Label>
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("editor.s3Bucket")}</Label>
                   <HelpTooltip
                     content={helpTooltips["fileUpload"]["s3_bucket"]}
                   />
@@ -153,7 +155,7 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">Region Name</Label>
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("editor.regionName")}</Label>
                   <HelpTooltip
                     content={helpTooltips["fileUpload"]["region_name"]}
                   />
@@ -169,8 +171,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    (Optional) Folder Path
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.optionalFolderPath")}
                   </Label>
                   <HelpTooltip content={helpTooltips["fileUpload"]["path"]} />
                 </div>
@@ -190,8 +192,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
             <>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    Storage Account Name
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.storageAccountName")}
                   </Label>
                   <HelpTooltip
                     content={
@@ -210,8 +212,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    Storage Account Key
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.storageAccountKey")}
                   </Label>
                   <HelpTooltip
                     content={
@@ -231,8 +233,8 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    Blob Container Name
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.blobContainerName")}
                   </Label>
                   <HelpTooltip
                     content={
@@ -251,10 +253,10 @@ function FileUploadNode({ id, data }: NodeProps<FileUploadNode>) {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm text-slate-400">
-                    (Optional) Folder Path
+                  <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.optionalFolderPath")}
                   </Label>
-                  <HelpTooltip content="Optional folder path within the blob container. Defaults to {{ workflow_run_id }} if not specified." />
+                  <HelpTooltip content={t("editor.azureFolderPathHelp")} />
                 </div>
                 <WorkflowBlockInputTextarea
                   nodeId={id}

@@ -38,6 +38,7 @@ import { useWorkflowTitleStore } from "@/store/WorkflowTitleStore";
 import { useWorkflowHasChangesStore } from "@/store/WorkflowHasChangesStore";
 import { cn } from "@/util/utils";
 import { CacheKeyValuesResponse } from "@/routes/workflows/types/scriptTypes";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Dom {
   input: React.MutableRefObject<HTMLInputElement | null>;
@@ -84,6 +85,7 @@ function WorkflowHeader({
   onRun,
   onHistory,
 }: Props) {
+  const { t } = useI18n();
   const { title, setTitle } = useWorkflowTitleStore();
   const workflowChangesStore = useWorkflowHasChangesStore();
   const { workflowPermanentId } = useParams();
@@ -121,14 +123,14 @@ function WorkflowHeader({
         queryKey: ["workflow", workflowPermanentId],
       });
       toast({
-        title: newIsTemplate ? "Saved as template" : "Removed from templates",
+        title: newIsTemplate ? t("editor.savedAsTemplate") : t("editor.removedFromTemplates"),
         variant: "success",
       });
     },
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to update template status",
+        title: t("editor.failedUpdateTemplateStatus"),
         description: error.message,
       });
     },
@@ -193,7 +195,7 @@ function WorkflowHeader({
                 onClick={handleShowAllCode}
               >
                 <CodeIcon className="mr-2 h-6 w-6" />
-                Show Code
+                {t("editor.showCode")}
               </Button>
             )}
             <div
@@ -230,7 +232,7 @@ function WorkflowHeader({
                   }
                   onCacheKeyValuesKeydown(e);
                 }}
-                placeholder="Code Key Value"
+                placeholder={t("editor.codeKeyValue")}
                 value={chosenCacheKeyValue ?? undefined}
                 onBlur={(e) => {
                   onCacheKeyValuesBlurred(e.target.value);
@@ -261,7 +263,7 @@ function WorkflowHeader({
             onClick={handleShowAllCode}
           >
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-            Code
+            {t("editor.code")}
           </Button>
         )}
         {isGlobalWorkflow ? (
@@ -284,7 +286,7 @@ function WorkflowHeader({
             ) : (
               <CopyIcon className="mr-3 h-6 w-6" />
             )}
-            Make a Copy to Edit
+            {t("editor.makeCopyToEdit")}
           </Button>
         ) : (
           <>
@@ -313,8 +315,8 @@ function WorkflowHeader({
                 </TooltipTrigger>
                 <TooltipContent>
                   {debugStore.isDebugMode
-                    ? "Turn off Browser"
-                    : "Turn on Browser"}
+                    ? t("editor.turnOffBrowser")
+                    : t("editor.turnOnBrowser")}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -337,7 +339,7 @@ function WorkflowHeader({
                     )}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Save</TooltipContent>
+                <TooltipContent>{t("common.save")}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
@@ -369,7 +371,7 @@ function WorkflowHeader({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {isTemplate ? "Remove from Templates" : "Save as Template"}
+                  {isTemplate ? t("editor.removeFromTemplates") : t("editor.saveAsTemplate")}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -389,7 +391,7 @@ function WorkflowHeader({
                       <VersionHistoryIcon size={24} />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>History</TooltipContent>
+                  <TooltipContent>{t("editor.history")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -399,7 +401,7 @@ function WorkflowHeader({
               size="lg"
               onClick={onParametersClick}
             >
-              <span className="mr-2">Parameters</span>
+              <span className="mr-2">{t("workflows.parameters")}</span>
               {parametersPanelOpen ? (
                 <ChevronUpIcon className="h-6 w-6" />
               ) : (
@@ -415,7 +417,7 @@ function WorkflowHeader({
               }}
             >
               <PlayIcon className="mr-2 h-6 w-6" />
-              Run
+              {t("workflows.run")}
             </Button>
           </>
         )}

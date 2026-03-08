@@ -5,6 +5,7 @@ import { RadialMenu, RadialMenuItem } from "@/components/RadialMenu";
 import { useDebugStore } from "@/store/useDebugStore";
 import { useRecordingStore } from "@/store/useRecordingStore";
 import { useSettingsStore } from "@/store/SettingsStore";
+import { useI18n } from "@/i18n/useI18n";
 
 type WorkflowAddMenuProps = {
   buttonSize?: string;
@@ -33,6 +34,7 @@ function WorkflowAddMenu({
   onRecord,
   onUploadSOP,
 }: WorkflowAddMenuProps) {
+  const { t } = useI18n();
   const debugStore = useDebugStore();
   const recordingStore = useRecordingStore();
   const settingsStore = useSettingsStore();
@@ -42,7 +44,7 @@ function WorkflowAddMenu({
       {
         id: "1",
         icon: <PlusIcon className={buttonSize ? "h-3 w-3" : undefined} />,
-        text: "Add Block",
+        text: t("editor.addBlock"),
         onClick: () => {
           onAdd();
         },
@@ -55,7 +57,7 @@ function WorkflowAddMenu({
         id: "2",
         icon: <SquareIcon className={buttonSize ? "h-3 w-3" : undefined} />,
         enabled: !recordingStore.isRecording,
-        text: "Record Browser",
+        text: t("editor.recordBrowser"),
         onClick: () => {
           onRecord();
         },
@@ -66,7 +68,7 @@ function WorkflowAddMenu({
     menuItems.push({
       id: "3",
       icon: <UploadIcon className={buttonSize ? "h-3 w-3" : undefined} />,
-      text: "Upload SOP",
+      text: t("editor.uploadSop"),
       enabled: !isUploadingSOP,
       onClick: () => {
         onUploadSOP();
@@ -75,6 +77,7 @@ function WorkflowAddMenu({
 
     return menuItems;
   }, [
+    t,
     buttonSize,
     onAdd,
     onRecord,

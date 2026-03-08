@@ -5,7 +5,7 @@
 -- ============================================================================
 
 -- bcrypt hash for "demo123"
--- $2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa
+-- $2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C
 
 BEGIN;
 
@@ -44,30 +44,30 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO enterprise_users (user_id, organization_id, username, password_hash, display_name, email, is_active, created_at, modified_at) VALUES
     -- IT Department
-    ('eu_admin',           'o_demo_cmb', 'banking_admin',       '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '系统管理员',   'admin@demo.bank',       true, NOW(), NOW()),
+    ('eu_demo_admin',      'o_demo_cmb', 'banking_admin',       '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '系统管理员',   'admin@demo.bank',       true, NOW(), NOW()),
     -- Corporate Credit Department
-    ('eu_cc_op1',          'o_demo_cmb', 'credit_operator',     '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '张明（对公操作员）',    'zhang.ming@demo.bank',    true, NOW(), NOW()),
-    ('eu_cc_op2',          'o_demo_cmb', 'credit_operator2',    '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '刘洋（对公操作员2）',   'liu.yang@demo.bank',      true, NOW(), NOW()),
-    ('eu_cc_approver',     'o_demo_cmb', 'credit_approver',     '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '王芳（对公审批员）',    'wang.fang@demo.bank',     true, NOW(), NOW()),
-    ('eu_cc_viewer',       'o_demo_cmb', 'credit_viewer',       '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '陈静（对公只读）',     'chen.jing@demo.bank',     true, NOW(), NOW()),
+    ('eu_cc_op1',          'o_demo_cmb', 'credit_operator',     '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '张明（对公操作员）',    'zhang.ming@demo.bank',    true, NOW(), NOW()),
+    ('eu_cc_op2',          'o_demo_cmb', 'credit_operator2',    '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '刘洋（对公操作员2）',   'liu.yang@demo.bank',      true, NOW(), NOW()),
+    ('eu_cc_approver',     'o_demo_cmb', 'credit_approver',     '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '王芳（对公审批员）',    'wang.fang@demo.bank',     true, NOW(), NOW()),
+    ('eu_cc_viewer',       'o_demo_cmb', 'credit_viewer',       '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '陈静（对公只读）',     'chen.jing@demo.bank',     true, NOW(), NOW()),
     -- Cross business line operator (corp credit + intl settlement)
-    ('eu_cc_cross',        'o_demo_cmb', 'credit_cross_op',     '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '赵磊（跨业务线操作员）',  'zhao.lei@demo.bank',      true, NOW(), NOW()),
+    ('eu_cc_cross',        'o_demo_cmb', 'credit_cross_op',     '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '赵磊（跨业务线操作员）',  'zhao.lei@demo.bank',      true, NOW(), NOW()),
     -- Personal Finance Department
-    ('eu_pf_op',           'o_demo_cmb', 'personal_operator',   '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '李娜（个金操作员）',    'li.na@demo.bank',         true, NOW(), NOW()),
-    ('eu_pf_approver',     'o_demo_cmb', 'personal_approver',   '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '周强（个金审批员）',    'zhou.qiang@demo.bank',    true, NOW(), NOW()),
+    ('eu_pf_op',           'o_demo_cmb', 'personal_operator',   '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '李娜（个金操作员）',    'li.na@demo.bank',         true, NOW(), NOW()),
+    ('eu_pf_approver',     'o_demo_cmb', 'personal_approver',   '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '周强（个金审批员）',    'zhou.qiang@demo.bank',    true, NOW(), NOW()),
     -- Asset Management Department
-    ('eu_am_op',           'o_demo_cmb', 'asset_operator',      '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '孙伟（资管操作员）',    'sun.wei@demo.bank',       true, NOW(), NOW()),
-    ('eu_am_approver',     'o_demo_cmb', 'asset_approver',      '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '吴敏（资管审批员）',    'wu.min@demo.bank',        true, NOW(), NOW()),
+    ('eu_am_op',           'o_demo_cmb', 'asset_operator',      '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '孙伟（资管操作员）',    'sun.wei@demo.bank',       true, NOW(), NOW()),
+    ('eu_am_approver',     'o_demo_cmb', 'asset_approver',      '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '吴敏（资管审批员）',    'wu.min@demo.bank',        true, NOW(), NOW()),
     -- Risk Management Department
-    ('eu_risk_viewer1',    'o_demo_cmb', 'risk_viewer',         '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '黄涛（风控查看员）',    'huang.tao@demo.bank',     true, NOW(), NOW()),
-    ('eu_risk_viewer2',    'o_demo_cmb', 'risk_viewer2',        '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '马丽（风控查看员2）',   'ma.li@demo.bank',         true, NOW(), NOW()),
+    ('eu_risk_viewer1',    'o_demo_cmb', 'risk_viewer',         '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '黄涛（风控查看员）',    'huang.tao@demo.bank',     true, NOW(), NOW()),
+    ('eu_risk_viewer2',    'o_demo_cmb', 'risk_viewer2',        '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '马丽（风控查看员2）',   'ma.li@demo.bank',         true, NOW(), NOW()),
     -- Compliance & Audit Department
-    ('eu_comp_approver',   'o_demo_cmb', 'compliance_approver', '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '杨超（合规审批员）',    'yang.chao@demo.bank',     true, NOW(), NOW()),
-    ('eu_comp_viewer',     'o_demo_cmb', 'compliance_viewer',   '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '林燕（合规查看员）',    'lin.yan@demo.bank',       true, NOW(), NOW()),
+    ('eu_comp_approver',   'o_demo_cmb', 'compliance_approver', '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '杨超（合规审批员）',    'yang.chao@demo.bank',     true, NOW(), NOW()),
+    ('eu_comp_viewer',     'o_demo_cmb', 'compliance_viewer',   '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '林燕（合规查看员）',    'lin.yan@demo.bank',       true, NOW(), NOW()),
     -- IT Department additional
-    ('eu_it_op',           'o_demo_cmb', 'it_operator',         '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '徐鹏（IT操作员）',     'xu.peng@demo.bank',       true, NOW(), NOW()),
+    ('eu_it_op',           'o_demo_cmb', 'it_operator',         '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '徐鹏（IT操作员）',     'xu.peng@demo.bank',       true, NOW(), NOW()),
     -- Inactive user (for testing)
-    ('eu_inactive',        'o_demo_cmb', 'inactive_user',       '$2b$12$LJ3m4ys3Lk0TSwMBQEBMxOZ8rFGnBNAqd1A4z8eUwIDBPIGX5mMCa', '已离职用户',          'inactive@demo.bank',      false, NOW(), NOW())
+    ('eu_inactive',        'o_demo_cmb', 'inactive_user',       '$2b$12$wBw3SCe72lwNbxfHlbzKfeLfkv7CgkBr4m9YPNFpUQpf/DU14zf/C', '已离职用户',          'inactive@demo.bank',      false, NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -75,7 +75,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO user_department_roles (user_id, department_id, role, created_at) VALUES
     -- IT admin (super_admin in IT dept)
-    ('eu_admin',         'dept_it',           'super_admin', NOW()),
+    ('eu_demo_admin',    'dept_it',           'super_admin', NOW()),
     -- Corporate Credit operators and approver
     ('eu_cc_op1',        'dept_corp_credit',  'operator',    NOW()),
     ('eu_cc_op2',        'dept_corp_credit',  'operator',    NOW()),
@@ -127,12 +127,12 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO special_permissions (permission_id, user_id, organization_id, permission_type, granted_by, created_at) VALUES
     -- Risk Management: cross-org read
-    ('sp_risk_v1_read',  'eu_risk_viewer1',  'o_demo_cmb', 'cross_org_read',    'eu_admin', NOW()),
-    ('sp_risk_v2_read',  'eu_risk_viewer2',  'o_demo_cmb', 'cross_org_read',    'eu_admin', NOW()),
+    ('sp_risk_v1_read',  'eu_risk_viewer1',  'o_demo_cmb', 'cross_org_read',    'eu_demo_admin', NOW()),
+    ('sp_risk_v2_read',  'eu_risk_viewer2',  'o_demo_cmb', 'cross_org_read',    'eu_demo_admin', NOW()),
     -- Compliance: cross-org read + approve
-    ('sp_comp_ap_read',  'eu_comp_approver', 'o_demo_cmb', 'cross_org_read',    'eu_admin', NOW()),
-    ('sp_comp_ap_appr',  'eu_comp_approver', 'o_demo_cmb', 'cross_org_approve', 'eu_admin', NOW()),
-    ('sp_comp_vw_read',  'eu_comp_viewer',   'o_demo_cmb', 'cross_org_read',    'eu_admin', NOW())
+    ('sp_comp_ap_read',  'eu_comp_approver', 'o_demo_cmb', 'cross_org_read',    'eu_demo_admin', NOW()),
+    ('sp_comp_ap_appr',  'eu_comp_approver', 'o_demo_cmb', 'cross_org_approve', 'eu_demo_admin', NOW()),
+    ('sp_comp_vw_read',  'eu_comp_viewer',   'o_demo_cmb', 'cross_org_read',    'eu_demo_admin', NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================

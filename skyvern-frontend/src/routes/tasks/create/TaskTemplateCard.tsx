@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/util/utils";
 import { useState } from "react";
 
 type Props = {
@@ -20,29 +19,31 @@ function TaskTemplateCard({ title, description, body, onClick }: Props) {
 
   return (
     <Card
-      className="border-0"
+      className="overflow-hidden border-0"
+      style={{
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--glass-shadow)",
+      }}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       onMouseOver={() => setHovering(true)}
       onMouseOut={() => setHovering(false)}
     >
       <CardHeader
-        className={cn("rounded-t-md bg-slate-elevation1", {
-          "bg-slate-900": hovering,
-        })}
+        className="rounded-t-md"
+        style={{ background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)" }}
       >
         <CardTitle className="font-normal">{title}</CardTitle>
-        <CardDescription className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-400">
+        <CardDescription className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: "var(--finrpa-text-muted)" }}>
           {description}
         </CardDescription>
       </CardHeader>
       <CardContent
-        className={cn(
-          "h-36 cursor-pointer rounded-b-md bg-slate-elevation3 p-4 text-sm text-slate-300",
-          {
-            "bg-slate-800": hovering,
-          },
-        )}
+        className="h-36 cursor-pointer rounded-b-md p-4 text-sm"
+        style={{
+          color: "var(--finrpa-text-secondary)",
+          background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)",
+        }}
         onClick={() => {
           onClick();
         }}

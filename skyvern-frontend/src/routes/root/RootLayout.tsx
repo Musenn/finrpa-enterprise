@@ -14,8 +14,9 @@ function RootLayout() {
   const isEmbedded = embed === "true";
   const debugStore = useDebugStore();
 
-  const horizontalPadding = cn("lg:pl-64", {
-    "lg:pl-20": collapsed,
+  // Floating sidebar: 12px left offset + sidebar width + 12px gap
+  const horizontalPadding = cn("lg:pl-[264px]", {
+    "lg:pl-[88px]": collapsed,
     "lg:pl-4": isEmbedded,
   });
 

@@ -41,10 +41,12 @@ import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuer
 import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 import { useRerender } from "@/hooks/useRerender";
 
+import { useI18n } from "@/i18n/useI18n";
 import { DisableCache } from "../DisableCache";
 import { BlockExecutionOptions } from "../components/BlockExecutionOptions";
 
 function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
+  const { t } = useI18n();
   const [facing, setFacing] = useState<"front" | "back">("front");
   const blockScriptStore = useBlockScriptStore();
   const { editable, label } = data;
@@ -89,7 +91,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
               "pointer-events-none": thisBlockIsPlaying,
-              "bg-slate-950 outline outline-2 outline-slate-300":
+              "outline outline-2 outline-primary":
                 thisBlockIsTargetted,
             },
             data.comparisonColor,
@@ -115,11 +117,11 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <div className="flex gap-2">
-                        <Label className="text-xs text-slate-300">URL</Label>
+                        <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
                         <HelpTooltip content={helpTooltips["task"]["url"]} />
                       </div>
                       {isFirstWorkflowBlock ? (
-                        <div className="flex justify-end text-xs text-slate-400">
+                        <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                           Tip: Use the {"+"} button to add parameters!
                         </div>
                       ) : null}
@@ -136,7 +138,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">Goal</Label>
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>Goal</Label>
                       <HelpTooltip
                         content={helpTooltips["task"]["navigationGoal"]}
                       />
@@ -170,7 +172,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                 <div key={`${rerender.key}-extraction`} className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Data Extraction Goal
                       </Label>
                       <HelpTooltip
@@ -219,7 +221,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
               <AccordionContent className="pl-6 pr-1 pt-1">
                 <div key={`${rerender.key}-advanced`} className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-xs text-slate-300">
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                       Complete if...
                     </Label>
                     <WorkflowBlockInputTextarea
@@ -242,7 +244,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   />
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Engine
                       </Label>
                     </div>
@@ -256,7 +258,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Max Steps Override
                       </Label>
                       <HelpTooltip
@@ -281,7 +283,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   <div className="space-y-2">
                     <div className="flex gap-4">
                       <div className="flex gap-2">
-                        <Label className="text-xs font-normal text-slate-300">
+                        <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                           Error Messages
                         </Label>
                         <HelpTooltip
@@ -354,7 +356,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Complete on Download
                       </Label>
                       <HelpTooltip
@@ -372,7 +374,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         File Name
                       </Label>
                       <HelpTooltip
@@ -393,7 +395,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                         2FA Identifier
                       </Label>
                       <HelpTooltip
@@ -412,7 +414,7 @@ function TaskNode({ id, data, type }: NodeProps<TaskNode>) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                         2FA Verification URL
                       </Label>
                       <HelpTooltip

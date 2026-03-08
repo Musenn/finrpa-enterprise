@@ -39,7 +39,7 @@ function UploadNode({ id, data }: NodeProps<UploadNode>) {
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
         )}
@@ -55,7 +55,7 @@ function UploadNode({ id, data }: NodeProps<UploadNode>) {
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Label className="text-sm text-slate-400">File Path</Label>
+              <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>File Path</Label>
               <HelpTooltip content={helpTooltips["upload"]["path"]} />
             </div>
             <Input value={data.path} className="nopan text-xs" disabled />

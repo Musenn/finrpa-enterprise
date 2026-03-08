@@ -13,8 +13,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
+import { useI18n } from "@/i18n/useI18n";
 
 function QueuedTasks() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const credentialGetter = useCredentialGetter();
 
@@ -47,20 +49,20 @@ function QueuedTasks() {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="border" style={{ borderRadius: "var(--radius-lg)", boxShadow: "var(--glass-shadow)", borderColor: "var(--glass-border)", overflow: "hidden" }}>
       <Table>
-        <TableHeader>
+        <TableHeader style={{ background: "rgba(26,58,92,0.06)" }}>
           <TableRow>
-            <TableHead className="w-1/4">ID</TableHead>
-            <TableHead className="w-1/4">URL</TableHead>
-            <TableHead className="w-1/4">Status</TableHead>
-            <TableHead className="w-1/4">Created At</TableHead>
+            <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.tableId")}</TableHead>
+            <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.url")}</TableHead>
+            <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.status")}</TableHead>
+            <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.createdAt")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tasks?.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4}>No queued tasks</TableCell>
+              <TableCell colSpan={4}>{t("tasks.noQueuedTasks")}</TableCell>
             </TableRow>
           ) : (
             tasks?.map((task) => {

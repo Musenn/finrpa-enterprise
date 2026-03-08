@@ -48,6 +48,7 @@ import {
 import { useRerender } from "@/hooks/useRerender";
 import { useRecordingStore } from "@/store/useRecordingStore";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 const httpMethods = [
   "GET",
@@ -59,22 +60,8 @@ const httpMethods = [
   "OPTIONS",
 ];
 
-const urlTooltip =
-  "The URL to send the HTTP request to. You can use {{ parameter_name }} to reference parameters.";
-const methodTooltip = "The HTTP method to use for the request.";
-const headersTooltip =
-  "HTTP headers to include with the request as JSON object.";
-const bodyTooltip =
-  "Request body as JSON object. Only used for POST, PUT, PATCH methods.";
-const filesTooltip =
-  'Files to upload as multipart/form-data. Dictionary mapping field names to file paths/URLs. Supports HTTP/HTTPS URLs, S3 URIs (s3://), Azure blob URIs (azure://), or limited local file access. Example: {"file": "https://example.com/file.pdf"} or {"document": "s3://bucket/path/file.pdf"}';
-const timeoutTooltip = "Request timeout in seconds.";
-const followRedirectsTooltip =
-  "Whether to automatically follow HTTP redirects.";
-const downloadFilenameTooltip =
-  "The complete filename (without extension) for downloaded files. Extension is automatically determined from the response Content-Type.";
-
 function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
+  const { t } = useI18n();
   const { editable, label } = data;
   const rerender = useRerender({ prefix: "accordian" });
   const nodes = useNodes<AppNode>();
@@ -184,7 +171,7 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                 disabled={!editable}
               >
                 <CodeIcon className="mr-1 h-3 w-3" />
-                Import cURL
+                {t("editor.importCurl")}
               </Button>
             </CurlImportDialog>
           }
@@ -195,8 +182,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
           <div className="flex gap-4">
             <div className="w-32 space-y-2">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">Method</Label>
-                <HelpTooltip content={methodTooltip} />
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.method")}</Label>
+                <HelpTooltip content={helpTooltips["httpRequest"]["method"]} />
               </div>
               <Select
                 value={data.method}
@@ -223,12 +210,12 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
             <div className="flex-1 space-y-2">
               <div className="flex justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">URL</Label>
-                  <HelpTooltip content={urlTooltip} />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
+                  <HelpTooltip content={helpTooltips["httpRequest"]["url"]} />
                 </div>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
-                    Tip: Use the {"+"} button to add parameters!
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.tipAddParameters")}
                   </div>
                 ) : null}
               </div>
@@ -249,8 +236,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">Headers</Label>
-                <HelpTooltip content={headersTooltip} />
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.headers")}</Label>
+                <HelpTooltip content={helpTooltips["httpRequest"]["headers"]} />
               </div>
               <QuickHeadersDialog onAdd={handleQuickHeaders}>
                 <Button
@@ -260,7 +247,7 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                   disabled={!editable}
                 >
                   <PlusIcon className="mr-1 h-3 w-3" />
-                  Quick Headers
+                  {t("editor.quickHeaders")}
                 </Button>
               </QuickHeadersDialog>
             </div>
@@ -283,8 +270,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">Body</Label>
-                  <HelpTooltip content={bodyTooltip} />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.body")}</Label>
+                  <HelpTooltip content={helpTooltips["httpRequest"]["body"]} />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -295,7 +282,7 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                       disabled={!editable}
                     >
                       <PlusIcon className="mr-1 h-3 w-3" />
-                      Add Parameter
+                      {t("editor.addParameter")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[22rem]">
@@ -325,8 +312,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
           {showBodyEditor && (
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">Files</Label>
-                <HelpTooltip content={filesTooltip} />
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.files")}</Label>
+                <HelpTooltip content={helpTooltips["httpRequest"]["files"]} />
               </div>
               <CodeEditor
                 className="w-full"
@@ -362,7 +349,7 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
         >
           <AccordionItem value="advanced" className="border-b-0">
             <AccordionTrigger className="py-0">
-              Advanced Settings
+              {t("editor.advancedSettings")}
             </AccordionTrigger>
             <AccordionContent key={rerender.key} className="pl-6 pr-1 pt-1">
               <div className="space-y-4">
@@ -376,8 +363,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                 <div className="flex gap-4">
                   <div className="w-32 space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">Timeout</Label>
-                      <HelpTooltip content={timeoutTooltip} />
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.timeout")}</Label>
+                      <HelpTooltip content={helpTooltips["httpRequest"]["timeout"]} />
                     </div>
                     <Input
                       type="number"
@@ -395,14 +382,14 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        Follow Redirects
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.followRedirects")}
                       </Label>
-                      <HelpTooltip content={followRedirectsTooltip} />
+                      <HelpTooltip content={helpTooltips["httpRequest"]["followRedirects"]} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-400">
-                        Automatically follow HTTP redirects
+                      <span className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                        {t("editor.autoFollowRedirects")}
                       </span>
                       <Switch
                         checked={data.followRedirects}
@@ -415,8 +402,8 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        Continue on Failure
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.continueOnFailure")}
                       </Label>
                       <HelpTooltip
                         content={
@@ -438,10 +425,10 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        Save Response as File
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.saveResponseAsFile")}
                       </Label>
-                      <HelpTooltip content="When enabled, the response body will be saved as a file instead of being parsed as JSON/text." />
+                      <HelpTooltip content={t("editor.saveResponseAsFileHelp")} />
                     </div>
                     <Switch
                       checked={data.saveResponseAsFile}
@@ -452,12 +439,12 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                     />
                   </div>
                   {data.saveResponseAsFile && (
-                    <div className="space-y-2 border-l-2 border-slate-600 pl-4">
+                    <div className="space-y-2 border-l-2 pl-4" style={{ borderColor: "var(--glass-border)" }}>
                       <div className="flex gap-2">
-                        <Label className="text-xs text-slate-300">
-                          Download Filename
+                        <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                          {t("editor.downloadFilename")}
                         </Label>
-                        <HelpTooltip content={downloadFilenameTooltip} />
+                        <HelpTooltip content={helpTooltips["httpRequest"]["downloadFilename"]} />
                       </div>
                       <Input
                         type="text"
@@ -465,7 +452,7 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
                         onChange={(e) => {
                           update({ downloadFilename: e.target.value });
                         }}
-                        placeholder="Auto-generated from URL"
+                        placeholder={t("editor.autoGeneratedFromUrl")}
                         className="nopan text-xs"
                         disabled={!editable}
                       />
@@ -478,30 +465,22 @@ function HttpRequestNode({ id, data, type }: NodeProps<HttpRequestNodeType>) {
         </Accordion>
 
         {/* Tips Section */}
-        <div className="rounded-md bg-slate-800/50 p-3">
-          <div className="space-y-2 text-xs text-slate-400">
+        <div className="rounded-md p-3" style={{ background: "var(--glass-bg)" }}>
+          <div className="space-y-2 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
             <div className="flex items-center gap-2">
               <MagicWandIcon className="h-3 w-3" />
-              <span className="font-medium">Quick Tips:</span>
+              <span className="font-medium">{t("editor.quickTips")}</span>
             </div>
             <ul className="ml-5 list-disc space-y-1">
+              <li>{t("editor.tipImportCurl")}</li>
+              <li>{t("editor.tipQuickHeaders")}</li>
               <li>
-                Use "Import cURL" to quickly convert API documentation examples
-              </li>
-              <li>
-                Use "Quick Headers" in the headers section to add common
-                authentication and content headers
-              </li>
-              <li>
-                Password credential: {"{{ my_credential.username }}"} /{" "}
+                {t("editor.tipPasswordCredential")}: {"{{ my_credential.username }}"} /{" "}
                 {"{{ my_credential.password }}"}
               </li>
-              <li>Secret credential: {"{{ my_secret.secret_value }}"}</li>
-              <li>
-                The request will return response data including status, headers,
-                and body
-              </li>
-              <li>Reference response data in later blocks with parameters</li>
+              <li>{t("editor.tipSecretCredential")}: {"{{ my_secret.secret_value }}"}</li>
+              <li>{t("editor.tipResponseData")}</li>
+              <li>{t("editor.tipReferenceResponse")}</li>
             </ul>
           </div>
         </div>

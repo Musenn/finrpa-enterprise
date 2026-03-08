@@ -40,8 +40,10 @@ import {
 import type { BranchCondition } from "../../../types/workflowTypes";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { WorkflowBlockInput } from "@/components/WorkflowBlockInput";
+import { useI18n } from "@/i18n/useI18n";
 
 function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
+  const { t } = useI18n();
   const nodes = useNodes<AppNode>();
   const { setNodes, setEdges } = useReactFlow();
   const node = nodes.find((n) => n.id === id);
@@ -434,14 +436,14 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
     const letter = getExcelStyleLetter(index);
 
     if (branch.is_default) {
-      return `${letter} • Else`;
+      return `${letter} • ${t("editor.conditionElse")}`;
     }
 
     if (index === 0) {
-      return `${letter} • If`;
+      return `${letter} • ${t("editor.conditionIf")}`;
     }
 
-    return `${letter} • Else If`;
+    return `${letter} • ${t("editor.conditionElseIf")}`;
   };
 
   if (!node) {
@@ -458,8 +460,9 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
         className="opacity-0"
       />
       <div
-        className="rounded-xl border-2 border-dashed border-slate-600 p-2"
+        className="rounded-xl border-2 border-dashed p-2"
         style={{
+          borderColor: "var(--glass-border)",
           width: conditionalNodeWidth,
           height: childrenHeightExtent,
         }}
@@ -558,9 +561,9 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                   "h-auto rounded-full border p-0 text-xs font-normal transition-colors hover:bg-transparent",
                                   showMenu ? "px-3 py-1 pr-7" : "px-3 py-1",
                                   {
-                                    "border-slate-50 bg-slate-50 text-slate-950 hover:bg-slate-50 hover:text-slate-950":
+                                    "border-primary bg-primary text-primary-foreground":
                                       branch.id === activeBranch?.id,
-                                    "border-transparent bg-slate-elevation5 text-slate-300 hover:bg-slate-elevation4 hover:text-slate-300":
+                                    "border-transparent bg-slate-elevation5":
                                       branch.id !== activeBranch?.id,
                                   },
                                 )}
@@ -579,14 +582,14 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                       className={cn(
                                         "absolute right-1 top-1/2 size-auto -translate-y-1/2 rounded-full p-0.5",
                                         {
-                                          "text-slate-950 hover:bg-slate-300 hover:text-slate-950":
+                                          "text-primary-foreground":
                                             branch.id === activeBranch?.id,
-                                          "text-slate-300 hover:bg-slate-600 hover:text-slate-300":
+                                          "":
                                             branch.id !== activeBranch?.id,
                                         },
                                       )}
                                       onClick={(e) => e.stopPropagation()}
-                                      title="Branch options"
+                                      title={t("editor.branchOptions")}
                                     >
                                       <DotsVerticalIcon className="size-3" />
                                     </Button>
@@ -602,7 +605,7 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                           }}
                                           className="cursor-pointer"
                                         >
-                                          Move Up
+                                          {t("editor.moveUp")}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                           disabled={!canMoveDown}
@@ -612,7 +615,7 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                           }}
                                           className="cursor-pointer"
                                         >
-                                          Move Down
+                                          {t("editor.moveDown")}
                                         </DropdownMenuItem>
                                       </>
                                     )}
@@ -627,7 +630,7 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                         }}
                                         className="cursor-pointer text-red-400 focus:text-red-400"
                                       >
-                                        Remove
+                                        {t("common.remove")}
                                       </DropdownMenuItem>
                                     )}
                                   </DropdownMenuContent>
@@ -644,10 +647,10 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto gap-1 rounded-full border border-transparent bg-slate-elevation5 p-0 px-3 py-1 text-xs font-normal text-slate-300 transition-colors hover:bg-slate-elevation4 hover:text-slate-300"
+                                className="h-auto gap-1 rounded-full border border-transparent bg-slate-elevation5 p-0 px-3 py-1 text-xs font-normal transition-colors hover:bg-slate-elevation4"
                                 disabled={!data.editable}
                               >
-                                {overflowBranches.length} More
+                                {overflowBranches.length} {t("editor.more")}
                                 <ChevronDownIcon className="size-3" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -679,8 +682,8 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                           size="sm"
                           onClick={handleAddCondition}
                           disabled={!data.editable}
-                          className="size-7 rounded-full border border-transparent bg-slate-elevation5 p-0 text-slate-300 hover:bg-slate-elevation4 hover:text-slate-300"
-                          title="Add new condition"
+                          className="size-7 rounded-full border border-transparent bg-slate-elevation5 p-0 hover:bg-slate-elevation4"
+                          title={t("editor.addNewCondition")}
                         >
                           <PlusIcon className="size-4" />
                         </Button>
@@ -692,8 +695,8 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
               {activeBranch && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-1">
-                    <Label className="text-xs text-slate-300">
-                      {activeBranch.is_default ? "Else branch" : "Expression"}
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                      {activeBranch.is_default ? t("editor.elseBranch") : t("editor.expression")}
                     </Label>
                     {!activeBranch.is_default && (
                       <HelpTooltip
@@ -705,14 +708,14 @@ function ConditionalNodeComponent({ id, data }: NodeProps<ConditionalNode>) {
                     nodeId={id}
                     value={
                       activeBranch.is_default
-                        ? "Executed when no other condition matches"
+                        ? t("editor.executedWhenNoMatch")
                         : activeBranch.criteria?.expression ?? ""
                     }
                     disabled={!data.editable || activeBranch.is_default}
                     onChange={(value) => {
                       handleExpressionChange(value);
                     }}
-                    placeholder="Enter condition to evaluate (Jinja, natural language, or both)"
+                    placeholder={t("editor.conditionPlaceholder")}
                   />
                 </div>
               )}

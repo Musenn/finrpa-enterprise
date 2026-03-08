@@ -14,8 +14,10 @@ import { ProxyLocation } from "@/api/types";
 import { KeyValueInput } from "@/components/KeyValueInput";
 import { HelpTooltip } from "@/components/HelpTooltip";
 import { Switch } from "@/components/ui/switch";
+import { useI18n } from "@/i18n/useI18n";
 
 function DebuggerPostRunParameters() {
+  const { t } = useI18n();
   const { data: workflowRunTimeline, isLoading: workflowRunTimelineIsLoading } =
     useWorkflowRunTimelineQuery();
   const [activeItem] = useActiveWorkflowRunItem();
@@ -24,7 +26,7 @@ function DebuggerPostRunParameters() {
   const parameters = workflowRun?.parameters ?? {};
 
   if (workflowRunIsLoading || workflowRunTimelineIsLoading) {
-    return <div>Loading workflow parameters...</div>;
+    return <div>{t("workflows.loadingParameters")}</div>;
   }
 
   if (!workflowRun || !workflowRunTimeline) {
@@ -66,7 +68,7 @@ function DebuggerPostRunParameters() {
       {activeBlock && isTaskVariantBlock(activeBlock) ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Task Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.taskBlockParameters")}</h1>
             <DebuggerTaskBlockParameters block={activeBlock} />
           </div>
         </div>
@@ -75,7 +77,7 @@ function DebuggerPostRunParameters() {
       activeBlock.block_type === WorkflowBlockTypes.SendEmail ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Email Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.emailBlockParameters")}</h1>
             <DebuggerSendEmailBlockParameters
               body={activeBlock?.body ?? ""}
               recipients={activeBlock?.recipients ?? []}
@@ -87,11 +89,11 @@ function DebuggerPostRunParameters() {
       {activeBlock && activeBlock.block_type === WorkflowBlockTypes.ForLoop ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">For Loop Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.forLoopBlockParameters")}</h1>
             <div className="flex flex-col gap-2">
               <div className="flex w-full items-center justify-start gap-2">
-                <h1 className="text-sm">Loop Values</h1>
-                <HelpTooltip content="The values that are being looped over." />
+                <h1 className="text-sm">{t("workflows.loopValues")}</h1>
+                <HelpTooltip content={t("workflows.loopValuesTooltip")} />
               </div>
               <CodeEditor
                 className="w-full"
@@ -108,11 +110,11 @@ function DebuggerPostRunParameters() {
       {activeBlock && activeBlock.block_type === WorkflowBlockTypes.Wait ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Wait Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.waitBlockParameters")}</h1>
             <div className="flex flex-col gap-2">
               <div className="flex w-full items-center justify-start gap-2">
-                <h1 className="text-sm">Wait Duration</h1>
-                <HelpTooltip content="Seconds to wait before proceeding." />
+                <h1 className="text-sm">{t("workflows.waitDuration")}</h1>
+                <HelpTooltip content={t("workflows.waitDurationTooltip")} />
               </div>
               <Input
                 value={
@@ -131,13 +133,13 @@ function DebuggerPostRunParameters() {
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
             <h1 className="text-sm font-bold">
-              Human Interaction Block Parameters
+              {t("workflows.humanInteractionBlockParameters")}
             </h1>
             {activeBlock.instructions ? (
               <div className="flex flex-col gap-2">
                 <div className="flex w-full items-center justify-start gap-2">
-                  <h1 className="text-sm">Instructions</h1>
-                  <HelpTooltip content="Instructions for the human interaction." />
+                  <h1 className="text-sm">{t("workflows.instructions")}</h1>
+                  <HelpTooltip content={t("workflows.humanInteractionInstructionsTooltip")} />
                 </div>
                 <AutoResizingTextarea
                   value={activeBlock.instructions}
@@ -147,13 +149,13 @@ function DebuggerPostRunParameters() {
             ) : null}
             {activeBlock.positive_descriptor ? (
               <div className="flex flex-col gap-2">
-                <h1 className="text-sm">Positive Descriptor</h1>
+                <h1 className="text-sm">{t("workflows.positiveDescriptor")}</h1>
                 <Input value={activeBlock.positive_descriptor} readOnly />
               </div>
             ) : null}
             {activeBlock.negative_descriptor ? (
               <div className="flex flex-col gap-2">
-                <h1 className="text-sm">Negative Descriptor</h1>
+                <h1 className="text-sm">{t("workflows.negativeDescriptor")}</h1>
                 <Input value={activeBlock.negative_descriptor} readOnly />
               </div>
             ) : null}
@@ -164,12 +166,12 @@ function DebuggerPostRunParameters() {
       activeBlock.block_type === WorkflowBlockTypes.Conditional ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Conditional Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.conditionalBlockParameters")}</h1>
             {activeBlock.executed_branch_expression ? (
               <div className="flex flex-col gap-2">
                 <div className="flex w-full items-center justify-start gap-2">
-                  <h1 className="text-sm">Executed Expression</h1>
-                  <HelpTooltip content="The branch expression that was evaluated." />
+                  <h1 className="text-sm">{t("workflows.executedExpression")}</h1>
+                  <HelpTooltip content={t("workflows.executedExpressionTooltip")} />
                 </div>
                 <AutoResizingTextarea
                   value={activeBlock.executed_branch_expression}
@@ -179,13 +181,13 @@ function DebuggerPostRunParameters() {
             ) : null}
             {typeof activeBlock.executed_branch_result === "boolean" ? (
               <div className="flex flex-col gap-2">
-                <h1 className="text-sm">Branch Result</h1>
+                <h1 className="text-sm">{t("workflows.branchResult")}</h1>
                 <div className="flex items-center gap-3">
                   <Switch
                     checked={activeBlock.executed_branch_result}
                     disabled
                   />
-                  <span className="text-sm text-slate-400">
+                  <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                     {activeBlock.executed_branch_result ? "True" : "False"}
                   </span>
                 </div>
@@ -193,7 +195,7 @@ function DebuggerPostRunParameters() {
             ) : null}
             {activeBlock.executed_branch_next_block ? (
               <div className="flex flex-col gap-2">
-                <h1 className="text-sm">Next Block</h1>
+                <h1 className="text-sm">{t("workflows.nextBlock")}</h1>
                 <Input
                   value={activeBlock.executed_branch_next_block}
                   readOnly
@@ -202,7 +204,7 @@ function DebuggerPostRunParameters() {
             ) : null}
             {activeBlock.executed_branch_id ? (
               <div className="flex flex-col gap-2">
-                <h1 className="text-sm">Executed Branch ID</h1>
+                <h1 className="text-sm">{t("workflows.executedBranchId")}</h1>
                 <Input value={activeBlock.executed_branch_id} readOnly />
               </div>
             ) : null}
@@ -213,12 +215,12 @@ function DebuggerPostRunParameters() {
       activeBlock.block_type === WorkflowBlockTypes.TextPrompt ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Text Prompt Block Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.textPromptBlockParameters")}</h1>
             {activeBlock.prompt ? (
               <div className="flex flex-col gap-2">
                 <div className="flex w-full items-center justify-start gap-2">
-                  <h1 className="text-sm">Prompt</h1>
-                  <HelpTooltip content="Instructions passed to the selected LLM." />
+                  <h1 className="text-sm">{t("tasks.prompt")}</h1>
+                  <HelpTooltip content={t("workflows.promptTooltip")} />
                 </div>
                 <AutoResizingTextarea value={activeBlock.prompt} readOnly />
               </div>
@@ -228,13 +230,13 @@ function DebuggerPostRunParameters() {
       ) : null}
       <div className="rounded bg-slate-elevation2 p-6">
         <div className="space-y-4">
-          <h1 className="text-sm font-bold">Workflow Parameters</h1>
+          <h1 className="text-sm font-bold">{t("workflows.workflowParameters")}</h1>
           {Object.entries(parameters).map(([key, value]) => {
             return (
               <div key={key} className="flex flex-col gap-2">
                 <div className="flex w-full items-center justify-start gap-2">
                   <h1 className="text-sm">{key}</h1>
-                  <HelpTooltip content="The value of the parameter." />
+                  <HelpTooltip content={t("workflows.parameterValueTooltip")} />
                 </div>
                 {typeof value === "string" ||
                 typeof value === "number" ||
@@ -255,21 +257,21 @@ function DebuggerPostRunParameters() {
           })}
           {Object.entries(parameters).length === 0 ? (
             <div className="text-sm">
-              No input parameters found for this workflow
+              {t("workflows.noInputParametersFound")}
             </div>
           ) : null}
-          <h1 className="text-sm font-bold">Other Workflow Parameters</h1>
+          <h1 className="text-sm font-bold">{t("workflows.otherWorkflowParameters")}</h1>
           <div className="flex flex-col gap-2">
             <div className="flex w-full items-center justify-start gap-2">
-              <h1 className="text-sm">Webhook Callback URL</h1>
-              <HelpTooltip content="The webhook callback URL for the workflow." />
+              <h1 className="text-sm">{t("tasks.webhookUrl")}</h1>
+              <HelpTooltip content={t("workflows.webhookCallbackUrlTooltip")} />
             </div>
             <Input value={webhookCallbackUrl ?? ""} readOnly />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex w-full items-center justify-start gap-2">
-              <h1 className="text-sm">Proxy Location</h1>
-              <HelpTooltip content="The proxy location for the workflow." />
+              <h1 className="text-sm">{t("tasks.proxyLocation")}</h1>
+              <HelpTooltip content={t("workflows.proxyLocationTooltip")} />
             </div>
             <ProxySelector
               value={proxyLocation ?? ProxyLocation.Residential}
@@ -280,8 +282,8 @@ function DebuggerPostRunParameters() {
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex w-full items-center justify-start gap-2">
-              <h1 className="text-sm">Extra HTTP Headers</h1>
-              <HelpTooltip content="The extra HTTP headers for the workflow." />
+              <h1 className="text-sm">{t("tasks.extraHttpHeaders")}</h1>
+              <HelpTooltip content={t("workflows.extraHttpHeadersTooltip")} />
             </div>
             <div className="w-full">
               <KeyValueInput
@@ -296,8 +298,8 @@ function DebuggerPostRunParameters() {
           {workflowRun.browser_session_id ? (
             <div className="flex flex-col gap-2">
               <div className="flex w-full items-center justify-start gap-2">
-                <h1 className="text-sm">Browser Session ID</h1>
-                <HelpTooltip content="The browser session ID used for this run." />
+                <h1 className="text-sm">{t("tasks.browserSessionId")}</h1>
+                <HelpTooltip content={t("workflows.browserSessionIdTooltip")} />
               </div>
               <Input value={workflowRun.browser_session_id} readOnly />
             </div>
@@ -305,8 +307,8 @@ function DebuggerPostRunParameters() {
           {workflowRun.max_screenshot_scrolls != null ? (
             <div className="flex flex-col gap-2">
               <div className="flex w-full items-center justify-start gap-2">
-                <h1 className="text-sm">Max Screenshot Scrolls</h1>
-                <HelpTooltip content="Maximum number of screenshot scrolls." />
+                <h1 className="text-sm">{t("tasks.maxScreenshotScrolls")}</h1>
+                <HelpTooltip content={t("workflows.maxScreenshotScrollsTooltip")} />
               </div>
               <Input
                 value={workflowRun.max_screenshot_scrolls.toString()}
@@ -319,11 +321,11 @@ function DebuggerPostRunParameters() {
       {workflowRun.task_v2 ? (
         <div className="rounded bg-slate-elevation2 p-6">
           <div className="space-y-4">
-            <h1 className="text-sm font-bold">Task 2.0 Parameters</h1>
+            <h1 className="text-sm font-bold">{t("workflows.task20Parameters")}</h1>
             <div className="flex flex-col gap-2">
               <div className="flex w-full items-center justify-start gap-2">
-                <h1 className="text-sm">Task 2.0 Prompt</h1>
-                <HelpTooltip content="The original prompt for the task." />
+                <h1 className="text-sm">{t("workflows.task20Prompt")}</h1>
+                <HelpTooltip content={t("workflows.task20PromptTooltip")} />
               </div>
               <AutoResizingTextarea
                 value={workflowRun.task_v2?.prompt ?? ""}

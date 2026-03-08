@@ -20,12 +20,14 @@ import { getCode, getOrderedBlockLabels } from "@/routes/workflows/utils";
 import { cn } from "@/util/utils";
 
 import { CopyAndExplainCode } from "../editor/Workspace";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
   showCacheKeyValueSelector?: boolean;
 }
 
 function WorkflowRunCode(props?: Props) {
+  const { t } = useI18n();
   const showCacheKeyValueSelector = props?.showCacheKeyValueSelector ?? false;
   const queryClient = useQueryClient();
   const { data: workflowRun } = useWorkflowRunWithWorkflowQuery();
@@ -128,7 +130,7 @@ function WorkflowRunCode(props?: Props) {
   if (code.length === 0 && !isGeneratingCode) {
     return (
       <div className="flex items-center justify-center bg-slate-elevation3 p-8">
-        No code has been generated yet.
+        {t("workflows.noCodeGenerated")}
       </div>
     );
   }
@@ -163,12 +165,12 @@ function WorkflowRunCode(props?: Props) {
       {cacheKeyValueSet.size > 0 ? (
         <div className="flex w-full justify-end gap-4">
           <div className="flex items-center justify-around gap-2">
-            <Label className="w-[7rem]">Code Key Value</Label>
+            <Label className="w-[7rem]">{t("workflows.codeKeyValue")}</Label>
             <HelpTooltip
               content={
                 !isFinalized
-                  ? "The code key value the generated code is being stored under."
-                  : "Which generated (& cached) code to view."
+                  ? t("workflows.codeKeyValueStoredUnder")
+                  : t("workflows.codeKeyValueCachedView")
               }
             />
           </div>
@@ -179,7 +181,7 @@ function WorkflowRunCode(props?: Props) {
             onValueChange={(v: string) => setCacheKeyValue(v)}
           >
             <SelectTrigger className="max-w-[15rem] [&>span]:text-ellipsis">
-              <SelectValue placeholder="Code Key Value" />
+              <SelectValue placeholder={t("workflows.codeKeyValue")} />
             </SelectTrigger>
             <SelectContent>
               {Array.from(cacheKeyValueSet)

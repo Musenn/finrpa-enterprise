@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 type ScreenshotDiffProps = {
   beforeUrl?: string;
@@ -17,10 +18,13 @@ type ScreenshotDiffProps = {
 export function ScreenshotDiff({
   beforeUrl,
   afterUrl,
-  beforeLabel = "Before",
-  afterLabel = "After",
+  beforeLabel,
+  afterLabel,
   className,
 }: ScreenshotDiffProps) {
+  const { t } = useI18n();
+  const resolvedBeforeLabel = beforeLabel ?? t("common.before");
+  const resolvedAfterLabel = afterLabel ?? t("common.after");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   return (
@@ -32,7 +36,7 @@ export function ScreenshotDiff({
             className="mb-2 text-xs font-semibold uppercase tracking-wider"
             style={{ color: "var(--finrpa-text-muted)" }}
           >
-            {beforeLabel}
+            {resolvedBeforeLabel}
           </div>
           {beforeUrl ? (
             <div
@@ -41,7 +45,7 @@ export function ScreenshotDiff({
             >
               <img
                 src={beforeUrl}
-                alt={beforeLabel}
+                alt={resolvedBeforeLabel}
                 className="h-auto w-full object-contain"
               />
             </div>
@@ -58,7 +62,7 @@ export function ScreenshotDiff({
             className="mb-2 text-xs font-semibold uppercase tracking-wider"
             style={{ color: "var(--finrpa-text-muted)" }}
           >
-            {afterLabel}
+            {resolvedAfterLabel}
           </div>
           {afterUrl ? (
             <div
@@ -67,7 +71,7 @@ export function ScreenshotDiff({
             >
               <img
                 src={afterUrl}
-                alt={afterLabel}
+                alt={resolvedAfterLabel}
                 className="h-auto w-full object-contain"
               />
             </div>

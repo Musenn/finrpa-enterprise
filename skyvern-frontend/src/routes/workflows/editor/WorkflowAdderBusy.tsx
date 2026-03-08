@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useRecordingStore } from "@/store/useRecordingStore";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 import "./WorkflowAdderBusy.css";
 
@@ -56,6 +57,7 @@ function WorkflowAdderBusy({
   onComplete,
   onCancel,
 }: Props) {
+  const { t } = useI18n();
   const recordingStore = useRecordingStore();
   const [isHovered, setIsHovered] = useState(false);
   const [shouldBump, setShouldBump] = useState(false);
@@ -185,10 +187,10 @@ function WorkflowAdderBusy({
           <TooltipContent>
             <p>
               {operation === "recording"
-                ? "Finish Recording"
+                ? t("editor.finishRecording")
                 : operation === "uploading"
-                  ? "Converting SOP... (click to cancel)"
-                  : "Processing..."}
+                  ? t("editor.convertingSop")
+                  : t("editor.processing")}
             </p>
           </TooltipContent>
         </Tooltip>
@@ -212,7 +214,7 @@ function WorkflowAdderBusy({
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Event Count</p>
+              <p>{t("editor.eventCount")}</p>
             </TooltipContent>
           </Tooltip>
         )}
@@ -220,10 +222,9 @@ function WorkflowAdderBusy({
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel SOP Conversion?</DialogTitle>
+            <DialogTitle>{t("editor.cancelSopConversion")}</DialogTitle>
             <DialogDescription>
-              The SOP is currently being converted to workflow blocks. Are you
-              sure you want to cancel this operation?
+              {t("editor.cancelSopConversionDesc")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -231,10 +232,10 @@ function WorkflowAdderBusy({
               variant="outline"
               onClick={() => setShowCancelDialog(false)}
             >
-              Continue
+              {t("editor.continue")}
             </Button>
             <Button variant="destructive" onClick={handleConfirmCancel}>
-              Cancel Upload
+              {t("editor.cancelUpload")}
             </Button>
           </DialogFooter>
         </DialogContent>

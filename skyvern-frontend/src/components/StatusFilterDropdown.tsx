@@ -7,87 +7,67 @@ import {
 } from "./ui/dropdown-menu";
 import { Checkbox } from "./ui/checkbox";
 import { Status } from "@/api/types";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
-type StatusDropdownItem = {
-  label: string;
-  value: Status;
+const statusLabelKeys: Record<string, MessageKey> = {
+  [Status.Completed]: "status.completed",
+  [Status.Failed]: "status.failed",
+  [Status.Running]: "status.running",
+  [Status.Queued]: "status.queued",
+  [Status.Terminated]: "status.terminated",
+  [Status.Canceled]: "status.canceled",
+  [Status.TimedOut]: "status.timedOut",
+  [Status.Created]: "status.created",
 };
 
-const statusDropdownItems: Array<StatusDropdownItem> = [
-  {
-    label: "Completed",
-    value: Status.Completed,
-  },
-  {
-    label: "Failed",
-    value: Status.Failed,
-  },
-  {
-    label: "Running",
-    value: Status.Running,
-  },
-  {
-    label: "Queued",
-    value: Status.Queued,
-  },
-  {
-    label: "Terminated",
-    value: Status.Terminated,
-  },
-  {
-    label: "Canceled",
-    value: Status.Canceled,
-  },
-  {
-    label: "Timed Out",
-    value: Status.TimedOut,
-  },
-  {
-    label: "Created",
-    value: Status.Created,
-  },
+const statusValues: Array<Status> = [
+  Status.Completed,
+  Status.Failed,
+  Status.Running,
+  Status.Queued,
+  Status.Terminated,
+  Status.Canceled,
+  Status.TimedOut,
+  Status.Created,
 ];
-
-type Item = {
-  label: string;
-  value: Status;
-};
 
 type Props = {
   values: Array<Status>;
   onChange: (values: Array<Status>) => void;
-  options?: Array<Item>;
+  options?: Array<Status>;
 };
 
 function StatusFilterDropdown({ options, values, onChange }: Props) {
-  const dropdownOptions = options ?? statusDropdownItems; // allow options to be overridden by the user of this component
+  const { t } = useI18n();
+  const dropdownOptions = options ?? statusValues;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          Filter by Status <ChevronDownIcon className="ml-2" />
+          {t("status.filterByStatus")} <ChevronDownIcon className="ml-2" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {dropdownOptions.map((item) => {
+        {dropdownOptions.map((status) => {
           return (
             <div
-              key={item.value}
+              key={status}
               className="flex items-center gap-2 p-2 text-sm"
             >
               <Checkbox
-                id={item.value}
-                checked={values.includes(item.value)}
+                id={status}
+                checked={values.includes(status)}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    onChange([...values, item.value]);
+                    onChange([...values, status]);
                   } else {
-                    onChange(values.filter((value) => value !== item.value));
+                    onChange(values.filter((v) => v !== status));
                   }
                 }}
               />
-              <label htmlFor={item.value}>{item.label}</label>
+              <label htmlFor={status}>{t(statusLabelKeys[status]!)}</label>
             </div>
           );
         })}

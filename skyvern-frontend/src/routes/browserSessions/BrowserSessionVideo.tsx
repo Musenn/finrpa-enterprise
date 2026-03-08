@@ -5,6 +5,7 @@ import { getClient } from "@/api/AxiosClient";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { type Recording } from "@/routes/workflows/types/browserSessionTypes";
 import { artifactApiBaseUrl } from "@/util/env";
+import { useI18n } from "@/i18n/useI18n";
 
 function getRecordingUrl(url: string | null | undefined): string | null {
   if (!url) {
@@ -17,6 +18,7 @@ function getRecordingUrl(url: string | null | undefined): string | null {
 }
 
 function BrowserSessionVideo() {
+  const { t } = useI18n();
   const { browserSessionId } = useParams();
   const credentialGetter = useCredentialGetter();
 
@@ -43,7 +45,7 @@ function BrowserSessionVideo() {
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <div className="text-lg">Loading videos...</div>
+        <div className="text-lg">{t("browserSessions.loadingVideos")}</div>
       </div>
     );
   }
@@ -52,7 +54,7 @@ function BrowserSessionVideo() {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-lg text-red-500">
-          Error loading videos: {error.message}
+          {t("browserSessions.errorLoadingVideos")}: {error.message}
         </div>
       </div>
     );
@@ -63,12 +65,12 @@ function BrowserSessionVideo() {
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-center">
           <div className="mb-2 text-lg text-gray-500">
-            No recordings available
+            {t("browserSessions.noRecordings")}
           </div>
           <div className="text-sm text-gray-400">
             {isSessionRunning
-              ? "Recordings will be available after the session completes"
-              : "No recordings were created for this session"}
+              ? t("browserSessions.recordingsAfterComplete")
+              : t("browserSessions.noRecordingsCreated")}
           </div>
         </div>
       </div>
@@ -78,9 +80,9 @@ function BrowserSessionVideo() {
   return (
     <div className="h-full w-full p-4">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold">Browser Session Videos</h2>
+        <h2 className="text-xl font-semibold">{t("browserSessions.sessionVideos")}</h2>
         <p className="text-sm text-gray-500">
-          Recorded videos from this browser session
+          {t("browserSessions.recordedVideos")}
         </p>
       </div>
 
@@ -92,7 +94,7 @@ function BrowserSessionVideo() {
           >
             <div className="mb-2">
               <h3 className="font-medium">
-                {recording.filename || `Recording ${index + 1}`}
+                {recording.filename || `${t("browserSessions.recording")} ${index + 1}`}
                 {recording.modified_at && (
                   <span className="ml-2 text-sm text-gray-500">
                     ({new Date(recording.modified_at).toLocaleString()})
@@ -109,7 +111,7 @@ function BrowserSessionVideo() {
                   src={getRecordingUrl(recording.url)!}
                   preload="metadata"
                 >
-                  Your browser does not support the video tag.
+                  {t("browserSessions.browserNotSupported")}
                 </video>
                 <div className="mt-2 text-xs text-gray-500">
                   <a
@@ -118,19 +120,19 @@ function BrowserSessionVideo() {
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800"
                   >
-                    Download video
+                    {t("browserSessions.downloadVideo")}
                   </a>
                 </div>
               </div>
             ) : (
               <div className="text-gray-500">
-                Video URL not available - video may still be processing
+                {t("browserSessions.videoNotAvailable")}
               </div>
             )}
 
             {recording.checksum && (
               <div className="mt-2 text-sm text-gray-600">
-                Checksum: {recording.checksum}
+                {t("browserSessions.checksum")}: {recording.checksum}
               </div>
             )}
           </div>

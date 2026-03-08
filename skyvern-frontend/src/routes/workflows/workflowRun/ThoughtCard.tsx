@@ -28,7 +28,7 @@ function ThoughtCard({ thought, onClick, active }: Props) {
         </StatusPill>
       </div>
       {(thought.answer || thought.thought) && (
-        <div className="text-xs text-slate-400">
+        <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
           {thought.answer || thought.thought}
         </div>
       )}

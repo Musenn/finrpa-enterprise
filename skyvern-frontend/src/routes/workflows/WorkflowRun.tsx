@@ -52,8 +52,10 @@ import { constructCacheKeyValue } from "@/routes/workflows/editor/utils";
 import { useCacheKeyValuesQuery } from "@/routes/workflows/hooks/useCacheKeyValuesQuery";
 import { WorkflowRunStatusAlert } from "@/routes/workflows/workflowRun/WorkflowRunStatusAlert";
 import { WorkflowRunVerificationCodeForm } from "@/routes/workflows/workflowRun/WorkflowRunVerificationCodeForm";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowRun() {
+  const { t } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const embed = searchParams.get("embed");
   const isEmbedded = embed === "true";
@@ -133,14 +135,14 @@ function WorkflowRun() {
       });
       toast({
         variant: "success",
-        title: "Workflow Canceled",
-        description: "The workflow has been successfully canceled.",
+        title: t("workflows.workflowCanceled"),
+        description: t("workflows.workflowCanceledDesc"),
       });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("common.error"),
         description: error.message,
       });
     },
@@ -198,8 +200,8 @@ function WorkflowRun() {
 
   const failureReasonTitle =
     workflowRun?.status === Status.Terminated
-      ? "Termination Reason"
-      : "Failure Reason";
+      ? t("workflows.terminationReason")
+      : t("tasks.failureReason");
 
   const finallyBlockInTimeline = finallyBlockLabel
     ? workflowRunTimeline?.find(
@@ -225,14 +227,14 @@ function WorkflowRun() {
       {matchedTips}
       {shouldShowFinallyNote && (
         <div className="mt-2 flex items-center gap-2 rounded bg-amber-500/20 px-3 py-2 text-sm text-amber-200">
-          <span className="font-medium">Note:</span>
+          <span className="font-medium">{t("common.note")}</span>
           <span>
-            "Execute on any outcome" block ({finallyBlockLabel}){" "}
+            {t("workflows.executeOnAnyOutcome")} ({finallyBlockLabel}){" "}
             {finallyBlockStatus === Status.Completed
-              ? "completed successfully"
+              ? t("workflows.completedSuccessfully")
               : finallyBlockStatus === Status.Failed
-                ? "failed"
-                : "ran"}
+                ? t("common.failed")
+                : t("workflows.ran")}
             .
           </span>
         </div>
@@ -255,7 +257,7 @@ function WorkflowRun() {
 
   const webhookFailureReason = webhookFailureReasonData ? (
     <div className="space-y-4">
-      <Label>Webhook Failure Reason</Label>
+      <Label>{t("tasks.webhookFailureReason")}</Label>
       <div className="rounded-md border border-yellow-600 p-4 text-sm">
         {webhookFailureReasonData}
       </div>
@@ -300,23 +302,23 @@ function WorkflowRun() {
 
   const switchBarOptions: SwitchBarNavigationOption[] = [
     {
-      label: "Overview",
+      label: t("workflows.overview"),
       to: "overview",
     },
     {
-      label: "Output",
+      label: t("workflows.output"),
       to: "output",
     },
     {
-      label: "Parameters",
+      label: t("workflows.parameters"),
       to: "parameters",
     },
     {
-      label: "Recording",
+      label: t("tasks.recording"),
       to: "recording",
     },
     {
-      label: "Code",
+      label: t("workflows.codeTab"),
       to: "code",
       icon: !isGeneratingCode ? (
         <CodeIcon className="inline-block size-5" />
@@ -346,13 +348,14 @@ function WorkflowRun() {
                 />
               ) : null}
             </div>
-            <h2 className="text-2xl text-slate-400">{workflowRunId}</h2>
+            <h2 className="text-2xl" style={{ color: "var(--finrpa-text-muted)" }}>{workflowRunId}</h2>
             {workflowRun?.browser_session_id && (
               <Link
-                className="font-mono text-sm text-slate-400 hover:text-slate-200 hover:underline hover:underline-offset-2"
+                className="font-mono text-sm hover:underline hover:underline-offset-2"
+                style={{ color: "var(--finrpa-text-muted)" }}
                 to={`/browser-session/${workflowRun.browser_session_id}/stream`}
               >
-                Browser Session: {workflowRun.browser_session_id}
+                {t("workflows.browserSession")} {workflowRun.browser_session_id}
               </Link>
             )}
           </div>
@@ -400,24 +403,24 @@ function WorkflowRun() {
             <Button asChild variant="secondary">
               <Link to={`/workflows/${workflowPermanentId}/build`}>
                 <Pencil2Icon className="mr-2 h-4 w-4" />
-                Edit
+                {t("common.edit")}
               </Link>
             </Button>
             {workflowRunIsCancellable && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="destructive">Cancel</Button>
+                  <Button variant="destructive">{t("common.cancel")}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogTitle>{t("common.areYouSure")}</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to cancel this workflow run?
+                      {t("workflows.confirmCancelRun")}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="secondary">Back</Button>
+                      <Button variant="secondary">{t("common.back")}</Button>
                     </DialogClose>
                     <Button
                       variant="destructive"
@@ -429,7 +432,7 @@ function WorkflowRun() {
                       {cancelWorkflowMutation.isPending && (
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Cancel Workflow Run
+                      {t("workflows.cancelWorkflowRun")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -447,7 +450,7 @@ function WorkflowRun() {
                   }}
                 >
                   <PlayIcon className="mr-2 h-4 w-4" />
-                  Rerun
+                  {t("tasks.rerun")}
                 </Link>
               </Button>
             )}
@@ -465,7 +468,7 @@ function WorkflowRun() {
           {(hasSomeExtractedInformation || hasTaskv2Output) && (
             <div className="space-y-4">
               <Label>
-                {hasTaskv2Output ? "Output" : "Extracted Information"}
+                {hasTaskv2Output ? t("workflows.output") : t("tasks.extractedData")}
               </Label>
               <CodeEditor
                 language="json"
@@ -481,7 +484,7 @@ function WorkflowRun() {
           )}
           {hasFileUrls && (
             <div className="space-y-4">
-              <Label>Downloaded Files</Label>
+              <Label>{t("workflows.downloadedFiles")}</Label>
               <ScrollArea>
                 <ScrollAreaViewport className="max-h-[250px] space-y-2">
                   {fileUrls.length > 0 ? (
@@ -502,7 +505,7 @@ function WorkflowRun() {
                       );
                     })
                   ) : (
-                    <div className="text-sm">No files downloaded</div>
+                    <div className="text-sm">{t("workflows.noFilesDownloaded")}</div>
                   )}
                 </ScrollAreaViewport>
               </ScrollArea>

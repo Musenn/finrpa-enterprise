@@ -110,6 +110,7 @@ import { WorkflowCopilotChat } from "../copilot/WorkflowCopilotChat";
 import { WorkflowCopilotButton } from "../copilot/WorkflowCopilotButton";
 import type { CopilotReviewStatus } from "./panels/WorkflowComparisonPanel";
 import type { WorkflowYAMLConversionResponse } from "../copilot/workflowCopilotTypes";
+import { useI18n } from "@/i18n/useI18n";
 import "./workspace-styles.css";
 
 const Constants = {
@@ -145,6 +146,7 @@ function bash(text: string, alternateText?: string) {
 }
 
 function CopyAndExplainCode({ code }: { code: string }) {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const numCodeLines = code.split("\n").length;
 
@@ -154,21 +156,21 @@ function CopyAndExplainCode({ code }: { code: string }) {
         <DialogTrigger asChild>
           <Button variant="tertiary" size="sm">
             <div className="flex items-center justify-center gap-2">
-              <div>Run Locally</div>
+              <div>{t("workflows.runLocally")}</div>
               <PlayIcon />
             </div>
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Run This Code</DialogTitle>
+            <DialogTitle>{t("workflows.runThisCode")}</DialogTitle>
             <DialogDescription>
-              Set up skyvern in your environment and run the code on your own.
+              {t("workflows.runThisCodeDesc")}
             </DialogDescription>
           </DialogHeader>
           <div>
-            <div>1. Install skyvern: {bash("pip install skyvern")}</div>
-            <div>2. Set up skyvern: {bash("skyvern quickstart")}</div>
+            <div>1. Install FinRPA: {bash("pip install finrpa")}</div>
+            <div>2. Set up FinRPA: {bash("finrpa quickstart")}</div>
             <div>
               3. Copy-paste the code and save it in a file, for example{" "}
               <code>main.py</code>{" "}
@@ -177,14 +179,14 @@ function CopyAndExplainCode({ code }: { code: string }) {
             <div>
               4. Run the code:{" "}
               {bash(
-                'skyvern run code --params \'{"param1": "val1", "param2": "val2"}\' main.py',
+                'finrpa run code --params \'{"param1": "val1", "param2": "val2"}\' main.py',
               )}
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Ok
+              {t("common.ok")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -225,6 +227,7 @@ function Workspace({
   showBrowser = false,
   workflow,
 }: Props) {
+  const { t } = useI18n();
   const { blockLabel, workflowPermanentId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const cacheKeyValueParam = searchParams.get("cache-key-value");
@@ -334,7 +337,7 @@ function Workspace({
     const errors = getWorkflowErrors(nodes);
     if (errors.length > 0) {
       toast({
-        title: "Encountered error while trying to save workflow:",
+        title: t("workflows.saveWorkflowError"),
         description: (
           <div className="space-y-2">
             {errors.map((error) => (
@@ -595,9 +598,9 @@ function Workspace({
       });
 
       toast({
-        title: "Browser cycled",
+        title: t("workflows.browserCycled"),
         variant: "success",
-        description: "Your browser has been cycled.",
+        description: t("workflows.browserCycledDesc"),
       });
 
       afterCycleBrowser();
@@ -605,7 +608,7 @@ function Workspace({
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to cycle browser",
+        title: t("workflows.failedCycleBrowser"),
         description: error.message,
       });
 
@@ -635,7 +638,7 @@ function Workspace({
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to delete code key value",
+        title: t("workflows.failedDeleteCodeKeyValue"),
         description: error.message,
       });
     },
@@ -1103,16 +1106,16 @@ function Workspace({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cycle (Get a new browser)</DialogTitle>
+            <DialogTitle>{t("workflows.cycleBrowser")}</DialogTitle>
             <DialogDescription>
-              <div className="pb-2 pt-4 text-sm text-slate-400">
+              <div className="pb-2 pt-4 text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                 {cycleBrowser.isPending ? (
                   <>
-                    Cooking you up a fresh browser...
+                    {t("workflows.cookingBrowser")}
                     <AnimatedWave text=".‧₊˚ ⋅ ✨★ ‧₊˚ ⋅" />
                   </>
                 ) : (
-                  "Abandon this browser for a new one. Are you sure?"
+                  t("workflows.abandonBrowser")
                 )}
               </div>
             </DialogDescription>
@@ -1120,7 +1123,7 @@ function Workspace({
           <DialogFooter>
             {!cycleBrowser.isPending && (
               <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
+                <Button variant="secondary">{t("common.cancel")}</Button>
               </DialogClose>
             )}
             <Button
@@ -1130,7 +1133,7 @@ function Workspace({
               }}
               disabled={cycleBrowser.isPending}
             >
-              Yes, Continue{" "}
+              {t("workflows.yesContinue")}{" "}
               {cycleBrowser.isPending && (
                 <ReloadIcon className="ml-2 size-4 animate-spin" />
               )}
@@ -1149,15 +1152,14 @@ function Workspace({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogTitle>{t("common.areYouSure")}</DialogTitle>
             <DialogDescription>
-              Saving will delete cached code, and Skyvern will re-generate it in
-              the next run. Proceed?
+              {t("workflows.savingDeletesCachedCode")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+              <Button variant="secondary">{t("common.cancel")}</Button>
             </DialogClose>
             <Button
               variant="default"
@@ -1167,7 +1169,7 @@ function Workspace({
                 workflowChangesStore.setShowConfirmCodeCacheDeletion(false);
               }}
             >
-              Yes
+              {t("common.yes")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1561,7 +1563,7 @@ function Workspace({
                         onClick={() => setIsCopilotOpen((prev) => !prev)}
                       />
                       <div className="flex items-center gap-2">
-                        <GlobeIcon /> Live Browser
+                        <GlobeIcon /> {t("workflows.liveBrowser")}
                       </div>
                       {showBreakoutButton && (
                         <BreakoutButton onClick={() => breakout()} />
@@ -1748,7 +1750,7 @@ function Workspace({
               organization_id: "",
               is_saved_task: saveData.workflow.is_saved_task ?? false,
               is_template: false,
-              title: "Current",
+              title: t("workflows.current"),
               workflow_permanent_id: saveData.workflow.workflow_permanent_id,
               version: saveData.workflow.version ?? 0,
               description: saveData.workflow.description ?? "",
@@ -1784,7 +1786,7 @@ function Workspace({
             // Construct fake WorkflowVersion for pending copilot suggestion
             const pendingVersion: WorkflowVersion = {
               ...pendingWorkflow,
-              title: "Copilot Suggestion",
+              title: t("workflows.copilotSuggestion"),
             };
 
             // Handle copilot review close with status
@@ -1799,9 +1801,9 @@ function Workspace({
                     pendingWorkflow,
                   );
                   toast({
-                    title: "Update failed",
+                    title: t("workflows.updateFailed"),
                     description:
-                      "Failed to apply workflow update. Please try again.",
+                      t("workflows.failedApplyWorkflowUpdate"),
                     variant: "destructive",
                   });
                 }
@@ -1841,9 +1843,9 @@ function Workspace({
           } catch (error) {
             console.error("Failed to prepare workflow comparison", error);
             toast({
-              title: "Comparison failed",
+              title: t("workflows.comparisonFailed"),
               description:
-                "Failed to prepare workflow for comparison. Please try again.",
+                t("workflows.comparisonFailedDesc"),
               variant: "destructive",
             });
           }
@@ -1858,8 +1860,8 @@ function Workspace({
               workflowData,
             );
             toast({
-              title: "Update failed",
-              description: "Failed to apply workflow update. Please try again.",
+              title: t("workflows.updateFailed"),
+              description: t("workflows.failedApplyWorkflowUpdate"),
               variant: "destructive",
             });
           }
@@ -1877,8 +1879,8 @@ function Workspace({
             });
           }
         }}
-        title="Delete Block"
-        description={`Are you sure you want to delete "${deleteBlockDialogState.nodeLabel}"?`}
+        title={t("workflows.deleteBlock")}
+        description={`${t("workflows.deleteBlockConfirm")} "${deleteBlockDialogState.nodeLabel ?? ""}"`}
         affectedBlocks={affectedBlocksForDelete}
         onConfirm={() => {
           if (deleteConfirmCallbackRef.current) {

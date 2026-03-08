@@ -5,12 +5,14 @@ import { WorkflowRunBlock } from "../types/workflowRunTypes";
 import { isTaskVariantBlock, WorkflowBlockTypes } from "../types/workflowTypes";
 import { Switch } from "@/components/ui/switch";
 import { HelpTooltip } from "@/components/HelpTooltip";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   block: WorkflowRunBlock;
 };
 
 function DebuggerTaskBlockParameters({ block }: Props) {
+  const { t } = useI18n();
   const isTaskVariant = isTaskVariantBlock(block);
   if (!isTaskVariant) {
     return null;
@@ -37,7 +39,7 @@ function DebuggerTaskBlockParameters({ block }: Props) {
     <>
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-center justify-start gap-2">
-          <h1 className="text-sm">URL</h1>
+          <h1 className="text-sm">{t("tasks.url")}</h1>
           <HelpTooltip content="The starting URL for the block." />
         </div>
         <Input value={block.url ?? ""} readOnly />
@@ -47,7 +49,7 @@ function DebuggerTaskBlockParameters({ block }: Props) {
         <div className="flex flex-col gap-2">
           <div className="flex w-full items-center justify-start gap-2">
             <h1 className="text-sm">Navigation Goal</h1>
-            <HelpTooltip content="What should Skyvern do on this page?" />
+            <HelpTooltip content={t("tasks.navigationGoalDesc")} />
           </div>
           <AutoResizingTextarea value={block.navigation_goal ?? ""} readOnly />
         </div>
@@ -148,7 +150,7 @@ function DebuggerTaskBlockParameters({ block }: Props) {
         </div>
         <div className="flex items-center gap-3">
           <Switch checked={block.continue_on_failure} disabled />
-          <span className="text-sm text-slate-400">
+          <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
             {block.continue_on_failure ? "Enabled" : "Disabled"}
           </span>
         </div>

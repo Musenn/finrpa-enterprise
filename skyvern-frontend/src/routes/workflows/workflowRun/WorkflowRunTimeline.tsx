@@ -75,9 +75,9 @@ function WorkflowRunTimeline({
               <div
                 key="stream"
                 className={cn(
-                  "flex cursor-pointer rounded-lg border-2 bg-slate-elevation3 p-4 hover:border-slate-50",
+                  "flex cursor-pointer rounded-lg border-2 bg-slate-elevation3 p-4",
                   {
-                    "border-slate-50": activeItem === "stream",
+                    "border-2": activeItem === "stream",
                   },
                 )}
                 onClick={onLiveStreamSelected}

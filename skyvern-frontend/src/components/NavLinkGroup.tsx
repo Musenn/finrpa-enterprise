@@ -42,7 +42,7 @@ function NavLinkItem({
       rel={link.newTab ? "noopener noreferrer" : undefined}
       className={({ isActive }) => {
         return cn(
-          "block rounded-lg py-2 pl-3 text-slate-400 hover:bg-muted hover:text-primary",
+          "block rounded-lg py-2 pl-3 hover:bg-muted hover:text-primary",
           { "py-1 pl-0 text-[0.8rem]": isMobile },
           {
             "bg-muted": isActive,
@@ -53,17 +53,18 @@ function NavLinkItem({
           },
         );
       }}
-      style={
-        isPartiallyHidden
+      style={{
+        ...(!groupIsActive ? { color: "var(--finrpa-text-muted)" } : {}),
+        ...(isPartiallyHidden
           ? {
               maskImage:
                 "linear-gradient(to bottom, black 0%, transparent 100%)",
               WebkitMaskImage:
                 "linear-gradient(to bottom, black 0%, transparent 100%)",
-              pointerEvents: "none",
+              pointerEvents: "none" as const,
             }
-          : undefined
-      }
+          : {}),
+      }}
       tabIndex={isPartiallyHidden ? -1 : undefined}
     >
       <div className="flex justify-between">
@@ -120,10 +121,11 @@ function NavLinkGroup({
       })}
     >
       <div
-        className={cn("py-2 text-slate-400", {
+        className={cn("py-2", {
           "text-primary": groupIsActive,
           "mt-2 py-1 text-[0.8rem] font-medium uppercase": isMobile,
         })}
+        style={!groupIsActive ? { color: "var(--finrpa-text-muted)" } : undefined}
       >
         <div
           className={cn({
@@ -200,12 +202,13 @@ function NavLinkGroup({
                   : undefined
               }
               className={cn(
-                "flex w-full items-center gap-2 rounded-lg py-2 pl-3 text-slate-400 hover:bg-muted hover:text-primary",
+                "flex w-full items-center gap-2 rounded-lg py-2 pl-3 hover:bg-muted hover:text-primary",
                 { "py-1 pl-0 text-[0.8rem]": isMobile },
                 {
                   "justify-center px-3": sidebarCollapsed,
                 },
               )}
+              style={{ color: "var(--finrpa-text-muted)" }}
             >
               <span
                 className="inline-flex transition-transform duration-300 ease-in-out"

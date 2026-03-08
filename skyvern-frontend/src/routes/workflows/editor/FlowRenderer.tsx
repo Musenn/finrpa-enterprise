@@ -97,6 +97,7 @@ import {
 } from "./workflowEditorUtils";
 import { getWorkflowErrors } from "./workflowEditorUtils";
 import { toast } from "@/components/ui/use-toast";
+import { useI18n } from "@/i18n/useI18n";
 import { useAutoPan } from "./useAutoPan";
 import { useAutoGenerateWorkflowTitle } from "../hooks/useAutoGenerateWorkflowTitle";
 
@@ -312,6 +313,7 @@ function FlowRenderer({
   onContainerResize,
   onRequestDeleteNode,
 }: Props) {
+  const { t } = useI18n();
   const { blockLabel: targettedBlockLabel } = useParams();
   const reactFlowInstance = useReactFlow();
   const debugStore = useDebugStore();
@@ -523,7 +525,7 @@ function FlowRenderer({
     const errors = getWorkflowErrors(nodes);
     if (errors.length > 0) {
       toast({
-        title: "Can not save workflow because of errors:",
+        title: t("workflows.saveWorkflowError"),
         description: (
           <div className="space-y-2">
             {errors.map((error) => (
@@ -870,7 +872,7 @@ function FlowRenderer({
       onMouseDownCapture={() => onMouseDownCapture?.()}
     >
       {layoutPhase === "pre-layout" && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950">
+        <div className="absolute inset-0 z-50 flex items-center justify-center" style={{ background: "var(--glass-bg)" }}>
           <div className="animate-pulse">
             <LogoMinimized />
           </div>
@@ -1014,7 +1016,7 @@ function FlowRenderer({
           zoomOnScroll={!flowIsConstrained}
         >
           {!hideBackground && (
-            <Background variant={BackgroundVariant.Dots} bgColor="#020617" />
+            <Background variant={BackgroundVariant.Dots} bgColor="#f8fafc" />
           )}
           {!hideControls && <Controls position="bottom-left" />}
         </ReactFlow>

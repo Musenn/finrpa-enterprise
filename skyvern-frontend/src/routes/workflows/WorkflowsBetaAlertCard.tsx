@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n/useI18n";
 
 function WorkflowsBetaAlertCard() {
+  const { t } = useI18n();
   return (
-    <div className="flex flex-col items-center rounded-lg bg-slate-900 p-4 shadow">
+    <div className="glass-card-static flex flex-col items-center rounded-lg p-4 shadow">
       <header>
-        <h1 className="py-4 text-3xl">Workflows (Beta)</h1>
+        <h1 className="py-4 text-3xl">{t("workflows.beta")}</h1>
       </header>
-      <div>Workflows through UI are currently under construction.</div>
-      <div>
-        Today, you can create and run workflows through the API.
-      </div>
+      <div>{t("workflows.betaDesc")}</div>
+      <div>{t("workflows.betaApiHint")}</div>
       <div className="flex gap-4 py-4">
         <Button variant="secondary" asChild>
           <a
@@ -17,7 +17,7 @@ function WorkflowsBetaAlertCard() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            View on GitHub
+            {t("workflows.viewOnGithub")}
           </a>
         </Button>
       </div>

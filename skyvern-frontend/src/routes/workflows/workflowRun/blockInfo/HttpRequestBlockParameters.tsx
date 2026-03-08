@@ -2,6 +2,7 @@ import { AutoResizingTextarea } from "@/components/AutoResizingTextarea/AutoResi
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { CodeEditor } from "@/routes/workflows/components/CodeEditor";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   method: string;
@@ -26,18 +27,19 @@ function HttpRequestBlockParameters({
   downloadFilename,
   saveResponseAsFile,
 }: Props) {
+  const { t } = useI18n();
   return (
     <div className="space-y-4">
       <div className="flex gap-16">
         <div className="w-80">
-          <h1 className="text-lg">Method</h1>
+          <h1 className="text-lg">{t("workflows.httpMethod")}</h1>
         </div>
         <Input value={method} readOnly />
       </div>
       {url ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">URL</h1>
+            <h1 className="text-lg">{t("workflows.urlLabel")}</h1>
           </div>
           <AutoResizingTextarea value={url} readOnly />
         </div>
@@ -45,7 +47,7 @@ function HttpRequestBlockParameters({
       {headers && Object.keys(headers).length > 0 ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Headers</h1>
+            <h1 className="text-lg">{t("workflows.httpHeaders")}</h1>
           </div>
           <CodeEditor
             className="w-full"
@@ -60,7 +62,7 @@ function HttpRequestBlockParameters({
       {body && Object.keys(body).length > 0 ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Body</h1>
+            <h1 className="text-lg">{t("workflows.httpBody")}</h1>
           </div>
           <CodeEditor
             className="w-full"
@@ -75,9 +77,9 @@ function HttpRequestBlockParameters({
       {files && Object.keys(files).length > 0 ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Files</h1>
-            <h2 className="text-base text-slate-400">
-              File fields and their paths/URLs
+            <h1 className="text-lg">{t("workflows.httpFiles")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("workflows.httpFilesDesc")}
             </h2>
           </div>
           <CodeEditor
@@ -92,26 +94,26 @@ function HttpRequestBlockParameters({
       ) : null}
       <div className="flex gap-16">
         <div className="w-80">
-          <h1 className="text-lg">Timeout</h1>
-          <h2 className="text-base text-slate-400">In seconds</h2>
+          <h1 className="text-lg">{t("workflows.httpTimeout")}</h1>
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.inSeconds")}</h2>
         </div>
         <Input value={timeout.toString()} readOnly />
       </div>
       <div className="flex gap-16">
         <div className="w-80">
-          <h1 className="text-lg">Follow Redirects</h1>
+          <h1 className="text-lg">{t("workflows.followRedirects")}</h1>
         </div>
         <div className="flex w-full items-center gap-3">
           <Switch checked={followRedirects} disabled />
-          <span className="text-sm text-slate-400">
-            {followRedirects ? "Enabled" : "Disabled"}
+          <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+            {followRedirects ? t("common.enabled") : t("common.disabled")}
           </span>
         </div>
       </div>
       {downloadFilename ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Download Filename</h1>
+            <h1 className="text-lg">{t("workflows.downloadFilename")}</h1>
           </div>
           <Input value={downloadFilename} readOnly />
         </div>
@@ -119,11 +121,11 @@ function HttpRequestBlockParameters({
       {saveResponseAsFile ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Save Response as File</h1>
+            <h1 className="text-lg">{t("workflows.saveResponseAsFile")}</h1>
           </div>
           <div className="flex w-full items-center gap-3">
             <Switch checked={true} disabled />
-            <span className="text-sm text-slate-400">Enabled</span>
+            <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("common.enabled")}</span>
           </div>
         </div>
       ) : null}

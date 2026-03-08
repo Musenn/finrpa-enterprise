@@ -34,6 +34,7 @@ import { useSettingsStore } from "@/store/SettingsStore";
 import { wssBaseUrl, newWssBaseUrl, getRuntimeApiKey } from "@/util/env";
 import { copyText } from "@/util/copyText";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 import { RotateThrough } from "./RotateThrough";
 import "./browser-stream.css";
@@ -124,6 +125,7 @@ function BrowserStream({
   // --
   onClose,
 }: Props) {
+  const { t } = useI18n();
   let showStream: boolean = false;
   let runId: string | null;
   let entity: "browserSession" | "task" | "workflow" | null;
@@ -507,13 +509,13 @@ function BrowserStream({
       // to avoid double toasting if disconnect handler also triggers similar logic.
       // However, the disconnect handler now primarily invalidates queries.
       toast({
-        title: "Run Ended",
+        title: t("browserSessions.runEnded"),
         description: `The ${name} run has ${run.status}.`,
         variant: "destructive",
       });
     } else if (run.status === Status.Completed) {
       toast({
-        title: "Run Completed",
+        title: t("browserSessions.runCompleted"),
         description: `The ${name} run has been completed.`,
         variant: "success",
       });
@@ -673,7 +675,7 @@ function BrowserStream({
           .readText()
           .then((text) => {
             toast({
-              title: "Pasting Into Browser",
+              title: t("browserSessions.pastingIntoBrowser"),
               description:
                 "Pasting your current clipboard text into the web page. NOTE: copy-paste only works in the web page - not in the browser (like the address bar).",
             });
@@ -698,14 +700,14 @@ function BrowserStream({
           .then((success) => {
             if (success) {
               toast({
-                title: "Copied to Clipboard",
+                title: t("common.copiedToClipboard"),
                 description:
                   "The text has been copied to your clipboard. NOTE: copy-paste only works in the web page - not in the browser (like the address bar).",
               });
             } else {
               toast({
                 variant: "destructive",
-                title: "Failed to write to Clipboard",
+                title: t("common.failedCopyClipboard"),
                 description: "The text could not be copied to your clipboard.",
               });
             }
@@ -715,7 +717,7 @@ function BrowserStream({
 
             toast({
               variant: "destructive",
-              title: "Failed to write to Clipboard",
+              title: t("common.failedCopyClipboard"),
               description: "The text could not be copied to your clipboard.",
             });
           });
@@ -848,7 +850,7 @@ function BrowserStream({
           </>
         )}
         {!isReady && (
-          <div className="absolute left-0 top-1/2 flex aspect-video max-h-full w-full -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-md border border-slate-800 text-sm text-slate-400">
+          <div className="absolute left-0 top-1/2 flex aspect-video max-h-full w-full -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-md border text-sm" style={{ borderColor: "var(--glass-border)", color: "var(--finrpa-text-muted)" }}>
             {browserSessionId && !hasBrowserSession ? (
               <div>This live browser session is no longer streaming.</div>
             ) : (

@@ -12,7 +12,7 @@ function CodeBlockParameters({ code, parameters }: Props) {
       <div className="flex gap-16">
         <div className="w-80">
           <h1 className="text-lg">Code</h1>
-          <h2 className="text-base text-slate-400">
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
             The Python snippet executed for this block
           </h2>
         </div>
@@ -29,7 +29,7 @@ function CodeBlockParameters({ code, parameters }: Props) {
         <div className="flex gap-16">
           <div className="w-80">
             <h1 className="text-lg">Parameters</h1>
-            <h2 className="text-base text-slate-400">
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
               Inputs passed to this code block
             </h2>
           </div>
@@ -37,11 +37,12 @@ function CodeBlockParameters({ code, parameters }: Props) {
             {parameters.map((parameter) => (
               <div
                 key={parameter.key}
-                className="rounded border border-slate-700/40 bg-slate-elevation3 p-3"
+                className="rounded border bg-slate-elevation3 p-3"
+                style={{ borderColor: "var(--glass-border)" }}
               >
                 <p className="font-medium">{parameter.key}</p>
                 {parameter.description ? (
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                     {parameter.description}
                   </p>
                 ) : null}

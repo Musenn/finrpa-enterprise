@@ -15,12 +15,14 @@ import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuer
 import { useBlockOutputStore } from "@/store/BlockOutputStore";
 import { useDebugStore } from "@/store/useDebugStore";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 interface Props {
   blockLabel: string;
 }
 
 function NodeTabs({ blockLabel }: Props) {
+  const { t } = useI18n();
   const { blockLabel: urlBlockLabel } = useParams();
   const blockOutput = useBlockOutputStore((state) => state.outputs[blockLabel]);
   const debugStore = useDebugStore();
@@ -81,7 +83,7 @@ function NodeTabs({ blockLabel }: Props) {
                   className={cn(
                     "flex h-[2.5rem] w-[2.5rem] min-w-[2.5rem] rotate-[-90deg] items-center justify-center gap-2 rounded-[50%] bg-slate-elevation3 p-2",
                     {
-                      "opacity-100 outline outline-2 outline-slate-300":
+                      "opacity-100 outline outline-2 outline-primary":
                         thisBlockIsTargetted,
                     },
                     {
@@ -111,10 +113,10 @@ function NodeTabs({ blockLabel }: Props) {
               </TooltipTrigger>
               <TooltipContent>
                 {!blockOutput
-                  ? "No outputs. Run block first."
+                  ? t("editor.noOutputsRunFirst")
                   : isExpanded
-                    ? "Close Outputs"
-                    : "Open Outputs"}
+                    ? t("editor.closeOutputs")
+                    : t("editor.openOutputs")}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

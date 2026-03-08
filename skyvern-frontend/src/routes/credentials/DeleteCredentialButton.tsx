@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getClient } from "@/api/AxiosClient";
+import { useI18n } from "@/i18n/useI18n";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -24,6 +25,7 @@ type Props = {
 };
 
 function DeleteCredentialButton({ credential }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
 
@@ -37,15 +39,15 @@ function DeleteCredentialButton({ credential }: Props) {
         queryKey: ["credentials"],
       });
       toast({
-        title: "Credential deleted",
+        title: t("credentials.credentialDeleted"),
         variant: "success",
-        description: "The credential has been deleted.",
+        description: t("credentials.credentialDeletedDesc"),
       });
     },
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to delete credential",
+        title: t("credentials.failedDeleteCredential"),
         description: error.message,
       });
     },
@@ -62,22 +64,19 @@ function DeleteCredentialButton({ credential }: Props) {
               </Button>
             </DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>Delete Credential</TooltipContent>
+          <TooltipContent>{t("credentials.deleteCredential")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogTitle>{t("common.areYouSure")}</DialogTitle>
         </DialogHeader>
         <div className="text-sm text-slate-400">
-          The credential{" "}
-          <span className="font-bold text-primary">{credential.name}</span> will
-          be PERMANENTLY deleted. The Skyvern team has no way to restore a
-          credential once it's deleted.
+          {t("credentials.deleteConfirm")}
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary">{t("common.cancel")}</Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -89,7 +88,7 @@ function DeleteCredentialButton({ credential }: Props) {
             {deleteCredentialMutation.isPending && (
               <ReloadIcon className="mr-2 size-4 animate-spin" />
             )}
-            Delete
+            {t("common.delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

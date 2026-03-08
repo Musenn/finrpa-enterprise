@@ -72,7 +72,7 @@ function PayloadParameterFields({
 
   if (parameters.length === 0) {
     return (
-      <p className="text-xs text-slate-500">
+      <p className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
         This workflow has no input parameters.
       </p>
     );
@@ -85,13 +85,13 @@ function PayloadParameterFields({
       {parameters.map((param) => (
         <div key={param.key} className="space-y-1.5">
           <div className="flex items-baseline gap-2">
-            <Label className="text-xs text-slate-300">{param.key}</Label>
-            <span className="text-[10px] text-slate-500">
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{param.key}</Label>
+            <span className="text-[10px]" style={{ color: "var(--finrpa-text-muted)" }}>
               {param.workflow_parameter_type}
             </span>
           </div>
           {param.description && (
-            <p className="text-[10px] text-slate-500">{param.description}</p>
+            <p className="text-[10px]" style={{ color: "var(--finrpa-text-muted)" }}>{param.description}</p>
           )}
           {param.workflow_parameter_type ===
           WorkflowParameterValueType.CredentialId ? (

@@ -25,8 +25,10 @@ import { statusIsRunningOrQueued } from "@/routes/tasks/types";
 import { useWorkflowRunQuery } from "@/routes/workflows/hooks/useWorkflowRunQuery";
 import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 import { useRecordingStore } from "@/store/useRecordingStore";
+import { useI18n } from "@/i18n/useI18n";
 
 function LoopNode({ id, data }: NodeProps<LoopNode>) {
+  const { t } = useI18n();
   const nodes = useNodes<AppNode>();
   const node = nodes.find((n) => n.id === id);
   if (!node) {
@@ -107,8 +109,9 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
         className="opacity-0"
       />
       <div
-        className="rounded-xl border-2 border-dashed border-slate-600 p-2"
+        className="rounded-xl border-2 border-dashed p-2"
         style={{
+          borderColor: "var(--glass-border)",
           width: loopNodeWidth,
           height: childrenHeightExtent,
         }}
@@ -120,7 +123,7 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
               "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
               {
                 "pointer-events-none": thisBlockIsPlaying,
-                "bg-slate-950 outline outline-2 outline-slate-300":
+                "outline outline-2 outline-primary":
                   thisBlockIsTargetted,
               },
               data.comparisonColor,
@@ -137,12 +140,12 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">Loop Value</Label>
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.loopValue")}</Label>
                   <HelpTooltip content={helpTooltips["loop"]["loopValue"]} />
                 </div>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
-                    Tip: Use the {"+"} button to add parameters!
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.tipAddParameters")}
                   </div>
                 ) : null}
               </div>
@@ -163,7 +166,7 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
                 loop_variable_reference: data.loopVariableReference,
               }}
               exampleValue={dataSchemaExampleValue}
-              helpTooltip="Specify a format for extracted data in JSON. Only applies when the loop value is natural language — ignored for parameter references."
+              helpTooltip={t("editor.dataSchemaHelpTooltip")}
             />
             <div className="space-y-2">
               <div className="space-y-2">
@@ -179,10 +182,10 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
                         });
                       }}
                     />
-                    <Label className="text-xs text-slate-300">
-                      Continue if Empty
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                      {t("editor.continueIfEmpty")}
                     </Label>
-                    <HelpTooltip content="When checked, the for loop block will successfully complete and workflow execution will continue if the loop value is empty" />
+                    <HelpTooltip content={t("editor.continueIfEmptyHelp")} />
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -196,10 +199,10 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
                         });
                       }}
                     />
-                    <Label className="text-xs text-slate-300">
-                      Continue on Failure
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                      {t("editor.continueOnFailure")}
                     </Label>
-                    <HelpTooltip content="When checked, the loop will continue executing even if one of its iterations fails" />
+                    <HelpTooltip content={t("editor.continueOnFailureHelp")} />
                   </div>
                 </div>
                 <div className="flex justify-between">
@@ -214,8 +217,8 @@ function LoopNode({ id, data }: NodeProps<LoopNode>) {
                         });
                       }}
                     />
-                    <Label className="text-xs text-slate-300">
-                      Next Loop on Failure
+                    <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                      {t("editor.nextLoopOnFailure")}
                     </Label>
                     <HelpTooltip
                       content={helpTooltips["loop"]["nextLoopOnFailure"]}

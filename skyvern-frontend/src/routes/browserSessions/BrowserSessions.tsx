@@ -51,6 +51,7 @@ import {
 import { CopyText } from "@/routes/workflows/editor/Workspace";
 import { basicTimeFormat } from "@/util/timeFormat";
 import { cn, formatMs, toDate } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 function sessionIsOpen(browserSession: BrowserSession): boolean {
   return (
@@ -58,15 +59,15 @@ function sessionIsOpen(browserSession: BrowserSession): boolean {
   );
 }
 
-const No = () => (
+const No = ({ label }: { label: string }) => (
   <Badge className="flex h-7 w-12 justify-center bg-gray-800 text-orange-50 hover:bg-gray-900">
-    No
+    {label}
   </Badge>
 );
 
-const Yes = () => (
+const Yes = ({ label }: { label: string }) => (
   <Badge className="flex h-7 w-12 justify-center bg-green-900 text-green-50 hover:bg-green-900/80">
-    Yes
+    {label}
   </Badge>
 );
 
@@ -80,22 +81,23 @@ const BROWSER_TYPE_OPTIONS: Array<{
 
 const EXTENSION_OPTIONS: Array<{
   value: BrowserSessionExtension;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
 }> = [
   {
     value: "ad-blocker",
-    label: "Ad Blocker",
-    description: "Blocks ads and common trackers in session pages.",
+    labelKey: "browserSessions.adBlocker",
+    descriptionKey: "browserSessions.adBlockerDesc",
   },
   {
     value: "captcha-solver",
-    label: "Captcha Solver",
-    description: "Enables automated captcha solving when available.",
+    labelKey: "browserSessions.captchaSolver",
+    descriptionKey: "browserSessions.captchaSolverDesc",
   },
 ];
 
 function BrowserSessions() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -182,11 +184,10 @@ function BrowserSessions() {
       <div className="space-y-5">
         <div className="flex items-center gap-2">
           <GlobeIcon className="size-6" />
-          <h1 className="text-2xl">Browsers</h1>
+          <h1 className="text-2xl">{t("browserSessions.browsers")}</h1>
         </div>
         <p className="text-slate-300">
-          Create your own live browsers to interact with websites, or run
-          workflows in.
+          {t("browserSessions.browsersDescription")}
         </p>
       </div>
 
@@ -205,7 +206,7 @@ function BrowserSessions() {
               ) : (
                 <PlusIcon className="mr-2 h-4 w-4" />
               )}
-              Create
+              {t("common.create")}
             </Button>
           </div>
         </div>
@@ -217,34 +218,34 @@ function BrowserSessions() {
                   ID
                 </TableHead>
                 <TableHead className="w-1/12 truncate text-slate-400">
-                  Open
+                  {t("browserSessions.open")}
                 </TableHead>
                 <TableHead className="w-1/6 truncate text-slate-400">
-                  <span className="mr-2">Occupied</span>
+                  <span className="mr-2">{t("browserSessions.occupied")}</span>
                   <HelpTooltip
                     className="inline"
-                    content="Browser is busy running a task or workflow"
+                    content={t("browserSessions.occupiedTooltip")}
                   />
                 </TableHead>
                 <TableHead className="w-1/6 truncate text-slate-400">
-                  Started
+                  {t("browserSessions.started")}
                 </TableHead>
                 <TableHead className="w-1/6 truncate text-slate-400">
-                  Timeout
+                  {t("browserSessions.timeout")}
                 </TableHead>
                 <TableHead className="w-1/2 truncate text-slate-400">
-                  CDP Url
+                  {t("browserSessions.cdpUrl")}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6}>Loading...</TableCell>
+                  <TableCell colSpan={6}>{t("common.loading")}</TableCell>
                 </TableRow>
               ) : browserSessions?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6}>No browser sessions found</TableCell>
+                  <TableCell colSpan={6}>{t("browserSessions.noSessions")}</TableCell>
                 </TableRow>
               ) : (
                 browserSessions?.map((browserSession) => {
@@ -256,7 +257,7 @@ function BrowserSessions() {
                   const ago = startedAtDate ? (
                     formatMs(Date.now() - startedAtDate.getTime()).ago
                   ) : (
-                    <span className="opacity-50">never</span>
+                    <span className="opacity-50">{t("browserSessions.never")}</span>
                   );
                   const cdpUrl = browserSession.browser_address ?? "-";
 
@@ -279,15 +280,15 @@ function BrowserSessions() {
                           />
                         </div>
                       </TableCell>
-                      <TableCell>{isOpen ? <Yes /> : <No />}</TableCell>
+                      <TableCell>{isOpen ? <Yes label={t("common.yes")} /> : <No label={t("common.no")} />}</TableCell>
                       <TableCell>
-                        {browserSession.runnable_id ? <Yes /> : <No />}
+                        {browserSession.runnable_id ? <Yes label={t("common.yes")} /> : <No label={t("common.no")} />}
                       </TableCell>
                       <TableCell
                         title={
                           browserSession.started_at
                             ? basicTimeFormat(browserSession.started_at)
-                            : "not started"
+                            : t("browserSessions.notStarted")
                         }
                       >
                         {ago}
@@ -316,7 +317,7 @@ function BrowserSessions() {
           </Table>
           <div className="relative px-3 py-3">
             <div className="absolute left-3 top-1/2 flex -translate-y-1/2 items-center gap-2 text-sm">
-              <span className="text-slate-400">Items per page</span>
+              <span className="text-slate-400">{t("browserSessions.itemsPerPage")}</span>
               <select
                 className="h-9 rounded-md border border-slate-300 bg-background"
                 value={itemsPerPage}
@@ -377,15 +378,14 @@ function BrowserSessions() {
       >
         <DrawerContent className="bottom-2 right-0 top-2 mt-0 h-full w-96 rounded border-0 p-6">
           <DrawerHeader>
-            <DrawerTitle>Create Browser Session</DrawerTitle>
+            <DrawerTitle>{t("browserSessions.createBrowserSession")}</DrawerTitle>
             <DrawerDescription>
-              Create a new browser session to interact with websites, or run
-              workflows in.
+              {t("browserSessions.createDescription")}
               <div className="mt-8 flex flex-col gap-4">
                 <div className="space-y-2">
                   <div className="flex gap-2">
-                    <Label>Proxy Location</Label>
-                    <HelpTooltip content="Route Skyvern through one of our available proxies." />
+                    <Label>{t("browserSessions.proxyLocation")}</Label>
+                    <HelpTooltip content={t("browserSessions.proxyHelper")} />
                   </div>
                   <ProxySelector
                     value={sessionOptions.proxyLocation}
@@ -401,15 +401,15 @@ function BrowserSessions() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label>Timeout (Minutes)</Label>
-                    <HelpTooltip content="Duration to keep the browser session open. Automatically extends as it is used." />
+                    <Label>{t("browserSessions.timeoutMinutes")}</Label>
+                    <HelpTooltip content={t("browserSessions.timeoutTooltip")} />
                   </div>
                   <Input
                     type="number"
                     min={5}
                     max={1440}
                     value={sessionOptions.timeoutMinutes ?? ""}
-                    placeholder="timeout (minutes)"
+                    placeholder={t("browserSessions.timeoutPlaceholder")}
                     onChange={(event) => {
                       const value =
                         event.target.value === ""
@@ -424,8 +424,8 @@ function BrowserSessions() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label>Browser Type</Label>
-                    <HelpTooltip content="Choose the browser engine for this session. Leave default to use server defaults." />
+                    <Label>{t("browserSessions.browserType")}</Label>
+                    <HelpTooltip content={t("browserSessions.browserTypeTooltip")} />
                   </div>
                   <Select
                     value={sessionOptions.browserType ?? "default"}
@@ -444,7 +444,7 @@ function BrowserSessions() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="default">
-                        Default (Microsoft Edge)
+                        {t("browserSessions.defaultBrowser")}
                       </SelectItem>
                       {BROWSER_TYPE_OPTIONS.map((browserType) => (
                         <SelectItem
@@ -459,8 +459,8 @@ function BrowserSessions() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label>Extensions</Label>
-                    <HelpTooltip content="Optional browser extensions to install when the session starts." />
+                    <Label>{t("browserSessions.extensions")}</Label>
+                    <HelpTooltip content={t("browserSessions.extensionsTooltip")} />
                   </div>
                   <div className="space-y-2 rounded-md border p-3">
                     {EXTENSION_OPTIONS.map((extension) => (
@@ -482,10 +482,10 @@ function BrowserSessions() {
                             htmlFor={`extension-${extension.value}`}
                             className="font-medium"
                           >
-                            {extension.label}
+                            {t(extension.labelKey as any)}
                           </Label>
                           <p className="text-xs text-muted-foreground">
-                            {extension.description}
+                            {t(extension.descriptionKey as any)}
                           </p>
                         </div>
                       </div>
@@ -515,7 +515,7 @@ function BrowserSessions() {
                   ) : (
                     <PlusIcon className="mr-2 h-4 w-4" />
                   )}
-                  Create
+                  {t("common.create")}
                 </Button>
               </div>
             </DrawerDescription>

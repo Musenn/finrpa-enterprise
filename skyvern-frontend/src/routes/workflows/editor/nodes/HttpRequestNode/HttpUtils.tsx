@@ -10,6 +10,7 @@ import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { copyText } from "@/util/copyText";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 import { validateUrl, validateJson } from "./httpValidation";
 
 // HTTP Method Badge Component
@@ -23,21 +24,21 @@ export function MethodBadge({
   const getMethodStyle = (method: string) => {
     switch (method.toUpperCase()) {
       case "GET":
-        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+        return "bg-green-100 text-green-800 border-green-300";
       case "POST":
-        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800";
+        return "bg-blue-100 text-blue-800 border-blue-300";
       case "PUT":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
       case "DELETE":
-        return "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+        return "bg-red-100 text-red-800 border-red-300";
       case "PATCH":
-        return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800";
+        return "bg-purple-100 text-purple-800 border-purple-300";
       case "HEAD":
-        return "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-300";
       case "OPTIONS":
-        return "bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-900/20 dark:text-cyan-400 dark:border-cyan-800";
+        return "bg-cyan-100 text-cyan-800 border-cyan-300";
       default:
-        return "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800";
+        return "bg-slate-100 text-slate-800 border-slate-300";
     }
   };
 
@@ -66,8 +67,8 @@ export function UrlValidator({ url }: { url: string }) {
       className={cn(
         "flex items-center gap-1 text-xs",
         validation.valid
-          ? "text-green-600 dark:text-green-400"
-          : "text-red-600 dark:text-red-400",
+          ? "text-green-600"
+          : "text-red-600",
       )}
     >
       {validation.valid ? (
@@ -91,8 +92,8 @@ export function JsonValidator({ value }: { value: string }) {
       className={cn(
         "flex items-center gap-1 text-xs",
         validation.valid
-          ? "text-green-600 dark:text-green-400"
-          : "text-red-600 dark:text-red-400",
+          ? "text-green-600"
+          : "text-red-600",
       )}
     >
       {validation.valid ? (
@@ -119,6 +120,7 @@ export function CopyToCurlButton({
   body: string;
   className?: string;
 }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const generateCurlCommand = () => {
@@ -158,14 +160,14 @@ export function CopyToCurlButton({
     if (success) {
       setCopied(true);
       toast({
-        title: "Copied!",
-        description: "cURL command copied to clipboard",
+        title: t("common.copied"),
+        description: t("editor.curlCopiedToClipboard"),
       });
       setTimeout(() => setCopied(false), 2000);
     } else {
       toast({
-        title: "Error",
-        description: "Failed to copy cURL command",
+        title: t("common.error"),
+        description: t("editor.failedCopyCurl"),
         variant: "destructive",
       });
     }
@@ -184,7 +186,7 @@ export function CopyToCurlButton({
       ) : (
         <CopyIcon className="mr-1 h-4 w-4" />
       )}
-      {copied ? "Copied!" : "Copy cURL"}
+      {copied ? t("common.copied") : t("editor.copyCurl")}
     </Button>
   );
 }
@@ -203,6 +205,7 @@ export function RequestPreview({
   body: string;
   files?: string;
 }) {
+  const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
 
   const hasContent = method && url;
@@ -212,16 +215,16 @@ export function RequestPreview({
   const hasFiles = files && files.trim() && files !== "{}";
 
   return (
-    <div className="rounded-md border bg-slate-50 p-3 dark:bg-slate-900/50">
+    <div className="rounded-md border p-3" style={{ background: "rgba(26,58,92,0.06)" }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MethodBadge method={method} />
-          <span className="font-mono text-sm text-slate-600 dark:text-slate-400">
-            {url || "No URL specified"}
+          <span className="font-mono text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+            {url || t("editor.noUrlSpecified")}
           </span>
           {hasFiles && (
             <Badge variant="outline" className="text-xs">
-              Files
+              {t("editor.files")}
             </Badge>
           )}
         </div>
@@ -231,7 +234,7 @@ export function RequestPreview({
           onClick={() => setExpanded(!expanded)}
           className="h-6 text-xs"
         >
-          {expanded ? "Hide" : "Show"} Details
+          {expanded ? t("workflows.hideValue") : t("workflows.showValue")} {t("common.details")}
         </Button>
       </div>
 
@@ -239,8 +242,8 @@ export function RequestPreview({
         <div className="mt-3 space-y-2">
           {/* Headers */}
           <div>
-            <div className="mb-1 text-xs font-medium">Headers:</div>
-            <pre className="overflow-x-auto rounded bg-slate-100 p-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            <div className="mb-1 text-xs font-medium">{t("editor.headers")}:</div>
+            <pre className="overflow-x-auto rounded p-2 text-xs" style={{ background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-muted)" }}>
               {headers || "{}"}
             </pre>
           </div>
@@ -248,8 +251,8 @@ export function RequestPreview({
           {/* Body (only for POST, PUT, PATCH) */}
           {["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && (
             <div>
-              <div className="mb-1 text-xs font-medium">Body:</div>
-              <pre className="overflow-x-auto rounded bg-slate-100 p-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+              <div className="mb-1 text-xs font-medium">{t("editor.body")}:</div>
+              <pre className="overflow-x-auto rounded p-2 text-xs" style={{ background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-muted)" }}>
                 {body || "{}"}
               </pre>
             </div>
@@ -259,8 +262,8 @@ export function RequestPreview({
           {["POST", "PUT", "PATCH"].includes(method.toUpperCase()) &&
             hasFiles && (
               <div>
-                <div className="mb-1 text-xs font-medium">Files:</div>
-                <pre className="overflow-x-auto rounded bg-slate-100 p-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                <div className="mb-1 text-xs font-medium">{t("editor.files")}:</div>
+                <pre className="overflow-x-auto rounded p-2 text-xs" style={{ background: "rgba(26,58,92,0.06)", color: "var(--finrpa-text-muted)" }}>
                   {files || "{}"}
                 </pre>
               </div>

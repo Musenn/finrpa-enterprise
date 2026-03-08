@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import type { OtpType, TotpCode } from "@/api/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { basicLocalTimeFormat, basicTimeFormat } from "@/util/timeFormat";
+import { useI18n } from "@/i18n/useI18n";
 
 type OtpTypeFilter = "all" | OtpType;
 
@@ -38,6 +39,7 @@ function renderCodeContent(code: TotpCode): string {
 }
 
 function CredentialsTotpTab() {
+  const { t } = useI18n();
   const [identifierFilter, setIdentifierFilter] = useState("");
   const [otpTypeFilter, setOtpTypeFilter] = useState<OtpTypeFilter>("all");
   const [limit, setLimit] = useState<(typeof LIMIT_OPTIONS)[number]>(50);
@@ -70,10 +72,9 @@ function CredentialsTotpTab() {
   return (
     <div className="space-y-6">
       <div className="rounded-lg border border-slate-700 bg-slate-elevation1 p-6">
-        <h2 className="text-lg font-semibold">Push a 2FA Code</h2>
+        <h2 className="text-lg font-semibold">{t("credentials.pushCode")}</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Paste the verification message you received. Skyvern extracts the code
-          and attaches it to the relevant run.
+          {t("credentials.pushCodeDesc")}
         </p>
         <PushTotpCodeForm
           className="mt-4"
@@ -86,16 +87,16 @@ function CredentialsTotpTab() {
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-wrap gap-4">
             <div className="space-y-1">
-              <Label htmlFor="totp-identifier-filter">Identifier</Label>
+              <Label htmlFor="totp-identifier-filter">{t("totp.identifier")}</Label>
               <Input
                 id="totp-identifier-filter"
-                placeholder="Filter by email or phone"
+                placeholder={t("totp.filterPlaceholder")}
                 value={identifierFilter}
                 onChange={(event) => setIdentifierFilter(event.target.value)}
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="totp-type-filter">OTP Type</Label>
+              <Label htmlFor="totp-type-filter">{t("totp.otpType")}</Label>
               <Select
                 value={otpTypeFilter}
                 onValueChange={(value: OtpTypeFilter) =>
@@ -103,17 +104,17 @@ function CredentialsTotpTab() {
                 }
               >
                 <SelectTrigger id="totp-type-filter" className="w-40">
-                  <SelectValue placeholder="All types" />
+                  <SelectValue placeholder={t("totp.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="totp">Numeric code</SelectItem>
-                  <SelectItem value="magic_link">Magic link</SelectItem>
+                  <SelectItem value="all">{t("totp.allTypes")}</SelectItem>
+                  <SelectItem value="totp">{t("totp.numericCode")}</SelectItem>
+                  <SelectItem value="magic_link">{t("totp.magicLink")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="totp-limit-filter">Limit</Label>
+              <Label htmlFor="totp-limit-filter">{t("totp.limit")}</Label>
               <Select
                 value={String(limit)}
                 onValueChange={(value) =>
@@ -144,17 +145,15 @@ function CredentialsTotpTab() {
             }}
             disabled={!hasFilters}
           >
-            Clear filters
+            {t("totp.clearFilters")}
           </Button>
         </div>
 
         {isFeatureUnavailable && (
           <Alert variant="destructive">
-            <AlertTitle>2FA listing unavailable</AlertTitle>
+            <AlertTitle>{t("totp.unavailable")}</AlertTitle>
             <AlertDescription>
-              Upgrade the backend to include{" "}
-              <code>GET /v1/credentials/totp</code>. Once available, this tab
-              will automatically populate with codes.
+              {t("totp.upgradeBackend")}
             </AlertDescription>
           </Alert>
         )}
@@ -164,12 +163,12 @@ function CredentialsTotpTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[220px]">Identifier</TableHead>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Workflow Run</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Expires</TableHead>
+                  <TableHead className="w-[220px]">{t("totp.identifier")}</TableHead>
+                  <TableHead>{t("totp.code")}</TableHead>
+                  <TableHead>{t("totp.source")}</TableHead>
+                  <TableHead>{t("totp.workflowRun")}</TableHead>
+                  <TableHead>{t("totp.created")}</TableHead>
+                  <TableHead>{t("totp.expires")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -191,8 +190,7 @@ function CredentialsTotpTab() {
                       colSpan={6}
                       className="text-center text-sm text-slate-300"
                     >
-                      No 2FA codes yet. Paste a verification message above or
-                      configure automatic forwarding.
+                      {t("totp.noCodes")}
                     </TableCell>
                   </TableRow>
                 ) : null}

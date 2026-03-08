@@ -58,6 +58,7 @@ import {
 } from "./types/workflowTypes";
 import { WorkflowParameterInput } from "./WorkflowParameterInput";
 import { TestWebhookDialog } from "@/components/TestWebhookDialog";
+import { useI18n } from "@/i18n/useI18n";
 import * as env from "@/util/env";
 
 /**
@@ -290,6 +291,7 @@ function RunWorkflowForm({
   initialValues,
   initialSettings,
 }: Props) {
+  const { t } = useI18n();
   const { workflowPermanentId } = useParams();
   const credentialGetter = useCredentialGetter();
   const navigate = useNavigate();
@@ -334,8 +336,8 @@ function RunWorkflowForm({
     onSuccess: (response) => {
       toast({
         variant: "success",
-        title: "Workflow run started",
-        description: "The workflow run has been started successfully",
+        title: t("workflows.runStarted"),
+        description: t("workflows.runStartedDesc"),
       });
       queryClient.invalidateQueries({
         queryKey: ["workflowRuns"],
@@ -353,7 +355,7 @@ function RunWorkflowForm({
       const detail = (error.response?.data as { detail?: string })?.detail;
       toast({
         variant: "destructive",
-        title: "Failed to start workflow run",
+        title: t("workflows.failedStart"),
         description: detail ?? error.message,
       });
     },
@@ -517,7 +519,7 @@ function RunWorkflowForm({
   };
 
   if (!workflowPermanentId || !workflow) {
-    return <div>Invalid workflow</div>;
+    return <div>{t("workflows.invalidWorkflow")}</div>;
   }
 
   return (
@@ -529,11 +531,10 @@ function RunWorkflowForm({
         <header className="flex items-end justify-between gap-4">
           <div className="space-y-5">
             <h1 className="text-3xl">
-              Parameters{workflow?.title ? ` - ${workflow.title}` : ""}
+              {t("workflows.parameters")}{workflow?.title ? ` - ${workflow.title}` : ""}
             </h1>
-            <h2 className="text-lg text-slate-400">
-              Fill the placeholder values that you have linked throughout your
-              workflow.
+            <h2 className="text-lg" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("workflows.fillParameters")}
             </h2>
           </div>
           <div className="flex shrink-0 gap-2">
@@ -576,9 +577,9 @@ function RunWorkflowForm({
                 }}
               >
                 <PlayIcon className="mr-2 h-4 w-4" />
-                Run with Code 2.0
+                {t("workflows.runWithCode2")}
                 <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs font-semibold text-amber-400">
-                  Beta
+                  {t("common.beta")}
                 </span>
               </Button>
             )}
@@ -594,7 +595,7 @@ function RunWorkflowForm({
               {!runWorkflowMutation.isPending && (
                 <PlayIcon className="mr-2 h-4 w-4" />
               )}
-              Run workflow
+              {t("workflows.runWorkflow")}
             </Button>
           </div>
         </header>
@@ -602,11 +603,10 @@ function RunWorkflowForm({
         {hasLoginBlockValidationError && (
           <Alert variant="destructive">
             <ExclamationTriangleIcon className="h-4 w-4" />
-            <AlertTitle>Cannot run workflow</AlertTitle>
+            <AlertTitle>{t("workflows.cannotRun")}</AlertTitle>
             <AlertDescription>
               <p>
-                The following login block(s) need a credential selected before
-                running:
+                {t("workflows.loginBlocksNeedCred")}
               </p>
               <ul className="mt-2 list-inside list-disc">
                 {loginBlocksWithoutCredentials.map((block) => (
@@ -618,9 +618,9 @@ function RunWorkflowForm({
                   to={`/workflows/${workflowPermanentId}/build`}
                   className="underline hover:no-underline"
                 >
-                  Go to the editor
+                  {t("workflows.goToEditor")}
                 </Link>{" "}
-                to configure credentials for these blocks.
+                {t("workflows.configureCredentials")}
               </p>
             </AlertDescription>
           </Alert>
@@ -628,7 +628,7 @@ function RunWorkflowForm({
 
         <div className="space-y-8 rounded-lg bg-slate-elevation3 px-6 py-5">
           <header>
-            <h1 className="text-lg">Input Parameters</h1>
+            <h1 className="text-lg">{t("workflows.inputParameters")}</h1>
           </header>
           {workflowParameters?.map((parameter) => {
             return (
@@ -640,18 +640,18 @@ function RunWorkflowForm({
                   validate: (value) => {
                     if (parameter.workflow_parameter_type === "json") {
                       if (value === null || value === undefined) {
-                        return "This field is required";
+                        return t("workflows.fieldRequired");
                       }
                       if (typeof value === "string") {
                         const trimmed = value.trim();
                         if (trimmed === "") {
-                          return "This field is required";
+                          return t("workflows.fieldRequired");
                         }
                         try {
                           JSON.parse(trimmed);
                           return true;
                         } catch (e) {
-                          return "Invalid JSON";
+                          return t("workflows.invalidJson");
                         }
                       }
                       return;
@@ -660,7 +660,7 @@ function RunWorkflowForm({
                     // Boolean parameters are required - show error and block submission
                     if (parameter.workflow_parameter_type === "boolean") {
                       if (value === null || value === undefined) {
-                        return "This field is required";
+                        return t("workflows.fieldRequired");
                       }
                       return;
                     }
@@ -675,7 +675,7 @@ function RunWorkflowForm({
                         value === undefined ||
                         Number.isNaN(value)
                       ) {
-                        return "This field is required";
+                        return t("workflows.fieldRequired");
                       }
                       return;
                     }
@@ -690,7 +690,7 @@ function RunWorkflowForm({
                           "s3uri" in value &&
                           !value.s3uri)
                       ) {
-                        return "This field is required";
+                        return t("workflows.fieldRequired");
                       }
                       return;
                     }
@@ -700,12 +700,12 @@ function RunWorkflowForm({
                       parameter.workflow_parameter_type === "string" &&
                       (value === null || value === "")
                     ) {
-                      return "Warning: you left this field empty";
+                      return t("workflows.fieldEmpty");
                     }
 
                     // For all other non-boolean types, show warning but don't block
                     if (value === null || value === undefined) {
-                      return "Warning: you left this field empty";
+                      return t("workflows.fieldEmpty");
                     }
                   },
                 }}
@@ -713,17 +713,17 @@ function RunWorkflowForm({
                   return (
                     <FormItem>
                       <div className="flex gap-16">
-                        <FormLabel className="!text-slate-50">
+                        <FormLabel style={{ color: "var(--finrpa-text-primary)" }}>
                           <div className="w-72">
                             <div className="flex items-center gap-2 text-lg">
                               {parameter.key}
-                              <span className="text-sm text-slate-400">
+                              <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                                 {getLabelForWorkflowParameterType(
                                   parameter.workflow_parameter_type,
                                 )}
                               </span>
                             </div>
-                            <h2 className="text-sm text-slate-400">
+                            <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                               {parameter.description}
                             </h2>
                           </div>
@@ -766,13 +766,13 @@ function RunWorkflowForm({
             );
           })}
           {workflowParameters.length === 0 && (
-            <div>This workflow doesn't have any input parameters</div>
+            <div>{t("workflows.noInputParameters")}</div>
           )}
         </div>
 
         <div className="space-y-8 rounded-lg bg-slate-elevation3 px-6 py-5">
           <header>
-            <h1 className="text-lg">Settings</h1>
+            <h1 className="text-lg">{t("settings.title")}</h1>
           </header>
           <FormField
             key="webhookCallbackUrl"
@@ -784,12 +784,12 @@ function RunWorkflowForm({
                   return;
                 }
                 if (typeof value !== "string") {
-                  return "Invalid URL";
+                  return t("workflows.invalidUrl");
                 }
                 const urlSchema = z.string().url({ message: "Invalid URL" });
                 const { success } = urlSchema.safeParse(value);
                 if (!success) {
-                  return "Invalid URL";
+                  return t("workflows.invalidUrl");
                 }
               },
             }}
@@ -800,11 +800,10 @@ function RunWorkflowForm({
                     <FormLabel>
                       <div className="w-72">
                         <div className="flex items-center gap-2 text-lg">
-                          Webhook Callback URL
+                          {t("tasks.webhookUrl")}
                         </div>
-                        <h2 className="text-sm text-slate-400">
-                          The URL of a webhook endpoint to send the details of
-                          the workflow result.
+                        <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                          {t("tasks.webhookUrlDesc")}
                         </h2>
                       </div>
                     </FormLabel>
@@ -836,7 +835,7 @@ function RunWorkflowForm({
                                 className="self-start"
                                 disabled={!field.value}
                               >
-                                Test Webhook
+                                {t("tasks.testWebhook")}
                               </Button>
                             }
                           />
@@ -860,10 +859,10 @@ function RunWorkflowForm({
                     <FormLabel>
                       <div className="w-72">
                         <div className="flex items-center gap-2 text-lg">
-                          Proxy Location
+                          {t("tasks.proxyLocation")}
                         </div>
-                        <h2 className="text-sm text-slate-400">
-                          Route Skyvern through one of our available proxies.
+                        <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                          {t("tasks.proxyHelper")}
                         </h2>
                       </div>
                     </FormLabel>
@@ -890,24 +889,21 @@ function RunWorkflowForm({
               const descriptions: Record<string, ReactNode> = {
                 agent: hasCode ? (
                   <span>
-                    Run this workflow with AI. (Even though it has generated
-                    code.)
+                    {t("workflows.runWithAIHasCode")}
                   </span>
                 ) : (
-                  <span>Run this workflow with AI.</span>
+                  <span>{t("workflows.runWithAIDesc")}</span>
                 ),
                 code: hasCode ? (
-                  <span>Run this workflow with generated code.</span>
+                  <span>{t("workflows.runWithCodeDesc")}</span>
                 ) : (
                   <span>
-                    Run this workflow with generated code (after it is first
-                    generated).
+                    {t("workflows.runWithCodeAfterGenerated")}
                   </span>
                 ),
                 code_v2: (
                   <span>
-                    Run this workflow with Code 2.0 (adaptive caching with
-                    self-healing scripts).
+                    {t("workflows.runWithCode2Desc")}
                   </span>
                 ),
               };
@@ -917,9 +913,9 @@ function RunWorkflowForm({
                     <FormLabel>
                       <div className="w-72">
                         <div className="flex items-center gap-2 text-lg">
-                          Run With
+                          {t("workflows.runWith")}
                         </div>
-                        <h2 className="text-sm text-slate-400">
+                        <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                           {descriptions[field.value] ?? descriptions.agent}
                         </h2>
                       </div>
@@ -931,12 +927,12 @@ function RunWorkflowForm({
                           onValueChange={(v) => field.onChange(v)}
                         >
                           <SelectTrigger className="w-48">
-                            <SelectValue placeholder="Run Method" />
+                            <SelectValue placeholder={t("workflows.runWith")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="agent">Skyvern Agent</SelectItem>
-                            <SelectItem value="code">Code</SelectItem>
-                            <SelectItem value="code_v2">Code 2.0</SelectItem>
+                            <SelectItem value="agent">{t("workflows.finrpaAgent")}</SelectItem>
+                            <SelectItem value="code">{t("workflows.code")}</SelectItem>
+                            <SelectItem value="code_v2">{t("workflows.code20")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -959,12 +955,10 @@ function RunWorkflowForm({
                     <FormLabel>
                       <div className="w-72">
                         <div className="flex items-center gap-2 text-lg">
-                          AI Fallback (self-healing)
+                          {t("workflows.aiFallback")}
                         </div>
-                        <h2 className="text-sm text-slate-400">
-                          If the run fails when running with code, keep this on
-                          to have AI attempt to fix the issue and regenerate the
-                          code.
+                        <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                          {t("workflows.aiFallbackDesc")}
                         </h2>
                       </div>
                     </FormLabel>
@@ -989,7 +983,7 @@ function RunWorkflowForm({
             <AccordionItem value="advanced" className="border-b-0">
               <AccordionTrigger className="py-0">
                 <header>
-                  <h1 className="text-lg">Advanced Settings</h1>
+                  <h1 className="text-lg">{t("tasks.advanced")}</h1>
                 </header>
               </AccordionTrigger>
               <AccordionContent className="pl-6 pr-1 pt-1">
@@ -1005,11 +999,10 @@ function RunWorkflowForm({
                             <FormLabel>
                               <div className="w-72">
                                 <div className="flex items-center gap-2 text-lg">
-                                  Browser Session ID
+                                  {t("tasks.browserSessionId")}
                                 </div>
-                                <h2 className="text-sm text-slate-400">
-                                  Use a persistent browser session to maintain
-                                  state and enable browser interaction.
+                                <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                                  {t("tasks.browserSessionIdDesc")}
                                 </h2>
                               </div>
                             </FormLabel>
@@ -1043,11 +1036,10 @@ function RunWorkflowForm({
                             <FormLabel>
                               <div className="w-72">
                                 <div className="flex items-center gap-2 text-lg">
-                                  Browser Address
+                                  {t("tasks.browserAddress")}
                                 </div>
-                                <h2 className="text-sm text-slate-400">
-                                  The address of the Browser server to use for
-                                  the workflow run.
+                                <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                                  {t("tasks.browserAddressDesc")}
                                 </h2>
                               </div>
                             </FormLabel>
@@ -1081,11 +1073,10 @@ function RunWorkflowForm({
                             <FormLabel>
                               <div className="w-72">
                                 <div className="flex items-center gap-2 text-lg">
-                                  Extra HTTP Headers
+                                  {t("tasks.extraHttpHeaders")}
                                 </div>
-                                <h2 className="text-sm text-slate-400">
-                                  Specify some self defined HTTP requests
-                                  headers in Dict format
+                                <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                                  {t("tasks.extraHttpHeadersDesc")}
                                 </h2>
                               </div>
                             </FormLabel>
@@ -1094,7 +1085,7 @@ function RunWorkflowForm({
                                 <KeyValueInput
                                   value={field.value ?? ""}
                                   onChange={(val) => field.onChange(val)}
-                                  addButtonText="Add Header"
+                                  addButtonText={t("tasks.addHeader")}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1115,9 +1106,9 @@ function RunWorkflowForm({
                             <FormLabel>
                               <div className="w-72">
                                 <div className="flex items-center gap-2 text-lg">
-                                  Max Screenshot Scrolls
+                                  {t("tasks.maxScreenshotScrolls")}
                                 </div>
-                                <h2 className="text-sm text-slate-400">
+                                <h2 className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                                   {`The maximum number of scrolls for the post action screenshot. Default is ${MAX_SCREENSHOT_SCROLLS_DEFAULT}. If it's set to 0, it will take the current viewport screenshot.`}
                                 </h2>
                               </div>

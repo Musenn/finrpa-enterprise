@@ -41,6 +41,7 @@ class LLMConfig(LLMConfigBase):
     max_completion_tokens: int | None = None
     temperature: float | None = SettingsManager.get_settings().LLM_CONFIG_TEMPERATURE
     reasoning_effort: str | None = None
+    force_stream: bool = False  # Force streaming mode for APIs that only support SSE format
 
 
 @dataclass(frozen=True)

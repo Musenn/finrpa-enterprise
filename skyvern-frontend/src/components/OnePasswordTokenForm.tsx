@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { useOnePasswordToken } from "@/hooks/useOnePasswordToken";
 import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
+import { useI18n } from "@/i18n/useI18n";
 
 const formSchema = z.object({
   token: z.string().min(1, "1Password token is required"),
@@ -22,6 +23,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function OnePasswordTokenForm() {
+  const { t } = useI18n();
   const [showToken, setShowToken] = useState(false);
   const { onePasswordToken, isLoading, createOrUpdateToken, isUpdating } =
     useOnePasswordToken();
@@ -54,20 +56,19 @@ export function OnePasswordTokenForm() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium">
-            1Password Service Account Token
+            {t("settings.onePasswordToken")}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Configure your 1Password service account token for credential
-            management.
+            {t("settings.onePasswordTokenDesc")}
           </p>
         </div>
         {onePasswordToken && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-sm text-muted-foreground">{t("settings.status")}:</span>
             <span
               className={`text-sm ${onePasswordToken.valid ? "text-green-600" : "text-red-600"}`}
             >
-              {onePasswordToken.valid ? "Active" : "Inactive"}
+              {onePasswordToken.valid ? t("settings.active") : t("settings.inactive")}
             </span>
           </div>
         )}
@@ -80,7 +81,7 @@ export function OnePasswordTokenForm() {
             name="token"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Service Account Token</FormLabel>
+                <FormLabel>{t("settings.serviceAccountToken")}</FormLabel>
                 <div className="relative">
                   <FormControl>
                     <Input
@@ -112,11 +113,11 @@ export function OnePasswordTokenForm() {
 
           <div className="flex items-center gap-4">
             <Button type="submit" disabled={isLoading || isUpdating}>
-              {isUpdating ? "Updating..." : "Update Token"}
+              {isUpdating ? t("settings.updating") : t("settings.updateToken")}
             </Button>
             {onePasswordToken && (
               <div className="text-sm text-muted-foreground">
-                Last updated:{" "}
+                {t("settings.lastUpdated")}{" "}
                 {new Date(onePasswordToken.modified_at).toLocaleDateString()}
               </div>
             )}
@@ -126,12 +127,12 @@ export function OnePasswordTokenForm() {
 
       {onePasswordToken && (
         <div className="rounded-md bg-muted p-4">
-          <h4 className="mb-2 text-sm font-medium">Token Information</h4>
+          <h4 className="mb-2 text-sm font-medium">{t("settings.tokenInfo")}</h4>
           <div className="space-y-1 text-sm text-muted-foreground">
             <div>ID: {onePasswordToken.id}</div>
-            <div>Type: {onePasswordToken.token_type}</div>
+            <div>{t("common.type")}: {onePasswordToken.token_type}</div>
             <div>
-              Created:{" "}
+              {t("settings.created")}{" "}
               {new Date(onePasswordToken.created_at).toLocaleDateString()}
             </div>
           </div>

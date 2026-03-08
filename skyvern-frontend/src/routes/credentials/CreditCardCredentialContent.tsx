@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/util/utils";
 import { Pencil1Icon } from "@radix-ui/react-icons";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   values: {
@@ -59,6 +60,7 @@ function CreditCardCredentialContent({
   onEnableEditName,
   onEnableEditValues,
 }: Props) {
+  const { t } = useI18n();
   const nameReadOnly = editMode && !editingGroups?.name;
   const valuesReadOnly = editMode && !editingGroups?.values;
 
@@ -66,9 +68,9 @@ function CreditCardCredentialContent({
     <div className="space-y-4">
       <div className="flex">
         <div className="w-72 shrink-0 space-y-1">
-          <div>Name</div>
+          <div>{t("credentials.name")}</div>
           <div className="text-sm text-slate-400">
-            The name of the credential
+            {t("credentials.nameDescription")}
           </div>
         </div>
         <div className="relative w-full">
@@ -83,7 +85,7 @@ function CreditCardCredentialContent({
               type="button"
               className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
               onClick={onEnableEditName}
-              aria-label="Edit name"
+              aria-label={t("credentials.editName")}
             >
               <Pencil1Icon className="size-4" />
             </button>
@@ -92,7 +94,7 @@ function CreditCardCredentialContent({
       </div>
       <Separator />
       <div className="space-y-2">
-        <Label>Cardholder Name</Label>
+        <Label>{t("credentials.cardholderName")}</Label>
         {valuesReadOnly ? (
           <div className="relative w-full">
             <Input value="••••••••" readOnly className="pr-9 opacity-70" />
@@ -100,7 +102,7 @@ function CreditCardCredentialContent({
               type="button"
               className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
               onClick={onEnableEditValues}
-              aria-label="Edit credential values"
+              aria-label={t("credentials.editCredentialValues")}
             >
               <Pencil1Icon className="size-4" />
             </button>
@@ -116,7 +118,7 @@ function CreditCardCredentialContent({
         )}
       </div>
       <div className="space-y-2">
-        <Label>Number</Label>
+        <Label>{t("credentials.cardNumber")}</Label>
         {valuesReadOnly ? (
           <div className="relative w-full">
             <Input value="••••••••" readOnly className="pr-9 opacity-70" />
@@ -124,7 +126,7 @@ function CreditCardCredentialContent({
               type="button"
               className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
               onClick={onEnableEditValues}
-              aria-label="Edit credential values"
+              aria-label={t("credentials.editCredentialValues")}
             >
               <Pencil1Icon className="size-4" />
             </button>
@@ -146,21 +148,21 @@ function CreditCardCredentialContent({
         )}
       </div>
       <div className="space-y-2">
-        <Label>Brand</Label>
+        <Label>{t("credentials.cardBrand")}</Label>
         <DropdownWithOptions
           options={brandOptions.map((brand) => ({
-            label: brand,
+            label: brand === "Other" ? t("common.other") : brand,
             value: brand,
           }))}
           value={values.cardBrand}
           onChange={(value) => onChange({ ...values, cardBrand: value })}
-          placeholder="Select Brand"
+          placeholder={t("credentials.selectBrand")}
           disabled={valuesReadOnly}
         />
       </div>
       <div className="flex gap-2">
         <div className="space-y-2">
-          <Label>Expiration</Label>
+          <Label>{t("credentials.cardExpiration")}</Label>
           {valuesReadOnly ? (
             <div className="relative w-full">
               <Input value="••••••••" readOnly className="pr-9 opacity-70" />
@@ -168,7 +170,7 @@ function CreditCardCredentialContent({
                 type="button"
                 className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={onEnableEditValues}
-                aria-label="Edit credential values"
+                aria-label={t("credentials.editCredentialValues")}
               >
                 <Pencil1Icon className="size-4" />
               </button>
@@ -191,7 +193,7 @@ function CreditCardCredentialContent({
           )}
         </div>
         <div className="space-y-2">
-          <Label>CVV</Label>
+          <Label>{t("credentials.cardCvv")}</Label>
           {valuesReadOnly ? (
             <div className="relative w-full">
               <Input value="••••••••" readOnly className="pr-9 opacity-70" />
@@ -199,7 +201,7 @@ function CreditCardCredentialContent({
                 type="button"
                 className="absolute right-0 top-0 flex size-9 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
                 onClick={onEnableEditValues}
-                aria-label="Edit credential values"
+                aria-label={t("credentials.editCredentialValues")}
               >
                 <Pencil1Icon className="size-4" />
               </button>

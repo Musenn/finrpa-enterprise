@@ -21,6 +21,7 @@ import { useRecordingStore } from "@/store/useRecordingStore";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { cn } from "@/util/utils";
 import { toast } from "@/components/ui/use-toast";
+import { useI18n } from "@/i18n/useI18n";
 
 import { REACT_FLOW_EDGE_Z_INDEX } from "../constants";
 import type { NodeBaseData } from "../nodes/types";
@@ -39,6 +40,7 @@ function EdgeWithAddButton({
   style = {},
   markerEnd,
 }: EdgeProps) {
+  const { t } = useI18n();
   const nodes = useNodes();
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -203,8 +205,8 @@ function EdgeWithAddButton({
     if (!file.name.toLowerCase().endsWith(".pdf")) {
       toast({
         variant: "destructive",
-        title: "Invalid file type",
-        description: "Please select a PDF file",
+        title: t("editor.invalidFileType"),
+        description: t("editor.pleaseSelectPdf"),
       });
       e.target.value = "";
       return;

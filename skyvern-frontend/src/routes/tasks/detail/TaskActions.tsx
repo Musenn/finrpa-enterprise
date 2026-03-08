@@ -23,6 +23,7 @@ import { ActionScreenshot } from "./ActionScreenshot";
 import { useActions } from "./hooks/useActions";
 import { ScrollableActionList } from "./ScrollableActionList";
 import { useFirstParam } from "@/hooks/useFirstParam";
+import { useI18n } from "@/i18n/useI18n";
 
 const formatter = Intl.NumberFormat("en-US", {
   style: "currency",
@@ -40,6 +41,7 @@ let socket: WebSocket | null = null;
 const wssBaseUrl = import.meta.env.VITE_WSS_BASE_URL;
 
 function TaskActions() {
+  const { t } = useI18n();
   const taskId = useFirstParam("taskId", "runId");
   const credentialGetter = useCredentialGetter();
   const [streamImgSrc, setStreamImgSrc] = useState<string>("");
@@ -117,14 +119,14 @@ function TaskActions() {
               message.status === "terminated"
             ) {
               toast({
-                title: "Task Failed",
-                description: "The task has failed.",
+                title: t("tasks.failed"),
+                description: t("tasks.taskFailedDesc"),
                 variant: "destructive",
               });
             } else if (message.status === "completed") {
               toast({
-                title: "Task Completed",
-                description: "The task has been completed.",
+                title: t("tasks.completed"),
+                description: t("tasks.taskCompletedDesc"),
                 variant: "success",
               });
             }
@@ -232,16 +234,16 @@ function TaskActions() {
     if (task?.status === Status.Created) {
       return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-slate-elevation1 text-lg">
-          <span>Task has been created.</span>
-          <span>Stream will start when the task is running.</span>
+          <span>{t("tasks.taskHasBeenCreated")}</span>
+          <span>{t("tasks.streamWillStart")}</span>
         </div>
       );
     }
     if (task?.status === Status.Queued) {
       return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-slate-elevation1 text-lg">
-          <span>Your task is queued. Typical queue time is 1-2 minutes.</span>
-          <span>Stream will start when the task is running.</span>
+          <span>{t("tasks.taskIsQueued")}</span>
+          <span>{t("tasks.streamWillStart")}</span>
         </div>
       );
     }
@@ -249,7 +251,7 @@ function TaskActions() {
     if (task?.status === Status.Running && streamImgSrc.length === 0) {
       return (
         <div className="flex h-full w-full items-center justify-center bg-slate-elevation1 text-lg">
-          Starting the stream...
+          {t("tasks.startingStream")}
         </div>
       );
     }

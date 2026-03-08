@@ -51,7 +51,7 @@ function WaitNode({ id, data, type }: NodeProps<WaitNode>) {
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
         )}
@@ -67,13 +67,13 @@ function WaitNode({ id, data, type }: NodeProps<WaitNode>) {
         <div className="space-y-2">
           <div className="flex justify-between">
             <div className="flex gap-2">
-              <Label className="text-xs text-slate-300">
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                 Wait Time (in seconds)
               </Label>
               <HelpTooltip content={helpTooltips["wait"]["waitInSeconds"]} />
             </div>
             {isFirstWorkflowBlock ? (
-              <div className="flex justify-end text-xs text-slate-400">
+              <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                 Tip: Use the {"+"} button to add parameters!
               </div>
             ) : null}

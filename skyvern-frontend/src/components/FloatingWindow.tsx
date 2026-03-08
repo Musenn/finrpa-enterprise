@@ -574,14 +574,13 @@ function FloatingWindow({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "#020817",
+            background: "var(--glass-bg)",
             boxSizing: "border-box",
             pointerEvents: "auto",
             overflow: "hidden",
+            borderColor: "var(--glass-border)",
           }}
-          className={cn("rounded-xl border border-slate-700", {
-            "hover:border-slate-600": !isMaximized,
-          })}
+          className={cn("rounded-xl border", {})}
           handleStyles={{
             bottomLeft: {
               width: isMinimized || isMaximized ? "0px" : Constants.HandleSize,

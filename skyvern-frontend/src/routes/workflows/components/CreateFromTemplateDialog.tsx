@@ -56,7 +56,7 @@ function CreateFromTemplateDialog({
         </DialogHeader>
         <div className="space-y-4">
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--finrpa-text-muted)" }} />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -74,22 +74,22 @@ function CreateFromTemplateDialog({
               </div>
             ) : filteredTemplates.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <BookmarkFilledIcon className="mb-3 h-10 w-10 text-slate-400" />
+                <BookmarkFilledIcon className="mb-3 h-10 w-10" style={{ color: "var(--finrpa-text-muted)" }} />
                 {templates.length === 0 ? (
                   <>
-                    <p className="text-slate-600 dark:text-slate-300">
+                    <p style={{ color: "var(--finrpa-text-secondary)" }}>
                       No templates yet
                     </p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                       Save a workflow as a template to see it here.
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="text-slate-600 dark:text-slate-300">
+                    <p style={{ color: "var(--finrpa-text-secondary)" }}>
                       No templates match your search
                     </p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
                       Try a different search term.
                     </p>
                   </>
@@ -103,7 +103,7 @@ function CreateFromTemplateDialog({
                     variant="outline"
                     className={cn(
                       "flex h-auto flex-col items-start gap-1 p-4 text-left",
-                      "hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30",
+                      "hover:border-blue-400 hover:bg-blue-50",
                     )}
                     onClick={() => handleSelect(template)}
                   >
@@ -114,11 +114,11 @@ function CreateFromTemplateDialog({
                       </span>
                     </div>
                     {template.description && (
-                      <p className="line-clamp-2 text-xs text-slate-500">
+                      <p className="line-clamp-2 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                         {template.description}
                       </p>
                     )}
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                       {template.workflow_definition.blocks.length} block
                       {template.workflow_definition.blocks.length !== 1
                         ? "s"

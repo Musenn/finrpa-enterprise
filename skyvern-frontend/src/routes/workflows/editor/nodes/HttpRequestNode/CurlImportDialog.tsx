@@ -22,6 +22,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { copyText } from "@/util/copyText";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   onImport: (data: {
@@ -37,20 +38,20 @@ type Props = {
 
 const curlExamples = [
   {
-    name: "GET Request",
+    nameKey: "editor.exampleGetRequest" as const,
     curl: `curl -X GET "https://api.example.com/users" \\
   -H "Authorization: Bearer token123" \\
   -H "Accept: application/json"`,
   },
   {
-    name: "POST JSON",
+    nameKey: "editor.examplePostJson" as const,
     curl: `curl -X POST "https://api.example.com/users" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer token123" \\
   -d '{"name": "John Doe", "email": "john@example.com"}'`,
   },
   {
-    name: "PUT Request",
+    nameKey: "editor.examplePutRequest" as const,
     curl: `curl -X PUT "https://api.example.com/users/123" \\
   -H "Content-Type: application/json" \\
   -d '{"name": "Jane Doe"}'`,
@@ -58,6 +59,7 @@ const curlExamples = [
 ];
 
 export function CurlImportDialog({ onImport, children }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [curlCommand, setCurlCommand] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,8 +74,8 @@ export function CurlImportDialog({ onImport, children }: Props) {
   const handleImport = async () => {
     if (!curlCommand.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter a curl command",
+        title: t("common.error"),
+        description: t("editor.pleaseEnterCurl"),
         variant: "destructive",
       });
       return;
@@ -98,8 +100,8 @@ export function CurlImportDialog({ onImport, children }: Props) {
       });
 
       toast({
-        title: "Success",
-        description: "Curl command imported successfully",
+        title: t("common.success"),
+        description: t("editor.curlImportedSuccess"),
         variant: "success",
       });
 
@@ -115,9 +117,9 @@ export function CurlImportDialog({ onImport, children }: Props) {
           }
         ).response?.data?.detail ||
         (error as { message?: string }).message ||
-        "Failed to parse curl command";
+        t("editor.failedParseCurl");
       toast({
-        title: "Import Failed",
+        title: t("editor.importFailed"),
         description: errorMessage,
         variant: "destructive",
       });
@@ -145,9 +147,9 @@ export function CurlImportDialog({ onImport, children }: Props) {
           }
         ).response?.data?.detail ||
         (error as { message?: string }).message ||
-        "Failed to parse curl command";
+        t("editor.failedParseCurl");
       toast({
-        title: "Preview Failed",
+        title: t("editor.previewFailed"),
         description: errorMessage,
         variant: "destructive",
       });
@@ -161,13 +163,13 @@ export function CurlImportDialog({ onImport, children }: Props) {
     const success = await copyText(example);
     if (success) {
       toast({
-        title: "Copied",
-        description: "Example copied to clipboard",
+        title: t("common.copied"),
+        description: t("editor.exampleCopied"),
       });
     } else {
       toast({
-        title: "Error",
-        description: "Failed to copy example",
+        title: t("common.error"),
+        description: t("editor.failedCopyExample"),
         variant: "destructive",
       });
     }
@@ -180,11 +182,10 @@ export function CurlImportDialog({ onImport, children }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CodeIcon className="h-5 w-5" />
-            Import from cURL
+            {t("editor.importFromCurl")}
           </DialogTitle>
           <DialogDescription>
-            Paste your curl command below and we'll automatically populate the
-            HTTP request fields.
+            {t("editor.curlImportDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -193,10 +194,10 @@ export function CurlImportDialog({ onImport, children }: Props) {
           <div className="space-y-4">
             <div>
               <label className="mb-2 block text-sm font-medium">
-                cURL Command
+                {t("editor.curlCommand")}
               </label>
               <Textarea
-                placeholder="Paste your curl command here..."
+                placeholder={t("editor.pasteCurlPlaceholder")}
                 value={curlCommand}
                 onChange={(e) => setCurlCommand(e.target.value)}
                 className="min-h-[200px] font-mono text-sm"
@@ -214,7 +215,7 @@ export function CurlImportDialog({ onImport, children }: Props) {
                 {loading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Preview
+                {t("editor.preview")}
               </Button>
               <Button
                 onClick={handleImport}
@@ -224,14 +225,14 @@ export function CurlImportDialog({ onImport, children }: Props) {
                 {loading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Import Request
+                {t("editor.importRequest")}
               </Button>
             </div>
 
             <Alert>
               <AlertDescription>
-                <strong>Supported:</strong> -X, -H, -d, --data, --json, -u,
-                --user, --cookie, --referer, and more.
+                <strong>{t("editor.supported")}:</strong> -X, -H, -d, --data, --json, -u,
+                --user, --cookie, --referer, {t("editor.andMore")}.
               </AlertDescription>
             </Alert>
           </div>
@@ -239,13 +240,13 @@ export function CurlImportDialog({ onImport, children }: Props) {
           {/* Right side - Examples and Preview */}
           <div className="space-y-4">
             <div>
-              <h4 className="mb-3 text-sm font-medium">Examples</h4>
+              <h4 className="mb-3 text-sm font-medium">{t("editor.examples")}</h4>
               <div className="space-y-2">
                 {curlExamples.map((example, index) => (
                   <div key={index} className="rounded-lg border p-3">
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-xs font-medium">
-                        {example.name}
+                        {t(example.nameKey)}
                       </span>
                       <Button
                         variant="ghost"
@@ -256,7 +257,7 @@ export function CurlImportDialog({ onImport, children }: Props) {
                         <CopyIcon className="h-3 w-3" />
                       </Button>
                     </div>
-                    <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs text-slate-400">
+                    <pre className="overflow-x-auto whitespace-pre-wrap break-all text-xs">
                       {example.curl}
                     </pre>
                   </div>
@@ -269,14 +270,14 @@ export function CurlImportDialog({ onImport, children }: Props) {
               <div>
                 <h4 className="mb-3 flex items-center gap-2 text-sm font-medium">
                   <CheckIcon className="h-4 w-4 text-green-500" />
-                  Preview
+                  {t("editor.preview")}
                 </h4>
                 <div className="space-y-2 rounded-lg border p-3">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="font-mono">
                       {previewData.method}
                     </Badge>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs">
                       {previewData.url}
                     </span>
                   </div>
@@ -284,8 +285,8 @@ export function CurlImportDialog({ onImport, children }: Props) {
                   {previewData.headers &&
                     Object.keys(previewData.headers).length > 0 && (
                       <div>
-                        <div className="mb-1 text-xs font-medium">Headers:</div>
-                        <div className="space-y-1 text-xs text-slate-400">
+                        <div className="mb-1 text-xs font-medium">{t("editor.headers")}:</div>
+                        <div className="space-y-1 text-xs">
                           {Object.entries(previewData.headers).map(
                             ([key, value]) => (
                               <div key={key} className="font-mono">
@@ -308,9 +309,9 @@ export function CurlImportDialog({ onImport, children }: Props) {
                         return (
                           <div>
                             <div className="mb-1 text-xs font-medium">
-                              Body:
+                              {t("editor.body")}:
                             </div>
-                            <pre className="overflow-x-auto whitespace-pre-wrap text-xs text-slate-400">
+                            <pre className="overflow-x-auto whitespace-pre-wrap text-xs">
                               {bodyStr || "{}"}
                             </pre>
                           </div>
@@ -319,9 +320,9 @@ export function CurlImportDialog({ onImport, children }: Props) {
                         return (
                           <div>
                             <div className="mb-1 text-xs font-medium">
-                              Body:
+                              {t("editor.body")}:
                             </div>
-                            <pre className="overflow-x-auto whitespace-pre-wrap text-xs text-slate-400">
+                            <pre className="overflow-x-auto whitespace-pre-wrap text-xs">
                               {"{}"}
                             </pre>
                           </div>
@@ -340,14 +341,14 @@ export function CurlImportDialog({ onImport, children }: Props) {
             onClick={() => setOpen(false)}
             disabled={loading}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={handleImport}
             disabled={loading || !curlCommand.trim()}
           >
             {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Import Request
+            {t("editor.importRequest")}
           </Button>
         </DialogFooter>
       </DialogContent>

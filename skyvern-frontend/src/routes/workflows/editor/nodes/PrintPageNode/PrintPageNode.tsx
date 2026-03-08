@@ -27,8 +27,10 @@ import { useUpdate } from "@/routes/workflows/editor/useUpdate";
 import { ParametersMultiSelect } from "../TaskNode/ParametersMultiSelect";
 import { AppNode } from "..";
 import { getAvailableOutputParameterKeys } from "../../workflowEditorUtils";
+import { useI18n } from "@/i18n/useI18n";
 
 function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
+  const { t } = useI18n();
   const { editable, label } = data;
   const { blockLabel: urlBlockLabel } = useParams();
   const { data: workflowRun } = useWorkflowRunQuery();
@@ -63,7 +65,7 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
           "w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
         )}
@@ -78,7 +80,7 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
         />
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-slate-300">Page Format</Label>
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.pageFormat")}</Label>
             <Select
               value={data.format}
               onValueChange={(value) => update({ format: value })}
@@ -97,8 +99,8 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Label className="text-xs text-slate-300">Print Background</Label>
-              <HelpTooltip content="Include CSS background colors and images in the PDF" />
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.printBackground")}</Label>
+              <HelpTooltip content={t("editor.printBackgroundHelp")} />
             </div>
             <Switch
               checked={data.printBackground}
@@ -110,10 +112,10 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Label className="text-xs font-normal text-slate-300">
-                Headers & Footers
+              <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                {t("editor.headersAndFooters")}
               </Label>
-              <HelpTooltip content="Adds date, title, URL, and page numbers to the PDF" />
+              <HelpTooltip content={t("editor.headersAndFootersHelp")} />
             </div>
             <Switch
               checked={data.includeTimestamp}
@@ -128,7 +130,7 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
         <Accordion type="single" collapsible>
           <AccordionItem value="advanced" className="border-b-0">
             <AccordionTrigger className="py-0">
-              Advanced Settings
+              {t("editor.advancedSettings")}
             </AccordionTrigger>
             <AccordionContent className="pl-6 pr-1 pt-1">
               <div className="space-y-4">
@@ -140,8 +142,8 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
                   }}
                 />
                 <div className="space-y-2">
-                  <Label className="text-xs text-slate-300">
-                    Custom Filename
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.customFilename")}
                   </Label>
                   <Input
                     value={data.customFilename}
@@ -152,8 +154,8 @@ function PrintPageNode({ id, data }: NodeProps<PrintPageNode>) {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs font-normal text-slate-300">
-                    Landscape
+                  <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                    {t("editor.landscape")}
                   </Label>
                   <Switch
                     checked={data.landscape}

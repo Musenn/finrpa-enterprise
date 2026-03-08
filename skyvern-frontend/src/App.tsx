@@ -7,6 +7,10 @@ import { queryClient } from "./api/QueryClient";
 import { PostHogProvider } from "posthog-js/react";
 import { LoggingContext, loggingStub } from "@/store/LoggingContext";
 import { UserContext } from "@/store/UserContext";
+import { useAuthStore } from "@/store/AuthStore";
+
+// Restore auth state from localStorage before the first render.
+useAuthStore.getState().initialize();
 
 const postHogOptions = {
   api_host: "https://app.posthog.com",

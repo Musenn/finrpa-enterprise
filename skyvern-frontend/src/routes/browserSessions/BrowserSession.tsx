@@ -26,10 +26,12 @@ import { type BrowserSession as BrowserSessionType } from "@/routes/workflows/ty
 
 import { BrowserSessionDownloads } from "./BrowserSessionDownloads";
 import { BrowserSessionVideo } from "./BrowserSessionVideo";
+import { useI18n } from "@/i18n/useI18n";
 
 type TabName = "stream" | "recordings" | "downloads";
 
 function BrowserSession() {
+  const { t } = useI18n();
   const { browserSessionId } = useParams();
   const location = useLocation();
   const activeTab: TabName = location.pathname.endsWith("/recordings")
@@ -68,7 +70,7 @@ function BrowserSession() {
       <div className="h-screen w-full gap-4 p-6">
         <div className="flex h-full w-full items-center justify-center">
           {/* we need nice artwork here */}
-          Loading...
+          {t("common.loading")}
         </div>
       </div>
     );
@@ -79,7 +81,7 @@ function BrowserSession() {
       <div className="h-screen w-full gap-4 p-6">
         <div className="flex h-full w-full items-center justify-center">
           {/* we need nice artwork here */}
-          No browser session found.
+          {t("browserSessions.notFound")}
         </div>
       </div>
     );
@@ -91,7 +93,7 @@ function BrowserSession() {
         <div className="flex w-full flex-shrink-0 flex-row items-center justify-between rounded-lg border p-4">
           <div className="flex w-full flex-row items-center justify-start gap-2">
             <LogoMinimized />
-            <div className="text-xl">Browser Session</div>
+            <div className="text-xl">{t("browserSessions.browserSession")}</div>
             {browserSession && (
               <div className="ml-auto flex flex-col items-end justify-end overflow-hidden">
                 <div className="flex items-center justify-end gap-2">
@@ -136,9 +138,9 @@ function BrowserSession() {
         <div className="flex w-full items-center justify-start gap-2">
           <SwitchBarNavigation
             options={[
-              { label: "Stream", to: "stream" },
-              { label: "Recordings", to: "recordings" },
-              { label: "Downloads", to: "downloads" },
+              { label: t("browserSessions.stream"), to: "stream" },
+              { label: t("browserSessions.recordings"), to: "recordings" },
+              { label: t("browserSessions.downloads"), to: "downloads" },
             ]}
           />
 
@@ -147,20 +149,19 @@ function BrowserSession() {
               <DialogTrigger asChild>
                 <Button className="ml-auto" variant="secondary">
                   <StopIcon className="mr-2 h-4 w-4" />
-                  Stop
+                  {t("browserSessions.stop")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Are you sure?</DialogTitle>
+                  <DialogTitle>{t("common.areYouSure")}</DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to stop (shut down) this browser
-                    session?
+                    {t("browserSessions.stopConfirm")}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button variant="secondary">Back</Button>
+                    <Button variant="secondary">{t("common.back")}</Button>
                   </DialogClose>
                   <Button
                     variant="destructive"
@@ -172,7 +173,7 @@ function BrowserSession() {
                     {closeBrowserSessionMutation.isPending && (
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Stop Browser Session
+                    {t("browserSessions.stopBrowserSession")}
                   </Button>
                 </DialogFooter>
               </DialogContent>

@@ -18,6 +18,7 @@ import {
 } from "@radix-ui/react-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   values: {
@@ -64,6 +65,7 @@ function PasswordCredentialContent({
   onEnableEditName,
   onEnableEditValues,
 }: Props) {
+  const { t } = useI18n();
   const { name, username, password, totp, totp_type, totp_identifier } = values;
   const nameReadOnly = editMode && !editingGroups?.name;
   const valuesReadOnly = editMode && !editingGroups?.values;
@@ -78,12 +80,12 @@ function PasswordCredentialContent({
   const prevTotpMethodRef = useRef<typeof totpMethod>(totpMethod);
   const totpIdentifierLabel =
     totpMethod === "text"
-      ? "TOTP Identifier (Phone)"
-      : "TOTP Identifier (Username or Email)";
+      ? t("credentials.totpIdentifierPhone")
+      : t("credentials.totpIdentifierEmail");
   const totpIdentifierHelper =
     totpMethod === "text"
-      ? "Phone number used to receive 2FA codes."
-      : "Email address used to receive 2FA codes.";
+      ? t("credentials.totpPhoneHelper")
+      : t("credentials.totpEmailHelper");
 
   const updateValues = useCallback(
     (updates: Partial<Props["values"]>): void => {
@@ -145,7 +147,7 @@ function PasswordCredentialContent({
     <div className="space-y-5">
       <div className="flex items-center gap-12">
         <div className="w-40 shrink-0">
-          <Label>Name</Label>
+          <Label>{t("credentials.name")}</Label>
         </div>
         <div className="relative w-full">
           <Input
@@ -173,7 +175,7 @@ function PasswordCredentialContent({
           <div className="flex items-center gap-12">
             <div className="w-40 shrink-0">
               <Label>
-                Login Page URL
+                {t("credentials.loginPageUrl")}
                 {urlRequired && <span className="text-destructive"> *</span>}
               </Label>
             </div>
@@ -190,7 +192,7 @@ function PasswordCredentialContent({
       <Separator />
       <div className="flex items-center gap-12">
         <div className="w-40 shrink-0">
-          <Label>Username or Email</Label>
+          <Label>{t("credentials.username")}</Label>
         </div>
         <div className="relative w-full">
           <Input
@@ -213,7 +215,7 @@ function PasswordCredentialContent({
       </div>
       <div className="flex items-center gap-12">
         <div className="w-40 shrink-0">
-          <Label>Password</Label>
+          <Label>{t("credentials.password")}</Label>
         </div>
         {valuesReadOnly ? (
           <div className="relative w-full">
@@ -256,13 +258,12 @@ function PasswordCredentialContent({
       <Accordion type="single" collapsible>
         <AccordionItem value="two-factor-authentication" className="border-b-0">
           <AccordionTrigger className="py-2">
-            Two-Factor Authentication
+            {t("credentials.twoFactor")}
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               <p className="text-sm text-slate-400">
-                Set up Skyvern to automatically retrieve two-factor
-                authentication codes.
+                {t("credentials.twoFactorDesc")}
               </p>
               <div
                 className={cn("grid h-36 grid-cols-3 gap-4", {
@@ -279,7 +280,7 @@ function PasswordCredentialContent({
                   onClick={() => handleTotpMethodChange("authenticator")}
                 >
                   <QRCodeIcon className="h-6 w-6" />
-                  <Label>Authenticator App</Label>
+                  <Label>{t("credentials.authenticatorApp")}</Label>
                 </div>
                 <div
                   className={cn(
@@ -291,7 +292,7 @@ function PasswordCredentialContent({
                   onClick={() => handleTotpMethodChange("email")}
                 >
                   <EnvelopeClosedIcon className="h-6 w-6" />
-                  <Label>Email</Label>
+                  <Label>{t("credentials.email")}</Label>
                 </div>
                 <div
                   className={cn(
@@ -303,7 +304,7 @@ function PasswordCredentialContent({
                   onClick={() => handleTotpMethodChange("text")}
                 >
                   <MobileIcon className="h-6 w-6" />
-                  <Label>Text Message</Label>
+                  <Label>{t("credentials.textMessage")}</Label>
                 </div>
               </div>
               {(totpMethod === "text" || totpMethod === "email") && (
@@ -340,25 +341,22 @@ function PasswordCredentialContent({
                   </div>
                   <p className="text-sm text-slate-400">
                     <Link
-                      to="https://meetings.hubspot.com/skyvern/demo"
+                      to="https://github.com/Musenn/finrpa-enterprise"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline underline-offset-2"
                     >
-                      Contact us to set up two-factor authentication in
-                      workflows
+                      {t("credentials.contactUs")}
                     </Link>{" "}
-                    or{" "}
+                    {t("common.or")}{" "}
                     <Link
                       to="https://github.com/Musenn/finrpa-enterprise"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline underline-offset-2"
                     >
-                      see our documentation on how to set up two-factor
-                      authentication in workflows
-                    </Link>{" "}
-                    to get started.
+                      {t("credentials.seeDocumentation")}
+                    </Link>
                   </p>
                 </>
               )}
@@ -367,7 +365,7 @@ function PasswordCredentialContent({
                   <div className="flex items-center gap-12">
                     <div className="w-40 shrink-0">
                       <Label className="whitespace-nowrap">
-                        Authenticator Key
+                        {t("credentials.authenticatorKey")}
                       </Label>
                     </div>
                     {valuesReadOnly ? (
@@ -395,9 +393,7 @@ function PasswordCredentialContent({
                     )}
                   </div>
                   <p className="text-sm text-slate-400">
-                    You need to find the authenticator secret from the website
-                    where you are using the credential. Here are some guides
-                    from popular authenticator apps:{"  "}
+                    {t("credentials.authenticatorGuide")}{"  "}
                     <Link
                       to="https://bitwarden.com/help/integrated-authenticator/#manually-enter-a-secret"
                       target="_blank"
@@ -415,7 +411,7 @@ function PasswordCredentialContent({
                     >
                       1Password
                     </Link>
-                    {", and "}
+                    {", "}
                     <Link
                       to="https://support.lastpass.com/s/document-item?language=en_US&bundleId=lastpass&topicId=LastPass/create-totp-vault.html&_LANG=enus"
                       target="_blank"
@@ -424,7 +420,6 @@ function PasswordCredentialContent({
                     >
                       LastPass
                     </Link>
-                    {"."}
                   </p>
                 </div>
               )}

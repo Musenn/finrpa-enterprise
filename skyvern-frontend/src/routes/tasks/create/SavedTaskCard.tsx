@@ -25,11 +25,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { useCredentialGetter } from "@/hooks/useCredentialGetter";
-import { cn } from "@/util/utils";
 import { DotsHorizontalIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   workflowId: string;
@@ -39,6 +39,7 @@ type Props = {
 };
 
 function SavedTaskCard({ workflowId, title, url, description }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
@@ -55,15 +56,15 @@ function SavedTaskCard({ workflowId, title, url, description }: Props) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "There was an error while deleting the template",
+        title: t("tasks.errorDeletingTemplate"),
         description: error.message,
       });
       setOpen(false);
     },
     onSuccess: () => {
       toast({
-        title: "Template deleted",
-        description: "Template deleted successfully",
+        title: t("tasks.templateDeleted"),
+        description: t("tasks.templateDeletedSuccessfully"),
       });
       queryClient.invalidateQueries({
         queryKey: ["savedTasks"],
@@ -75,16 +76,19 @@ function SavedTaskCard({ workflowId, title, url, description }: Props) {
 
   return (
     <Card
-      className="border-0"
+      className="overflow-hidden border-0"
+      style={{
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--glass-shadow)",
+      }}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       onMouseOver={() => setHovering(true)}
       onMouseOut={() => setHovering(false)}
     >
       <CardHeader
-        className={cn("rounded-t-md bg-slate-elevation1", {
-          "bg-slate-900": hovering,
-        })}
+        className="rounded-t-md"
+        style={{ background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)" }}
       >
         <CardTitle className="flex items-center justify-between font-normal">
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -101,22 +105,22 @@ function SavedTaskCard({ workflowId, title, url, description }: Props) {
                 <DotsHorizontalIcon className="cursor-pointer" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Template Actions</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("tasks.templateActions")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => {
                     setOpen(true);
                   }}
                 >
-                  Delete Template
+                  {t("tasks.deleteTemplate")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogTitle>{t("common.areYouSure")}</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete this task template?
+                  {t("tasks.confirmDeleteTemplate")}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -126,7 +130,7 @@ function SavedTaskCard({ workflowId, title, url, description }: Props) {
                     setOpen(false);
                   }}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </Button>
                 <Button
                   variant="destructive"
@@ -138,23 +142,22 @@ function SavedTaskCard({ workflowId, title, url, description }: Props) {
                   {deleteTaskMutation.isPending && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Delete
+                  {t("common.delete")}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </CardTitle>
-        <CardDescription className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-400">
+        <CardDescription className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: "var(--finrpa-text-muted)" }}>
           {url}
         </CardDescription>
       </CardHeader>
       <CardContent
-        className={cn(
-          "h-36 cursor-pointer overflow-scroll rounded-b-md bg-slate-elevation3 p-4 text-sm text-slate-300",
-          {
-            "bg-slate-800": hovering,
-          },
-        )}
+        className="h-36 cursor-pointer overflow-scroll rounded-b-md p-4 text-sm"
+        style={{
+          color: "var(--finrpa-text-secondary)",
+          background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)",
+        }}
         onClick={() => {
           navigate(`/tasks/create/${workflowId}`);
         }}

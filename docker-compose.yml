@@ -6,7 +6,7 @@ services:
     image: postgres:14-alpine
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -26,7 +26,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "16379:6379"
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
@@ -43,8 +43,8 @@ services:
     image: minio/minio:latest
     restart: unless-stopped
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "19000:9000"
+      - "19001:9001"
     volumes:
       - minio-data:/data
     environment:
@@ -58,20 +58,29 @@ services:
       retries: 5
 
   # ============================================================
-  # Skyvern Core -- AI browser automation engine
+  # FinRPA Core -- AI browser automation engine
   # ============================================================
   skyvern:
     image: public.ecr.aws/skyvern/skyvern:latest
     restart: on-failure
     ports:
-      - "8000:8000"
-      - "6080:6080"
-      - "9222:9222"
+      - "18000:8000"
+      - "16080:6080"
+      - "19222:9222"
     volumes:
       - ./artifacts:/data/artifacts
       - ./videos:/data/videos
       - ./har:/data/har
       - ./log:/data/log
+      - ./skyvern/config.py:/app/skyvern/config.py:ro
+      - ./skyvern/forge/sdk/api/llm/models.py:/app/skyvern/forge/sdk/api/llm/models.py:ro
+      - ./skyvern/forge/sdk/api/llm/config_registry.py:/app/skyvern/forge/sdk/api/llm/config_registry.py:ro
+      - ./skyvern/forge/sdk/api/llm/api_handler_factory.py:/app/skyvern/forge/sdk/api/llm/api_handler_factory.py:ro
+      - ./skyvern/forge/api_app.py:/app/skyvern/forge/api_app.py:ro
+      - ./enterprise:/app/enterprise:ro
+      - ./alembic/env.py:/app/alembic/env.py:ro
+      - ./entrypoint-skyvern.sh:/app/entrypoint-skyvern.sh:ro
+      - ./scripts/ensure_enterprise_schema.py:/app/scripts/ensure_enterprise_schema.py:ro
     env_file:
       - .env
     environment:
@@ -80,7 +89,7 @@ services:
       ENABLE_CODE_BLOCK: "true"
       REDIS_URL: redis://redis:6379/0
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/heartbeat')\""]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -92,14 +101,14 @@ services:
         condition: service_healthy
 
   # ============================================================
-  # Skyvern UI -- Web frontend
+  # FinRPA UI -- Web frontend (Docker image fallback)
   # ============================================================
   skyvern-ui:
     image: public.ecr.aws/skyvern/skyvern-ui:latest
     restart: unless-stopped
     ports:
-      - "8080:8080"
-      - "9090:9090"
+      - "18080:8080"
+      - "19090:9090"
     depends_on:
       skyvern:
         condition: service_healthy

@@ -28,6 +28,7 @@ import { AxiosError } from "axios";
 import { toast } from "../ui/use-toast";
 import { TSON } from "@/util/tson";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   value: string;
@@ -44,6 +45,7 @@ function WorkflowDataSchemaInputGroup({
   exampleValue,
   helpTooltip,
 }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const [generateWithAIActive, setGenerateWithAIActive] = useState(false);
   const [generateWithAIPrompt, setGenerateWithAIPrompt] = useState("");
@@ -80,9 +82,9 @@ function WorkflowDataSchemaInputGroup({
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Could not generate the data schema",
+        title: t("workflows.failedGenerateSchema"),
         description:
-          error.message ?? "There was an error generating data schema",
+          error.message ?? t("workflows.errorGeneratingSchema"),
       });
     },
   });
@@ -92,7 +94,7 @@ function WorkflowDataSchemaInputGroup({
       <div className="flex h-7 items-center justify-between">
         <div className="flex gap-4">
           <div className="flex gap-2">
-            <Label className="text-xs text-slate-300">Data Schema</Label>
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("workflows.dataSchema")}</Label>
             <HelpTooltip
               content={helpTooltip ?? helpTooltips["task"]["dataSchema"]}
             />
@@ -118,7 +120,7 @@ function WorkflowDataSchemaInputGroup({
             }}
           >
             <MagicWandIcon className="mr-2 size-4" />
-            Generate with AI
+            {t("workflows.generateWithAI")}
           </Button>
         )}
       </div>
@@ -140,7 +142,7 @@ function WorkflowDataSchemaInputGroup({
                 onChange={(event) => {
                   setGenerateWithAIPrompt(event.target.value);
                 }}
-                placeholder="Describe how you want your output formatted"
+                placeholder={t("workflows.describeOutputFormat")}
               />
               {getDataSchemaSuggestionMutation.isPending ? (
                 <ReloadIcon className="size-4 animate-spin" />
@@ -198,15 +200,14 @@ function WorkflowDataSchemaInputGroup({
         >
           <DialogContent className="max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Review AI-Generated Schema</DialogTitle>
+              <DialogTitle>{t("workflows.reviewAISchema")}</DialogTitle>
               <DialogDescription>
-                Review the AI-generated schema before applying it. This will
-                replace your current data schema.
+                {t("workflows.reviewAISchemaDesc")}
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm text-slate-400">Current Schema</Label>
+                <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.currentSchema")}</Label>
                 <CodeEditor
                   language="json"
                   value={value}
@@ -218,8 +219,8 @@ function WorkflowDataSchemaInputGroup({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm text-slate-400">
-                  Proposed Schema
+                <Label className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("workflows.proposedSchema")}
                 </Label>
                 <CodeEditor
                   language="json"
@@ -234,7 +235,7 @@ function WorkflowDataSchemaInputGroup({
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
+                <Button variant="secondary">{t("common.cancel")}</Button>
               </DialogClose>
               <Button
                 onClick={() => {
@@ -244,7 +245,7 @@ function WorkflowDataSchemaInputGroup({
                   resetAIState();
                 }}
               >
-                Accept Changes
+                {t("workflows.acceptChanges")}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -41,15 +41,10 @@ import { BROWSER_DOWNLOAD_TIMEOUT_SECONDS } from "@/api/types";
 import { DisableCache } from "../DisableCache";
 import { BlockExecutionOptions } from "../components/BlockExecutionOptions";
 import { AI_IMPROVE_CONFIGS } from "../../constants";
-
-const urlTooltip =
-  "The URL Skyvern is navigating to. Leave this field blank to pick up from where the last block left off.";
-const urlPlaceholder = "https://";
-const navigationGoalTooltip =
-  "Give Skyvern an objective that describes how to download the file.";
-const navigationGoalPlaceholder = "Tell Skyvern which file to download.";
+import { useI18n } from "@/i18n/useI18n";
 
 function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
+  const { t } = useI18n();
   const [facing, setFacing] = useState<"front" | "back">("front");
   const blockScriptStore = useBlockScriptStore();
   const { editable, label } = data;
@@ -94,7 +89,7 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
               "pointer-events-none": thisBlockIsPlaying,
-              "bg-slate-950 outline outline-2 outline-slate-300":
+              "outline outline-2 outline-primary":
                 thisBlockIsTargetted,
             },
           )}
@@ -111,12 +106,12 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <div className="flex gap-2">
-                  <Label className="text-xs text-slate-300">URL</Label>
-                  <HelpTooltip content={urlTooltip} />
+                  <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("tasks.url")}</Label>
+                  <HelpTooltip content={helpTooltips["download"]["url"]} />
                 </div>
                 {isFirstWorkflowBlock ? (
-                  <div className="flex justify-end text-xs text-slate-400">
-                    Tip: Use the {"+"} button to add parameters!
+                  <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+                    {t("editor.tipAddParameters")}
                   </div>
                 ) : null}
               </div>
@@ -126,14 +121,14 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   update({ url: value });
                 }}
                 value={data.url}
-                placeholder={urlPlaceholder}
+                placeholder={placeholders["download"]["url"]}
                 className="nopan text-xs"
               />
             </div>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">Download Goal</Label>
-                <HelpTooltip content={navigationGoalTooltip} />
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.downloadGoal")}</Label>
+                <HelpTooltip content={helpTooltips["download"]["navigationGoal"]} />
               </div>
               <WorkflowBlockInputTextarea
                 aiImprove={AI_IMPROVE_CONFIGS.fileDownload.navigationGoal}
@@ -142,17 +137,17 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   update({ navigationGoal: value });
                 }}
                 value={data.navigationGoal}
-                placeholder={navigationGoalPlaceholder}
+                placeholder={placeholders["download"]["navigationGoal"]}
                 className="nopan text-xs"
               />
             </div>
             <div className="space-y-2">
               <div className="space-between flex items-center gap-2">
-                <Label className="text-xs text-slate-300">
-                  Download Timeout (sec)
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                  {t("editor.downloadTimeoutSec")}
                 </Label>
                 <HelpTooltip
-                  content={`The maximum time to wait for downloads to complete, in seconds. If not set, defaults to ${BROWSER_DOWNLOAD_TIMEOUT_SECONDS} seconds.`}
+                  content={t("editor.downloadTimeoutHelp", { seconds: BROWSER_DOWNLOAD_TIMEOUT_SECONDS })}
                 />
 
                 <Input
@@ -172,8 +167,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                 />
               </div>
             </div>
-            <div className="rounded-md bg-slate-800 p-2 text-xs text-slate-400">
-              Once the file is downloaded, this block will complete.
+            <div className="rounded-md p-2 text-xs" style={{ background: "var(--glass-bg)", color: "var(--finrpa-text-muted)" }}>
+              {t("editor.downloadCompleteHint")}
             </div>
           </div>
           <Separator />
@@ -184,7 +179,7 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
           >
             <AccordionItem value="advanced" className="border-b-0">
               <AccordionTrigger className="py-0">
-                Advanced Settings
+                {t("editor.advancedSettings")}
               </AccordionTrigger>
               <AccordionContent className="pl-6 pr-1 pt-1">
                 <div key={rerender.key} className="space-y-4">
@@ -206,8 +201,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        Engine
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("tasks.engine")}
                       </Label>
                     </div>
                     <RunEngineSelector
@@ -220,8 +215,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        Max Steps Override
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.maxStepsOverride")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["download"]["maxStepsOverride"]}
@@ -245,8 +240,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   <div className="space-y-2">
                     <div className="flex gap-4">
                       <div className="flex gap-2">
-                        <Label className="text-xs font-normal text-slate-300">
-                          Error Messages
+                        <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                          {t("editor.errorMessages")}
                         </Label>
                         <HelpTooltip
                           content={helpTooltips["download"]["errorCodeMapping"]}
@@ -305,8 +300,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
-                        File Name
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.fileName")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["download"]["fileSuffix"]}
@@ -325,8 +320,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        2FA Identifier
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.twoFaIdentifier")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["download"]["totpIdentifier"]}
@@ -344,8 +339,8 @@ function FileDownloadNode({ id, data }: NodeProps<FileDownloadNode>) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        2FA Verification URL
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.twoFaVerificationUrl")}
                       </Label>
                       <HelpTooltip
                         content={helpTooltips["task"]["totpVerificationUrl"]}

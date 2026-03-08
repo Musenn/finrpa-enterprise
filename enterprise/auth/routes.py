@@ -3,8 +3,6 @@
 import structlog
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from skyvern.forge import app as forge_app
 
 from .dependencies import CurrentUser
@@ -14,6 +12,8 @@ from .models import (
     UserBusinessLineModel,
     UserDepartmentRoleModel,
 )
+from skyvern.forge.sdk.db.models import OrganizationModel
+
 from .schemas import DepartmentRole, LoginRequest, LoginResponse
 
 LOG = structlog.get_logger()
@@ -21,9 +21,29 @@ LOG = structlog.get_logger()
 router = APIRouter(prefix="/enterprise/auth", tags=["Enterprise Auth"])
 
 
-async def _get_db_session() -> AsyncSession:
-    """Get an async database session from Skyvern's connection pool."""
-    return forge_app.DATABASE.get_async_session()
+@router.get("/organizations")
+async def list_enterprise_organizations() -> list[dict]:
+    """Return organizations that have enterprise users (public, no auth required)."""
+    async with forge_app.DATABASE.Session() as session:
+        stmt = (
+            select(
+                OrganizationModel.organization_id,
+                OrganizationModel.organization_name,
+            )
+            .where(
+                OrganizationModel.organization_id.in_(
+                    select(EnterpriseUserModel.organization_id).distinct()
+                )
+            )
+            .order_by(OrganizationModel.organization_name)
+        )
+        result = await session.execute(stmt)
+        rows = result.all()
+
+    return [
+        {"organization_id": r.organization_id, "organization_name": r.organization_name}
+        for r in rows
+    ]
 
 
 @router.post("/login", response_model=LoginResponse)
@@ -33,7 +53,7 @@ async def login(request: LoginRequest) -> LoginResponse:
 
     from .jwt_service import create_enterprise_token
 
-    async with await _get_db_session() as session:
+    async with forge_app.DATABASE.Session() as session:
         # Find user by org + username
         stmt = select(EnterpriseUserModel).where(
             EnterpriseUserModel.organization_id == request.organization_id,

@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/util/utils";
 import { EyeNoneIcon, EyeOpenIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   values: {
@@ -30,6 +31,7 @@ function SecretCredentialContent({
   onEnableEditName,
   onEnableEditValues,
 }: Props) {
+  const { t } = useI18n();
   const { name, secretLabel, secretValue } = values;
   const nameReadOnly = editMode && !editingGroups?.name;
   const valuesReadOnly = editMode && !editingGroups?.values;
@@ -39,9 +41,9 @@ function SecretCredentialContent({
     <div className="space-y-4">
       <div className="flex">
         <div className="w-72 shrink-0 space-y-1">
-          <Label>Name</Label>
+          <Label>{t("credentials.name")}</Label>
           <div className="text-sm text-slate-400">
-            The name of the credential
+            {t("credentials.nameDescription")}
           </div>
         </div>
         <div className="relative w-full">
@@ -65,10 +67,10 @@ function SecretCredentialContent({
       </div>
       <Separator />
       <div className="space-y-2">
-        <Label>Secret Label (optional)</Label>
+        <Label>{t("credentials.secretLabelOptional")}</Label>
         <div className="relative w-full">
           <Input
-            placeholder="e.g., API Key, Bearer Token"
+            placeholder={t("credentials.secretLabelPlaceholder")}
             value={secretLabel}
             onChange={(e) =>
               onChange({ ...values, secretLabel: e.target.value })
@@ -89,7 +91,7 @@ function SecretCredentialContent({
         </div>
       </div>
       <div className="space-y-2">
-        <Label>Secret Value</Label>
+        <Label>{t("credentials.secretValue")}</Label>
         {valuesReadOnly ? (
           <div className="relative w-full">
             <Input value="••••••••" readOnly className="pr-9 opacity-70" />
@@ -129,9 +131,7 @@ function SecretCredentialContent({
           </div>
         )}
         <p className="text-sm text-slate-400">
-          {
-            "Use in HTTP Request blocks with: {{ credential_name.secret_value }}"
-          }
+          {t("credentials.secretUsageHint")}
         </p>
       </div>
     </div>

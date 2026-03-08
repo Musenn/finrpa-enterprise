@@ -21,7 +21,7 @@ function TaskFormSection({
   const [hovering, setHovering] = useState(false);
 
   return (
-    <section className="space-y-8 rounded-lg bg-slate-elevation3 px-6 py-5">
+    <section className="space-y-8 rounded-lg px-6 py-5 glass-card-static">
       <header className="flex h-7 gap-4">
         <div
           className="flex h-7 cursor-pointer gap-4"
@@ -33,14 +33,17 @@ function TaskFormSection({
         >
           <div
             className={cn(
-              "flex w-7 items-center justify-center rounded-full border border-slate-400",
+              "flex w-7 items-center justify-center rounded-full border",
               {
                 "border-destructive": !active && hasError,
-                "bg-slate-400 text-slate-950": active || hovering,
               },
             )}
+            style={{
+              borderColor: (!active && hasError) ? undefined : "var(--glass-border)",
+              ...(active || hovering ? { background: "var(--glass-border)", color: "var(--finrpa-text-primary)" } : {}),
+            }}
           >
-            <span className={"text-slate-50"}>{String(index)}</span>
+            <span style={{ color: "var(--finrpa-text-primary)" }}>{String(index)}</span>
           </div>
           <span
             className={cn("text-lg", {

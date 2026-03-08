@@ -21,21 +21,14 @@ import {
 import { useRerender } from "@/hooks/useRerender";
 import { useRecordingStore } from "@/store/useRecordingStore";
 import { AI_IMPROVE_CONFIGS } from "../../constants";
-
-const instructionsTooltip =
-  "Instructions shown to the user for review. Explain what needs to be reviewed and what action should be taken.";
-const positiveDescriptorTooltip =
-  "Label for the positive action button (e.g., 'Approve', 'Continue', 'Yes').";
-const negativeDescriptorTooltip =
-  "Label for the negative action button (e.g., 'Reject', 'Cancel', 'No').";
-const timeoutTooltip =
-  "Time in seconds to wait for human interaction before timing out. Default is 2 hours (7200 seconds).";
+import { useI18n } from "@/i18n/useI18n";
 
 function HumanInteractionNode({
   id,
   data,
   type,
 }: NodeProps<HumanInteractionNode>) {
+  const { t } = useI18n();
   const { editable, label } = data;
   const { blockLabel: urlBlockLabel } = useParams();
   const { data: workflowRun } = useWorkflowRunQuery();
@@ -72,7 +65,7 @@ function HumanInteractionNode({
           "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
           {
             "pointer-events-none": thisBlockIsPlaying,
-            "bg-slate-950 outline outline-2 outline-slate-300":
+            "outline outline-2 outline-primary":
               thisBlockIsTargetted,
           },
           data.comparisonColor,
@@ -94,10 +87,10 @@ function HumanInteractionNode({
           <div className="space-y-2">
             <div className="flex justify-between">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">
-                  Instructions For Human
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                  {t("editor.instructionsForHuman")}
                 </Label>
-                <HelpTooltip content={instructionsTooltip} />
+                <HelpTooltip content={t("editor.instructionsForHumanHelp")} />
               </div>
             </div>
             {/* TODO(jdo): 'instructions' allows templating; but it requires adding a column to the workflow_block_runs
@@ -108,13 +101,13 @@ function HumanInteractionNode({
                 update({ instructions: value });
               }}
               value={data.instructions}
-              placeholder="Please review and approve or reject to continue the workflow."
+              placeholder={t("editor.instructionsPlaceholder")}
               className="nopan text-xs"
             />
           </div>
           <div className="space-between flex items-center gap-2">
-            <Label className="text-xs text-slate-300">Timeout (minutes)</Label>
-            <HelpTooltip content={timeoutTooltip} />
+            <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.timeoutMinutes")}</Label>
+            <HelpTooltip content={t("editor.humanTimeoutHelp")} />
             <Input
               className="ml-auto w-16 text-right"
               value={data.timeoutSeconds / 60}
@@ -128,18 +121,16 @@ function HumanInteractionNode({
               }}
             />
           </div>
-          <div className="flex items-center justify-center gap-2 rounded-md bg-slate-800 p-2">
-            <span className="rounded bg-slate-700 p-1 text-lg">💡</span>
-            <div className="space-y-1 text-xs text-slate-400">
-              The workflow will pause and send an email notification to the
-              recipients. The workflow continues or terminates based on the
-              user's response.
+          <div className="flex items-center justify-center gap-2 rounded-md p-2" style={{ background: "rgba(26,58,92,0.06)" }}>
+            <span className="rounded p-1 text-lg" style={{ background: "rgba(26,58,92,0.10)" }}>💡</span>
+            <div className="space-y-1 text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("editor.humanInteractionInfo")}
             </div>
           </div>
-          <div className="space-y-4 rounded-md bg-slate-800 p-4">
-            <h2>Email Settings</h2>
+          <div className="space-y-4 rounded-md p-4" style={{ background: "rgba(26,58,92,0.06)" }}>
+            <h2>{t("editor.emailSettings")}</h2>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300">Recipients</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.recipients")}</Label>
               <WorkflowBlockInput
                 nodeId={id}
                 onChange={(value) => {
@@ -151,19 +142,19 @@ function HumanInteractionNode({
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300">Subject</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.subject")}</Label>
               <WorkflowBlockInput
                 nodeId={id}
                 onChange={(value) => {
                   update({ subject: value });
                 }}
                 value={data.subject}
-                placeholder="Human interaction required for workflow run"
+                placeholder={t("editor.subjectPlaceholder")}
                 className="nopan text-xs"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-300">Body</Label>
+              <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>{t("editor.body")}</Label>
               <WorkflowBlockInputTextarea
                 aiImprove={AI_IMPROVE_CONFIGS.humanInteraction.body}
                 nodeId={id}
@@ -171,7 +162,7 @@ function HumanInteractionNode({
                   update({ body: value });
                 }}
                 value={data.body}
-                placeholder="Your interaction is required for a workflow run!"
+                placeholder={t("editor.bodyPlaceholder")}
                 className="nopan text-xs"
               />
             </div>
@@ -188,17 +179,17 @@ function HumanInteractionNode({
         >
           <AccordionItem value="email" className="border-b-0">
             <AccordionTrigger className="py-0">
-              Advanced Settings
+              {t("editor.advancedSettings")}
             </AccordionTrigger>
             <AccordionContent className="pl-6 pr-1 pt-1">
               <div key={rerender.key} className="space-y-4 pt-4">
                 <div className="flex gap-4">
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        Negative Button Label
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.negativeButtonLabel")}
                       </Label>
-                      <HelpTooltip content={negativeDescriptorTooltip} />
+                      <HelpTooltip content={t("editor.negativeButtonHelp")} />
                     </div>
                     <WorkflowBlockInput
                       nodeId={id}
@@ -212,10 +203,10 @@ function HumanInteractionNode({
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-2">
-                      <Label className="text-xs text-slate-300">
-                        Positive Button Label
+                      <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
+                        {t("editor.positiveButtonLabel")}
                       </Label>
-                      <HelpTooltip content={positiveDescriptorTooltip} />
+                      <HelpTooltip content={t("editor.positiveButtonHelp")} />
                     </div>
                     <WorkflowBlockInput
                       nodeId={id}

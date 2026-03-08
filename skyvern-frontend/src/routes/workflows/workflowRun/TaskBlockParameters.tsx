@@ -8,6 +8,7 @@ import {
   type WorkflowBlock,
 } from "../types/workflowTypes";
 import { Switch } from "@/components/ui/switch";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   block: WorkflowRunBlock;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 function TaskBlockParameters({ block, definitionBlock }: Props) {
+  const { t } = useI18n();
   const isTaskVariant = isTaskVariantBlock(block);
   if (!isTaskVariant) {
     return null;
@@ -101,9 +103,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
     <>
       <div className="flex gap-16">
         <div className="w-80">
-          <h1 className="text-lg">URL</h1>
-          <h2 className="text-base text-slate-400">
-            The starting URL for the block
+          <h1 className="text-lg">{t("tasks.url")}</h1>
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.startingUrlBlockDesc")}
           </h2>
         </div>
         <Input value={block.url ?? ""} readOnly />
@@ -112,9 +114,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showNavigationParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Navigation Goal</h1>
-            <h2 className="text-base text-slate-400">
-              What should Skyvern do on this page?
+            <h1 className="text-lg">{t("tasks.navigationGoal")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("tasks.navigationGoalDesc")}
             </h2>
           </div>
           <AutoResizingTextarea value={block.navigation_goal ?? ""} readOnly />
@@ -124,9 +126,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showNavigationParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Navigation Payload</h1>
-            <h2 className="text-base text-slate-400">
-              Specify important parameters, routes, or states
+            <h1 className="text-lg">{t("tasks.navigationPayload")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("tasks.navigationPayloadDesc")}
             </h2>
           </div>
           <CodeEditor
@@ -143,9 +145,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showDataExtractionParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Data Extraction Goal</h1>
-            <h2 className="text-base text-slate-400">
-              What outputs are you looking to get?
+            <h1 className="text-lg">{t("tasks.dataExtractionGoal")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("tasks.dataExtractionGoalDesc")}
             </h2>
           </div>
           <AutoResizingTextarea
@@ -158,9 +160,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showDataExtractionParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Data Schema</h1>
-            <h2 className="text-base text-slate-400">
-              Specify the output format in JSON
+            <h1 className="text-lg">{t("tasks.dataSchema")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("tasks.dataSchemaDesc")}
             </h2>
           </div>
           <CodeEditor
@@ -177,8 +179,8 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showValidationParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Completion Criteria</h1>
-            <h2 className="text-base text-slate-400">Complete if...</h2>
+            <h1 className="text-lg">{t("tasks.completionCriteria")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.completionCriteriaDesc")}</h2>
           </div>
           <AutoResizingTextarea
             value={block.complete_criterion ?? ""}
@@ -190,8 +192,8 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showValidationParameters ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Termination Criteria</h1>
-            <h2 className="text-base text-slate-400">Terminate if...</h2>
+            <h1 className="text-lg">{t("tasks.terminationCriteria")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.terminationCriteriaDesc")}</h2>
           </div>
           <AutoResizingTextarea
             value={block.terminate_criterion ?? ""}
@@ -203,9 +205,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
       {showIncludeActionHistoryInVerification ? (
         <div className="flex gap-16">
           <div className="w-80">
-            <h1 className="text-lg">Include Action History</h1>
-            <h2 className="text-base text-slate-400">
-              Whether to include action history in the completion verification
+            <h1 className="text-lg">{t("tasks.includeActionHistory")}</h1>
+            <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+              {t("tasks.includeActionHistoryVerificationDesc")}
             </h2>
           </div>
           <div className="w-full">
@@ -219,31 +221,31 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
 
       <div className="flex gap-16">
         <div className="w-80">
-          <h1 className="text-lg">Continue on Failure</h1>
-          <h2 className="text-base text-slate-400">
-            Whether to continue the workflow if this block fails
+          <h1 className="text-lg">{t("tasks.continueOnFailure")}</h1>
+          <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+            {t("tasks.continueOnFailureDesc")}
           </h2>
         </div>
         <div className="flex w-full items-center gap-3">
           <Switch checked={block.continue_on_failure} disabled />
-          <span className="text-sm text-slate-400">
-            {block.continue_on_failure ? "Enabled" : "Disabled"}
+          <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+            {block.continue_on_failure ? t("common.enabled") : t("common.disabled")}
           </span>
         </div>
       </div>
 
       {hasAdvancedSettings ? (
         <>
-          <h2 className="text-base font-semibold text-slate-300">
-            Advanced Settings
+          <h2 className="text-base font-semibold" style={{ color: "var(--finrpa-text-secondary)" }}>
+            {t("tasks.advancedSettings")}
           </h2>
 
           {engine ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Engine</h1>
-                <h2 className="text-base text-slate-400">
-                  The execution engine used for this block
+                <h1 className="text-lg">{t("tasks.engine")}</h1>
+                <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("tasks.engineDesc")}
                 </h2>
               </div>
               <Input value={engine} readOnly />
@@ -253,9 +255,9 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {errorCodeMapping ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Error Code Mapping</h1>
-                <h2 className="text-base text-slate-400">
-                  Custom error codes and their descriptions
+                <h1 className="text-lg">{t("tasks.errorCodeMapping")}</h1>
+                <h2 className="text-base" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("tasks.errorCodeMappingCustomDesc")}
                 </h2>
               </div>
               <CodeEditor
@@ -272,7 +274,7 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {typeof maxRetries === "number" ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Max Retries</h1>
+                <h1 className="text-lg">{t("tasks.maxRetries")}</h1>
               </div>
               <Input value={maxRetries.toString()} readOnly />
             </div>
@@ -281,7 +283,7 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {typeof maxStepsPerRun === "number" ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Max Steps Per Run</h1>
+                <h1 className="text-lg">{t("tasks.maxStepsPerRun")}</h1>
               </div>
               <Input value={maxStepsPerRun.toString()} readOnly />
             </div>
@@ -290,7 +292,7 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {totpVerificationUrl ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">TOTP Verification URL</h1>
+                <h1 className="text-lg">{t("tasks.totpVerificationUrl")}</h1>
               </div>
               <Input value={totpVerificationUrl} readOnly />
             </div>
@@ -299,7 +301,7 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {totpIdentifier ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">TOTP Identifier</h1>
+                <h1 className="text-lg">{t("tasks.totpIdentifier")}</h1>
               </div>
               <Input value={totpIdentifier} readOnly />
             </div>
@@ -308,11 +310,11 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {completeOnDownload === true ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Complete on Download</h1>
+                <h1 className="text-lg">{t("tasks.completeOnDownload")}</h1>
               </div>
               <div className="flex w-full items-center gap-3">
                 <Switch checked={true} disabled />
-                <span className="text-sm text-slate-400">Enabled</span>
+                <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("common.enabled")}</span>
               </div>
             </div>
           ) : null}
@@ -320,7 +322,7 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {downloadSuffix ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Download Suffix</h1>
+                <h1 className="text-lg">{t("tasks.downloadSuffix")}</h1>
               </div>
               <Input value={downloadSuffix} readOnly />
             </div>
@@ -329,12 +331,12 @@ function TaskBlockParameters({ block, definitionBlock }: Props) {
           {disableCache === true ? (
             <div className="flex gap-16">
               <div className="w-80">
-                <h1 className="text-lg">Cache Disabled</h1>
+                <h1 className="text-lg">{t("tasks.cacheDisabled")}</h1>
               </div>
               <div className="flex w-full items-center gap-3">
                 <Switch checked={true} disabled />
-                <span className="text-sm text-slate-400">
-                  Cache is disabled for this block
+                <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>
+                  {t("tasks.cacheDisabledDesc")}
                 </span>
               </div>
             </div>

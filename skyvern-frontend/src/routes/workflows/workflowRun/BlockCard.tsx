@@ -14,9 +14,9 @@ function BlockCard({ block, onClick, active }: Props) {
   return (
     <div
       className={cn(
-        "cursor-pointer space-y-3 rounded-md border bg-slate-elevation3 p-4 hover:border-slate-50",
+        "cursor-pointer space-y-3 rounded-md border bg-slate-elevation3 p-4",
         {
-          "border-slate-50": active,
+          "border-2": active,
         },
       )}
       onClick={onClick}

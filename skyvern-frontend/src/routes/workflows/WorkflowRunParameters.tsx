@@ -49,7 +49,7 @@ function WorkflowRunParameters() {
       <div className="space-y-8">
         <header className="space-y-5">
           <h1 className="text-3xl">Parameters</h1>
-          <h2 className="text-lg text-slate-400">
+          <h2 className="text-lg" style={{ color: "var(--finrpa-text-muted)" }}>
             Fill the placeholder values that you have linked throughout your
             workflow.
           </h2>

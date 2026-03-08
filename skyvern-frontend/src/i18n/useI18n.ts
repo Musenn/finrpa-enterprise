@@ -29,7 +29,16 @@ export function useI18n() {
   const locale = useSyncExternalStore(subscribe, getSnapshot);
 
   const t = useCallback(
-    (key: MessageKey) => locales[locale][key] ?? key,
+    (key: MessageKey, params?: Record<string, string | number>) => {
+      let text: string = locales[locale][key] ?? key;
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          text = text.replace(new RegExp(`\\{\\{\\s*${k}\\s*\\}\\}`, "g"), String(v));
+          text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+        });
+      }
+      return text;
+    },
     [locale],
   );
 

@@ -7,6 +7,8 @@ import { useState } from "react";
 import { GlassCard } from "@/components/enterprise/GlassCard";
 import { Icon } from "@/components/Icon";
 import { cn } from "@/util/utils";
+import { useI18n } from "@/i18n/useI18n";
+import type { MessageKey } from "@/i18n/locales";
 
 type Department = {
   id: string;
@@ -46,14 +48,14 @@ const demoDepartments: Department[] = [
 ];
 
 const demoUsers: User[] = [
-  { user_id: "eu_01", name: "Zhang Wei", department: "Corporate Lending", role: "operator", business_lines: ["Corporate Loans", "Intl Settlement"] },
-  { user_id: "eu_02", name: "Li Ming", department: "Corporate Lending", role: "approver", business_lines: ["Corporate Loans"] },
-  { user_id: "eu_03", name: "Wang Fang", department: "Retail Banking", role: "operator", business_lines: ["Retail Credit"] },
-  { user_id: "eu_04", name: "Chen Jun", department: "Risk Management", role: "viewer", business_lines: ["ALL"] },
-  { user_id: "eu_05", name: "Zhao Ying", department: "Compliance & Audit", role: "approver", business_lines: ["ALL"] },
-  { user_id: "eu_06", name: "Liu Yang", department: "IT Department", role: "org_admin", business_lines: ["ALL"] },
-  { user_id: "eu_07", name: "Huang Lei", department: "Retail Banking", role: "approver", business_lines: ["Retail Credit", "Wealth Management"] },
-  { user_id: "eu_08", name: "Sun Na", department: "Asset Management", role: "operator", business_lines: ["Wealth Management"] },
+  { user_id: "eu_01", name: "张伟", department: "Corporate Lending", role: "operator", business_lines: ["Corporate Loans", "Intl Settlement"] },
+  { user_id: "eu_02", name: "李明", department: "Corporate Lending", role: "approver", business_lines: ["Corporate Loans"] },
+  { user_id: "eu_03", name: "王芳", department: "Retail Banking", role: "operator", business_lines: ["Retail Credit"] },
+  { user_id: "eu_04", name: "陈军", department: "Risk Management", role: "viewer", business_lines: ["ALL"] },
+  { user_id: "eu_05", name: "赵颖", department: "Compliance & Audit", role: "approver", business_lines: ["ALL"] },
+  { user_id: "eu_06", name: "刘洋", department: "IT Department", role: "org_admin", business_lines: ["ALL"] },
+  { user_id: "eu_07", name: "黄磊", department: "Retail Banking", role: "approver", business_lines: ["Retail Credit", "Wealth Management"] },
+  { user_id: "eu_08", name: "孙娜", department: "Asset Management", role: "operator", business_lines: ["Wealth Management"] },
 ];
 
 const roleColors: Record<string, { bg: string; text: string }> = {
@@ -62,6 +64,36 @@ const roleColors: Record<string, { bg: string; text: string }> = {
   operator:    { bg: "bg-green-100",   text: "text-green-800" },
   approver:    { bg: "bg-amber-100",   text: "text-amber-800" },
   viewer:      { bg: "bg-gray-100",    text: "text-gray-700" },
+};
+
+const deptNameKeys: Record<string, MessageKey> = {
+  "Corporate Lending": "permissions.blCorporateLending",
+  "Syndicated Loans": "permissions.blSyndicatedLoans",
+  "Trade Finance": "permissions.blTradeFinance",
+  "Retail Banking": "permissions.blRetailBanking",
+  "Personal Loans": "permissions.blPersonalLoans",
+  "Credit Cards": "permissions.blCreditCards",
+  "Asset Management": "permissions.blAssetManagement",
+  "Risk Management": "permissions.blRiskManagement",
+  "Compliance & Audit": "permissions.blComplianceAudit",
+  "IT Department": "permissions.blITDepartment",
+};
+
+const roleNameKeys: Record<string, MessageKey> = {
+  "super_admin": "permissions.roleSuperAdmin",
+  "org_admin": "permissions.roleOrgAdmin",
+  "operator": "permissions.roleOperator",
+  "approver": "permissions.roleApprover",
+  "viewer": "permissions.roleViewer",
+};
+
+const blNameKeys: Record<string, MessageKey> = {
+  "Corporate Loans": "permissions.blCorporateLoans",
+  "Intl Settlement": "permissions.blIntlSettlement",
+  "Retail Credit": "permissions.blRetailCredit",
+  "Wealth Management": "permissions.blWealthManagement",
+  "Insurance": "permissions.blInsurance",
+  "ALL": "permissions.blAll",
 };
 
 function DeptTree({
@@ -75,6 +107,7 @@ function DeptTree({
   onSelect: (id: string) => void;
   depth?: number;
 }) {
+  const { t } = useI18n();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(departments.map((d) => d.id)));
 
   return (
@@ -118,7 +151,7 @@ function DeptTree({
                 <span className="w-4" />
               )}
               <Icon name="department" size={16} />
-              {dept.name}
+              {deptNameKeys[dept.name] ? t(deptNameKeys[dept.name]!) : dept.name}
             </div>
             {hasChildren && isExpanded && (
               <DeptTree
@@ -136,6 +169,7 @@ function DeptTree({
 }
 
 export function PermissionsPage() {
+  const { t } = useI18n();
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
   const filteredUsers = selectedDept
@@ -152,7 +186,7 @@ export function PermissionsPage() {
       <div className="flex items-center gap-3">
         <Icon name="permissions" size={24} color="var(--finrpa-blue)" />
         <h1 className="text-xl font-bold" style={{ color: "var(--finrpa-blue)" }}>
-          Permission Management
+          {t("permissions.title")}
         </h1>
       </div>
 
@@ -162,7 +196,7 @@ export function PermissionsPage() {
           <GlassCard hoverable={false} padding="md">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
               <Icon name="department" size={16} color="var(--finrpa-blue)" />
-              Departments
+              {t("permissions.departments")}
             </h3>
             <div
               className="mb-3 cursor-pointer rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
@@ -173,7 +207,7 @@ export function PermissionsPage() {
               }}
               onClick={() => setSelectedDept(null)}
             >
-              All Departments
+              {t("permissions.allDepartments")}
             </div>
             <DeptTree
               departments={demoDepartments}
@@ -189,14 +223,14 @@ export function PermissionsPage() {
             <div className="mb-4 flex items-center justify-between">
               <h3 className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--finrpa-text-primary)" }}>
                 <Icon name="user" size={16} color="var(--finrpa-blue)" />
-                Users ({filteredUsers.length})
+                {t("permissions.users")} ({filteredUsers.length})
               </h3>
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <Icon name="search" size={16} color="var(--finrpa-text-muted)" className="absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     className="glass-input pl-9 text-sm"
-                    placeholder="Search users..."
+                    placeholder={t("permissions.searchUsers")}
                     style={{ width: 220 }}
                   />
                 </div>
@@ -206,10 +240,10 @@ export function PermissionsPage() {
             <table className="glass-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Department</th>
-                  <th>Role</th>
-                  <th>Business Lines</th>
+                  <th>{t("permissions.name")}</th>
+                  <th>{t("permissions.department")}</th>
+                  <th>{t("permissions.role")}</th>
+                  <th>{t("permissions.businessLines")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -218,10 +252,10 @@ export function PermissionsPage() {
                   return (
                     <tr key={user.user_id}>
                       <td className="font-medium">{user.name}</td>
-                      <td>{user.department}</td>
+                      <td>{deptNameKeys[user.department] ? t(deptNameKeys[user.department]!) : user.department}</td>
                       <td>
                         <span className={cn("glass-badge", rc.bg, rc.text)}>
-                          {user.role}
+                          {roleNameKeys[user.role] ? t(roleNameKeys[user.role]!) : user.role}
                         </span>
                       </td>
                       <td>
@@ -236,7 +270,7 @@ export function PermissionsPage() {
                                 fontWeight: bl === "ALL" ? 600 : 400,
                               }}
                             >
-                              {bl}
+                              {blNameKeys[bl] ? t(blNameKeys[bl]!) : bl}
                             </span>
                           ))}
                         </div>

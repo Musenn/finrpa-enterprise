@@ -15,16 +15,16 @@ import { useNavigate } from "react-router-dom";
 import { stringify as convertToYAML } from "yaml";
 import { SavedTaskCard } from "./SavedTaskCard";
 import { useState } from "react";
-import { cn } from "@/util/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   TaskBlock,
   WorkflowApiResponse,
 } from "@/routes/workflows/types/workflowTypes";
+import { useI18n } from "@/i18n/useI18n";
 
-function createEmptyTaskTemplate() {
+function createEmptyTaskTemplate(newTemplateLabel: string) {
   return {
-    title: "New Template",
+    title: newTemplateLabel,
     description: "",
     is_saved_task: true,
     webhook_callback_url: null,
@@ -42,7 +42,7 @@ function createEmptyTaskTemplate() {
       blocks: [
         {
           block_type: "task",
-          label: "New Template",
+          label: newTemplateLabel,
           url: "https://example.com",
           navigation_goal: "",
           data_extraction_goal: null,
@@ -54,6 +54,7 @@ function createEmptyTaskTemplate() {
 }
 
 function SavedTasks() {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const navigate = useNavigate();
   const [hovering, setHovering] = useState(false);
@@ -72,7 +73,7 @@ function SavedTasks() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const request = createEmptyTaskTemplate();
+      const request = createEmptyTaskTemplate(t("tasks.newTemplate"));
       const client = await getClient(credentialGetter);
       const yaml = convertToYAML(request);
       return client
@@ -90,15 +91,15 @@ function SavedTasks() {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "There was an error while saving changes",
+        title: t("tasks.errorSaving"),
         description: error.message,
       });
     },
     onSuccess: (response) => {
       toast({
         variant: "success",
-        title: "New template created",
-        description: "Your template was created successfully",
+        title: t("tasks.newTemplateCreated"),
+        description: t("tasks.templateCreatedSuccessfully"),
       });
       queryClient.invalidateQueries({
         queryKey: ["savedTasks"],
@@ -117,20 +118,18 @@ function SavedTasks() {
         onMouseOut={() => setHovering(false)}
       >
         <CardHeader
-          className={cn("rounded-t-md bg-slate-elevation1", {
-            "bg-slate-900": hovering,
-          })}
+          className="rounded-t-md"
+          style={{ background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)" }}
         >
-          <CardTitle className="font-normal">New Task</CardTitle>
+          <CardTitle className="font-normal">{t("tasks.createNew")}</CardTitle>
           <CardDescription>{"https://.."}</CardDescription>
         </CardHeader>
         <CardContent
-          className={cn(
-            "flex h-36 cursor-pointer items-center justify-center rounded-b-md bg-slate-elevation3 p-4 text-sm text-slate-300",
-            {
-              "bg-slate-800": hovering,
-            },
-          )}
+          className="flex h-36 cursor-pointer items-center justify-center rounded-b-md p-4 text-sm"
+          style={{
+            color: "var(--finrpa-text-secondary)",
+            background: hovering ? "rgba(26,58,92,0.10)" : "var(--glass-bg)",
+          }}
           onClick={() => {
             if (mutation.isPending) {
               return;

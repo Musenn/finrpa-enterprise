@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRecordingStore } from "@/store/useRecordingStore";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   isDeletable?: boolean;
@@ -25,6 +26,7 @@ function NodeActionMenu({
   onDelete,
   onShowScript,
 }: Props) {
+  const { t } = useI18n();
   const recordingStore = useRecordingStore();
   const isRecording = recordingStore.isRecording;
 
@@ -38,7 +40,7 @@ function NodeActionMenu({
         <DotsHorizontalIcon className="h-6 w-6 cursor-pointer" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Block Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("editor.blockActions")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {isDeletable && (
           <DropdownMenuItem
@@ -47,7 +49,7 @@ function NodeActionMenu({
               onDelete?.();
             }}
           >
-            Delete Block
+            {t("editor.deleteBlock")}
           </DropdownMenuItem>
         )}
         {isScriptable && onShowScript && (
@@ -56,7 +58,7 @@ function NodeActionMenu({
               onShowScript();
             }}
           >
-            {showScriptText ?? "Show Code"}
+            {showScriptText ?? t("editor.showCode")}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

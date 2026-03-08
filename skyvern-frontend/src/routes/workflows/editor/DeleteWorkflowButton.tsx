@@ -22,12 +22,14 @@ import { useCredentialGetter } from "@/hooks/useCredentialGetter";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   id: string;
 };
 
 function DeleteWorkflowButton({ id }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
 
@@ -44,7 +46,7 @@ function DeleteWorkflowButton({ id }: Props) {
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to delete workflow",
+        title: t("editor.failedDeleteWorkflow"),
         description: error.message,
       });
     },
@@ -61,17 +63,17 @@ function DeleteWorkflowButton({ id }: Props) {
               </Button>
             </DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>Delete Workflow</TooltipContent>
+          <TooltipContent>{t("workflows.delete")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
-          <DialogDescription>This workflow will be deleted.</DialogDescription>
+          <DialogTitle>{t("editor.areYouSure")}</DialogTitle>
+          <DialogDescription>{t("editor.workflowWillBeDeleted")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary">{t("common.cancel")}</Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -83,7 +85,7 @@ function DeleteWorkflowButton({ id }: Props) {
             {deleteWorkflowMutation.isPending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Delete
+            {t("common.delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

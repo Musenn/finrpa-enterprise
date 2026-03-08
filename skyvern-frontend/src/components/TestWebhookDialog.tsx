@@ -162,7 +162,7 @@ function TestWebhookDialog({
   };
 
   const getStatusBadgeClass = (statusCode: number | null) => {
-    if (!statusCode) return "bg-slate-500";
+    if (!statusCode) return "bg-gray-500";
     if (statusCode >= 200 && statusCode < 300) return "bg-green-600";
     if (statusCode >= 400 && statusCode < 500) return "bg-orange-600";
     if (statusCode >= 500) return "bg-red-600";
@@ -216,11 +216,11 @@ function TestWebhookDialog({
           {result && (
             <div className="space-y-4 border-t pt-4">
               {result.error ? (
-                <div className="rounded-md border border-red-600 bg-red-50 p-4 dark:bg-red-950">
-                  <p className="text-sm font-medium text-red-900 dark:text-red-100">
+                <div className="rounded-md border border-red-600 bg-red-50 p-4">
+                  <p className="text-sm font-medium text-red-900">
                     Error
                   </p>
-                  <p className="mt-1 text-sm text-red-700 dark:text-red-200">
+                  <p className="mt-1 text-sm text-red-700">
                     {result.error}
                   </p>
                 </div>
@@ -300,11 +300,11 @@ function TestWebhookDialog({
                     <CollapsibleContent className="mt-4 space-y-4">
                       <div className="space-y-2">
                         <Label>Headers Sent</Label>
-                        <div className="space-y-1 rounded-md border bg-slate-50 p-3 font-mono text-sm dark:bg-slate-950">
+                        <div className="space-y-1 rounded-md border p-3 font-mono text-sm" style={{ background: "rgba(26,58,92,0.06)" }}>
                           {Object.entries(result.headers_sent).map(
                             ([key, value]) => (
                               <div key={key}>
-                                <span className="text-slate-600 dark:text-slate-400">
+                                <span style={{ color: "var(--finrpa-text-muted)" }}>
                                   {key}:
                                 </span>{" "}
                                 {value}

@@ -225,6 +225,7 @@ class Settings(BaseSettings):
     OPENAI_COMPATIBLE_ADD_ASSISTANT_PREFIX: bool = False
     OPENAI_COMPATIBLE_MODEL_KEY: str = "OPENAI_COMPATIBLE"
     OPENAI_COMPATIBLE_REASONING_EFFORT: str | None = None
+    OPENAI_COMPATIBLE_FORCE_STREAM: bool = False  # Force streaming for APIs that only support SSE
     OPENAI_COMPATIBLE_GITHUB_COPILOT_DOMAIN: str = "githubcopilot.com"
 
     # AZURE

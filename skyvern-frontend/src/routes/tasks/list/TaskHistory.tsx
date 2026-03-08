@@ -29,8 +29,10 @@ import { TaskListSkeletonRows } from "./TaskListSkeletonRows";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "@radix-ui/react-icons";
 import { downloadBlob } from "@/util/downloadBlob";
+import { useI18n } from "@/i18n/useI18n";
 
 function TaskHistory() {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
@@ -107,7 +109,7 @@ function TaskHistory() {
   return (
     <div className="space-y-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl">Task Runs</h1>
+        <h1 className="text-2xl">{t("tasks.taskRuns")}</h1>
         <div className="flex gap-2">
           <StatusFilterDropdown
             values={statusFilters}
@@ -115,19 +117,19 @@ function TaskHistory() {
           />
           <Button variant="secondary" onClick={handleExport}>
             <DownloadIcon className="mr-2" />
-            Export CSV
+            {t("tasks.exportCsv")}
           </Button>
         </div>
       </header>
-      <div className="rounded-md border">
+      <div className="border" style={{ borderRadius: "var(--radius-lg)", boxShadow: "var(--glass-shadow)", borderColor: "var(--glass-border)", overflow: "hidden" }}>
         <Table>
-          <TableHeader>
+          <TableHeader style={{ background: "rgba(26,58,92,0.06)" }}>
             <TableRow>
-              <TableHead className="w-1/4">ID</TableHead>
-              <TableHead className="w-1/4">URL</TableHead>
-              <TableHead className="w-1/6">Status</TableHead>
-              <TableHead className="w-1/4">Created At</TableHead>
-              <TableHead className="w-1/12" />
+              <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.tableId")}</TableHead>
+              <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.url")}</TableHead>
+              <TableHead className="w-1/6" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.status")}</TableHead>
+              <TableHead className="w-1/4" style={{ color: "var(--finrpa-text-muted)" }}>{t("tasks.createdAt")}</TableHead>
+              <TableHead className="w-1/12" style={{ color: "var(--finrpa-text-muted)" }} />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -135,7 +137,7 @@ function TaskHistory() {
               <TaskListSkeletonRows />
             ) : tasks?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>No tasks found</TableCell>
+                <TableCell colSpan={5}>{t("tasks.noTasksFound")}</TableCell>
               </TableRow>
             ) : (
               tasks?.map((task) => {

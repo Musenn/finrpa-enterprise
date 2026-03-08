@@ -15,12 +15,14 @@ import { WorkflowRunOverviewActiveElement } from "./WorkflowRunOverview";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
 import { SendEmailBlockParameters } from "./blockInfo/SendEmailBlockInfo";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   activeItem: WorkflowRunOverviewActiveElement;
 };
 
 function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
+  const { t } = useI18n();
   const item = isActionItem(activeItem) ? activeItem.block : activeItem;
 
   if (!item) {
@@ -37,9 +39,9 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
       <div className="rounded bg-slate-elevation1 p-4">
         <Tabs key="thought" defaultValue="observation">
           <TabsList>
-            <TabsTrigger value="observation">Observation</TabsTrigger>
-            <TabsTrigger value="thought">Thought</TabsTrigger>
-            <TabsTrigger value="answer">Answer</TabsTrigger>
+            <TabsTrigger value="observation">{t("workflows.observation")}</TabsTrigger>
+            <TabsTrigger value="thought">{t("workflows.thought")}</TabsTrigger>
+            <TabsTrigger value="answer">{t("workflows.answer")}</TabsTrigger>
           </TabsList>
           <TabsContent value="observation">
             <AutoResizingTextarea value={item.observation ?? ""} readOnly />
@@ -80,14 +82,14 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
             <TabsList>
               {item.status === Status.Completed && (
                 <TabsTrigger value="extracted_information">
-                  Extracted Information
+                  {t("tasks.extractedData")}
                 </TabsTrigger>
               )}
               {showFailureReasonTab && (
-                <TabsTrigger value="failure_reason">Failure Reason</TabsTrigger>
+                <TabsTrigger value="failure_reason">{t("tasks.failureReason")}</TabsTrigger>
               )}
-              <TabsTrigger value="navigation_goal">Navigation Goal</TabsTrigger>
-              <TabsTrigger value="parameters">Parameters</TabsTrigger>
+              <TabsTrigger value="navigation_goal">{t("tasks.navigationGoal")}</TabsTrigger>
+              <TabsTrigger value="parameters">{t("workflows.parameters")}</TabsTrigger>
               {item.task_id && (
                 <Link
                   to={`/tasks/${item.task_id}/diagnostics`}
@@ -96,7 +98,7 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
                 >
                   <div className="flex items-center gap-2 px-3 py-1 text-sm font-medium">
                     <ExternalLinkIcon />
-                    <span>Diagnostics</span>
+                    <span>{t("tasks.diagnostics")}</span>
                   </div>
                 </Link>
               )}
@@ -123,7 +125,7 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
                 <AutoResizingTextarea
                   value={
                     item.status === "canceled"
-                      ? "This block was cancelled"
+                      ? t("workflows.blockWasCancelled")
                       : item.failure_reason ?? ""
                   }
                   readOnly
@@ -175,8 +177,8 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
           <div className="rounded bg-slate-elevation1 p-4">
             <Tabs key={item.block_type} defaultValue="prompt">
               <TabsList>
-                <TabsTrigger value="prompt">Prompt</TabsTrigger>
-                <TabsTrigger value="output">Output</TabsTrigger>
+                <TabsTrigger value="prompt">{t("tasks.prompt")}</TabsTrigger>
+                <TabsTrigger value="output">{t("workflows.output")}</TabsTrigger>
               </TabsList>
               <TabsContent value="prompt">
                 <CodeEditor
@@ -206,8 +208,8 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
       if (item.wait_sec !== null && typeof item.wait_sec !== "undefined") {
         return (
           <div className="flex w-1/2 justify-between rounded bg-slate-elevation1 p-4">
-            <span className="text-sm text-slate-400">Wait Time</span>
-            <span className="text-sm">{item.wait_sec} Seconds</span>
+            <span className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.waitTime")}</span>
+            <span className="text-sm">{item.wait_sec} {t("workflows.seconds")}</span>
           </div>
         );
       }
@@ -222,16 +224,16 @@ function WorkflowRunTimelineItemInfoSection({ activeItem }: Props) {
         <Tabs key={item.block_type} defaultValue={fallbackDefaultTab}>
           <TabsList>
             {showFailureReasonTab && (
-              <TabsTrigger value="failure_reason">Failure Reason</TabsTrigger>
+              <TabsTrigger value="failure_reason">{t("tasks.failureReason")}</TabsTrigger>
             )}
-            <TabsTrigger value="output">Output</TabsTrigger>
+            <TabsTrigger value="output">{t("workflows.output")}</TabsTrigger>
           </TabsList>
           {showFailureReasonTab && (
             <TabsContent value="failure_reason">
               <AutoResizingTextarea
                 value={
                   item.status === "canceled"
-                    ? "This block was cancelled"
+                    ? t("workflows.blockWasCancelled")
                     : item.failure_reason ?? ""
                 }
                 readOnly

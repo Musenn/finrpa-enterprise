@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AxiosError } from "axios";
+import { useI18n } from "@/i18n/useI18n";
 
 function isJsonString(str: string): boolean {
   try {
@@ -42,6 +43,7 @@ function ImportWorkflowButton({
   onImportStart,
   selectedFolderId,
 }: ImportWorkflowButtonProps) {
+  const { t } = useI18n();
   const inputId = useId();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
@@ -72,14 +74,14 @@ function ImportWorkflowButton({
       });
       toast({
         variant: "success",
-        title: "Workflow imported",
-        description: "Successfully imported workflow",
+        title: t("workflows.workflowImported"),
+        description: t("workflows.workflowImportedDesc"),
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Error importing workflow",
-        description: getErrorMessage(error, "Failed to import workflow"),
+        title: t("workflows.errorImporting"),
+        description: getErrorMessage(error, t("workflows.failedImport")),
       });
     }
   };
@@ -105,13 +107,13 @@ function ImportWorkflowButton({
       onImportStart?.();
 
       toast({
-        title: "Import started",
+        title: t("workflows.importStarted"),
         description: `Importing ${file.name}...`,
       });
     } catch (error) {
       toast({
-        title: "Import Failed",
-        description: getErrorMessage(error, "Failed to import PDF"),
+        title: t("workflows.importFailed"),
+        description: getErrorMessage(error, t("workflows.failedImportPdf")),
         variant: "destructive",
       });
     }
@@ -150,12 +152,12 @@ function ImportWorkflowButton({
             />
             <div className="flex h-full cursor-pointer items-center gap-2 rounded-md bg-secondary px-4 py-2 font-bold text-secondary-foreground hover:bg-secondary/90">
               <UploadIcon className="h-4 w-4" />
-              Import
+              {t("workflows.import")}
             </div>
           </Label>
         </TooltipTrigger>
         <TooltipContent>
-          Import a workflow from a YAML, JSON, or PDF file
+          {t("workflows.importTooltip")}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -13,6 +13,7 @@ import { cn } from "@/util/utils";
 import { CodeEditor } from "./components/CodeEditor";
 import { AutoResizingTextarea } from "@/components/AutoResizingTextarea/AutoResizingTextarea";
 import { statusIsFinalized } from "../tasks/types";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   task: TaskApiResponse;
@@ -20,6 +21,7 @@ type Props = {
 };
 
 function WorkflowBlockCollapsibleContent({ task, onNavigate }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"output" | "goal" | "parameters">(
     statusIsFinalized(task) ? "output" : "goal",
@@ -126,50 +128,53 @@ function WorkflowBlockCollapsibleContent({ task, onNavigate }: Props) {
                   {statusIsFinalized(task) && (
                     <div
                       className={cn(
-                        "cursor-pointer rounded-sm px-3 py-2 text-slate-400 hover:bg-slate-700",
+                        "cursor-pointer rounded-sm px-3 py-2 hover:bg-muted",
                         {
-                          "bg-slate-700 text-foreground":
+                          "bg-muted text-foreground":
                             activeTab === "output",
                         },
                       )}
+                      style={activeTab !== "output" ? { color: "var(--finrpa-text-muted)" } : undefined}
                       onClick={() => {
                         setActiveTab("output");
                       }}
                     >
                       {showExtractedInformation
-                        ? "Extracted Information"
+                        ? t("tasks.extractedData")
                         : showFailureReason
-                          ? "Failure Reason"
+                          ? t("tasks.failureReason")
                           : ""}
                     </div>
                   )}
 
                   <div
                     className={cn(
-                      "cursor-pointer rounded-sm px-3 py-2 text-slate-400 hover:bg-slate-700 hover:text-foreground",
+                      "cursor-pointer rounded-sm px-3 py-2 hover:bg-muted hover:text-foreground",
                       {
-                        "bg-slate-700 text-foreground": activeTab === "goal",
+                        "bg-muted text-foreground": activeTab === "goal",
                       },
                     )}
+                    style={activeTab !== "goal" ? { color: "var(--finrpa-text-muted)" } : undefined}
                     onClick={() => {
                       setActiveTab("goal");
                     }}
                   >
-                    Navigation Goal
+                    {t("tasks.navigationGoal")}
                   </div>
                   <div
                     className={cn(
-                      "cursor-pointer rounded-sm px-3 py-2 text-slate-400 hover:bg-slate-700 hover:text-foreground",
+                      "cursor-pointer rounded-sm px-3 py-2 hover:bg-muted hover:text-foreground",
                       {
-                        "bg-slate-700 text-foreground":
+                        "bg-muted text-foreground":
                           activeTab === "parameters",
                       },
                     )}
+                    style={activeTab !== "parameters" ? { color: "var(--finrpa-text-muted)" } : undefined}
                     onClick={() => {
                       setActiveTab("parameters");
                     }}
                   >
-                    Parameters
+                    {t("workflows.parameters")}
                   </div>
                 </div>
                 <div>

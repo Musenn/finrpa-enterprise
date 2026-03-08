@@ -86,8 +86,8 @@ function ExtractionNode({ id, data, type }: NodeProps<ExtractionNode>) {
           className={cn(
             "transform-origin-center w-[30rem] space-y-4 rounded-lg bg-slate-elevation3 px-6 py-4 transition-all",
             {
-              "pointer-events-none bg-slate-950": thisBlockIsPlaying,
-              "outline outline-2 outline-slate-300": thisBlockIsTargetted,
+              "pointer-events-none": thisBlockIsPlaying,
+              "outline outline-2 outline-primary": thisBlockIsTargetted,
             },
             data.comparisonColor,
           )}
@@ -103,7 +103,7 @@ function ExtractionNode({ id, data, type }: NodeProps<ExtractionNode>) {
           <div className="space-y-2">
             <div className="flex justify-between">
               <div className="flex gap-2">
-                <Label className="text-xs text-slate-300">
+                <Label className="text-xs" style={{ color: "var(--finrpa-text-secondary)" }}>
                   Data Extraction Goal
                 </Label>
                 <HelpTooltip
@@ -111,7 +111,7 @@ function ExtractionNode({ id, data, type }: NodeProps<ExtractionNode>) {
                 />
               </div>
               {isFirstWorkflowBlock ? (
-                <div className="flex justify-end text-xs text-slate-400">
+                <div className="flex justify-end text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   Tip: Use the {"+"} button to add parameters!
                 </div>
               ) : null}
@@ -182,7 +182,7 @@ function ExtractionNode({ id, data, type }: NodeProps<ExtractionNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Engine
                       </Label>
                     </div>
@@ -196,7 +196,7 @@ function ExtractionNode({ id, data, type }: NodeProps<ExtractionNode>) {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Label className="text-xs font-normal text-slate-300">
+                      <Label className="text-xs font-normal" style={{ color: "var(--finrpa-text-secondary)" }}>
                         Max Steps Override
                       </Label>
                       <HelpTooltip

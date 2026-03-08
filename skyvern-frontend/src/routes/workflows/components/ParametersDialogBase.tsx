@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { useI18n } from "@/i18n/useI18n";
 
 type ParameterItem = {
   id: string;
@@ -30,10 +31,13 @@ type Props = {
 export function ParametersDialogBase({
   open,
   onOpenChange,
-  title = "Parameters",
-  sectionLabel = "Parameters",
+  title,
+  sectionLabel,
   items,
 }: Props) {
+  const { t } = useI18n();
+  const resolvedTitle = title ?? t("workflows.parameters");
+  const resolvedSectionLabel = sectionLabel ?? t("workflows.parameters");
   const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set());
 
   function toggleReveal(id: string) {
@@ -60,7 +64,7 @@ export function ParametersDialogBase({
             <div className="flex flex-wrap items-center gap-2">
               <div className="break-all font-mono text-sm">{item.key}</div>
               {item.description ? (
-                <div className="text-xs text-slate-400">
+                <div className="text-xs" style={{ color: "var(--finrpa-text-muted)" }}>
                   — {item.description}
                 </div>
               ) : null}
@@ -73,7 +77,7 @@ export function ParametersDialogBase({
                 size="sm"
                 variant="outline"
                 onClick={() => toggleReveal(item.id)}
-                title={revealed ? "Hide value" : "Show value"}
+                title={revealed ? t("workflows.hideValue") : t("workflows.showValue")}
               >
                 {revealed ? (
                   <EyeClosedIcon className="h-4 w-4" />
@@ -99,13 +103,13 @@ export function ParametersDialogBase({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>{resolvedTitle}</DialogTitle>
         </DialogHeader>
         {items.length === 0 ? (
-          <div className="text-sm text-slate-400">No parameters.</div>
+          <div className="text-sm" style={{ color: "var(--finrpa-text-muted)" }}>{t("workflows.noParameters")}</div>
         ) : (
           <div className="space-y-3">
-            <Label className="text-xs">{sectionLabel}</Label>
+            <Label className="text-xs">{resolvedSectionLabel}</Label>
             <ScrollArea>
               <ScrollAreaViewport className="max-h-[420px]">
                 <div className="space-y-3">

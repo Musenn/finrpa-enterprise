@@ -38,6 +38,7 @@ import { stringify as convertToYAML } from "yaml";
 import { convert } from "./editor/workflowEditorUtils";
 import { useCreateWorkflowMutation } from "./hooks/useCreateWorkflowMutation";
 import { WorkflowApiResponse } from "./types/workflowTypes";
+import { useI18n } from "@/i18n/useI18n";
 
 type Props = {
   workflow: WorkflowApiResponse;
@@ -61,6 +62,7 @@ function downloadFile(fileName: string, contents: string) {
 }
 
 function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
+  const { t } = useI18n();
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
 
@@ -95,7 +97,7 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to delete workflow",
+        title: t("workflows.failedDeleteWorkflow"),
         description: error.message,
       });
     },
@@ -127,15 +129,15 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
       });
       toast({
         title: variables.isTemplate
-          ? "Saved as template"
-          : "Removed from templates",
+          ? t("workflows.savedAsTemplate")
+          : t("workflows.removedFromTemplates"),
         variant: "success",
       });
     },
     onError: (error: AxiosError) => {
       toast({
         variant: "destructive",
-        title: "Failed to update template status",
+        title: t("workflows.failedUpdateTemplate"),
         description: error.message,
       });
     },
@@ -164,7 +166,7 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
             className="p-2"
           >
             <CopyIcon className="mr-2 h-4 w-4" />
-            Clone Workflow
+            {t("workflows.cloneWorkflow")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {
@@ -182,14 +184,14 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
               <BookmarkIcon className="mr-2 h-4 w-4" />
             )}
             {workflow.is_template
-              ? "Remove from Templates"
-              : "Save as Template"}
+              ? t("workflows.removeFromTemplates")
+              : t("workflows.saveAsTemplate")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <DownloadIcon className="mr-2 h-4 w-4" />
-              Export as...
+              {t("workflows.exportAs")}
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
@@ -213,23 +215,23 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
           <DialogTrigger>
             <DropdownMenuItem className="p-2">
               <GarbageIcon className="mr-2 h-4 w-4 text-destructive" />
-              Delete Workflow
+              {t("workflows.delete")}
             </DropdownMenuItem>
           </DialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogTitle>{t("common.areYouSure")}</DialogTitle>
           <DialogDescription>
-            The workflow{" "}
+            {t("workflows.deleteConfirmPrefix")}{" "}
             <span className="font-semibold text-primary">{workflow.title}</span>{" "}
-            will be deleted.
+            {t("workflows.deleteConfirmSuffix")}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary">{t("common.cancel")}</Button>
           </DialogClose>
           <Button
             variant="destructive"
@@ -241,7 +243,7 @@ function WorkflowActions({ workflow, onSuccessfullyDeleted }: Props) {
             {deleteWorkflowMutation.isPending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Delete
+            {t("common.delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

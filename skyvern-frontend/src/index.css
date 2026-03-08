@@ -25,10 +25,10 @@
     --tertiary: 227.6 11.6% 48.8%;
     --tertiary-foreground: 213 27% 84%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 18% 95%;
+    --muted-foreground: 215 20% 38%;
 
-    --accent: 210 20% 96%;
+    --accent: 210 18% 95%;
     --accent-foreground: 210 52% 23%;
 
     --destructive: 0 84.2% 60.2%;
@@ -41,8 +41,8 @@
     --success: 160 84% 39%;
     --success-foreground: 152 81% 96%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 214 25% 85%;
+    --input: 214 25% 85%;
     --ring: 210 52% 23%;
 
     --radius: 0.5rem;

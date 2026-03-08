@@ -7,10 +7,19 @@ type Props = {
 function ExampleCasePill({ icon, label, onClick }: Props) {
   return (
     <div
-      className="flex cursor-pointer gap-2 whitespace-normal rounded-sm bg-slate-elevation3 px-4 py-3 hover:bg-slate-elevation5 lg:whitespace-nowrap"
+      className="flex cursor-pointer gap-2 whitespace-normal border px-4 py-3 transition-colors lg:whitespace-nowrap"
+      style={{
+        background: "rgba(255,255,255,0.7)",
+        borderColor: "var(--glass-border)",
+        color: "var(--finrpa-text-primary)",
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--glass-shadow)",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.9)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.7)"; }}
       onClick={onClick}
     >
-      <div>{icon}</div>
+      <div style={{ color: "var(--finrpa-blue)" }}>{icon}</div>
       <div>{label}</div>
     </div>
   );

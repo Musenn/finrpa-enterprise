@@ -42,6 +42,7 @@ import { useTaskQuery } from "./hooks/useTaskQuery";
 import { useFirstParam } from "@/hooks/useFirstParam";
 import * as env from "@/util/env";
 import { TaskRunVerificationCodeForm } from "./TaskRunVerificationCodeForm";
+import { useI18n } from "@/i18n/useI18n";
 
 function createTaskRequestObject(values: TaskApiResponse) {
   return {
@@ -57,6 +58,7 @@ function createTaskRequestObject(values: TaskApiResponse) {
 }
 
 function TaskDetails() {
+  const { t } = useI18n();
   const taskId = useFirstParam("taskId", "runId");
   const credentialGetter = useCredentialGetter();
   const queryClient = useQueryClient();
@@ -126,14 +128,14 @@ function TaskDetails() {
       }
       toast({
         variant: "success",
-        title: "Task Canceled",
-        description: "The task has been successfully canceled.",
+        title: t("tasks.taskCanceled"),
+        description: t("tasks.taskCanceledDesc"),
       });
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("common.error"),
         description: error.message,
       });
     },
@@ -155,7 +157,7 @@ function TaskDetails() {
     task?.status === Status.Completed && task.extracted_information !== null;
   const extractedInformation = showExtractedInformation ? (
     <div className="space-y-1">
-      <Label className="text-lg">Extracted Information</Label>
+      <Label className="text-lg">{t("tasks.extractedData")}</Label>
       <CodeEditor
         language="json"
         value={JSON.stringify(task.extracted_information, null, 2)}
@@ -178,7 +180,7 @@ function TaskDetails() {
     task?.status === Status.TimedOut;
   const failureReason = showFailureReason ? (
     <div className="space-y-1">
-      <Label className="text-lg">Failure Reason</Label>
+      <Label className="text-lg">{t("tasks.failureReason")}</Label>
       <CodeEditor
         language="json"
         value={JSON.stringify(task.failure_reason, null, 2)}
@@ -192,7 +194,7 @@ function TaskDetails() {
 
   const webhookFailureReason = task?.webhook_failure_reason ? (
     <div className="space-y-1">
-      <Label>Webhook Failure Reason</Label>
+      <Label>{t("tasks.webhookFailureReason")}</Label>
       <div className="rounded-md border border-yellow-600 p-4 text-sm">
         {task.webhook_failure_reason}
       </div>
@@ -264,18 +266,18 @@ function TaskDetails() {
             {taskIsRunningOrQueued && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="destructive">Cancel</Button>
+                  <Button variant="destructive">{t("tasks.cancel")}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogTitle>{t("common.areYouSure")}</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to cancel this task?
+                      {t("tasks.confirmCancelTask")}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="secondary">Back</Button>
+                      <Button variant="secondary">{t("common.back")}</Button>
                     </DialogClose>
                     <Button
                       variant="destructive"
@@ -287,7 +289,7 @@ function TaskDetails() {
                       {cancelTaskMutation.isPending && (
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Cancel Task
+                      {t("tasks.cancelTask")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -297,13 +299,13 @@ function TaskDetails() {
               <Button asChild>
                 <Link to={`/tasks/create/retry/${task.task_id}`}>
                   <PlayIcon className="mr-2 h-4 w-4" />
-                  Rerun
+                  {t("tasks.rerun")}
                 </Link>
               </Button>
             )}
           </div>
         </div>
-        <div className="text-2xl text-slate-400 underline underline-offset-4">
+        <div className="text-2xl underline underline-offset-4" style={{ color: "var(--finrpa-text-muted)" }}>
           {workflowIsLoading || workflowRunIsLoading ? (
             <Skeleton className="h-8 w-64" />
           ) : (
@@ -337,19 +339,19 @@ function TaskDetails() {
       <SwitchBarNavigation
         options={[
           {
-            label: "Actions",
+            label: t("tasks.actions"),
             to: "actions",
           },
           {
-            label: "Recording",
+            label: t("tasks.recording"),
             to: "recording",
           },
           {
-            label: "Parameters",
+            label: t("tasks.parameters"),
             to: "parameters",
           },
           {
-            label: "Diagnostics",
+            label: t("tasks.diagnostics"),
             to: "diagnostics",
           },
         ]}
