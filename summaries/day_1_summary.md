@@ -1,44 +1,28 @@
-# Day 1 — 项目初始化
+# Day 1 — 项目骨架搭建
 
 ## 今日改动
 
-完成项目骨架搭建，核心工作分三部分：
+完成 FinRPA Enterprise 的项目骨架搭建，将 Skyvern 开源 AI 浏览器自动化引擎集成到企业级项目框架中，核心工作分四部分：
 
-1. **Skyvern 底座集成**：将 Skyvern 源码（skyvern/、alembic/、skyvern-frontend/、Dockerfile）直接拷贝到项目中，作为二次开发的起点
-2. **Enterprise 扩展层**：在项目根目录创建独立的 `enterprise/` 包，内含 7 个功能子模块（auth、tenant、approval、audit、dashboard、llm、workflows），后续所有金融场景的定制代码均落在此目录下，不侵入 Skyvern 核心
-3. **容器化开发环境**：编写 docker-compose.yml，包含 PostgreSQL 14、Redis 7、MinIO、Skyvern、Skyvern-UI 五个服务，配置完整的 healthcheck 与依赖启动顺序，`make dev` 一键拉起
+1. **Skyvern 源码集成**：完整集成 Skyvern 核心代码——`skyvern/` Python 包（AI 浏览器操作引擎）、`skyvern-frontend/` React 前端（工作流编辑器和任务管理 UI）、`alembic/` 数据库迁移脚本。采用直接拷贝而非 Git submodule，原因是后续 Day 8-9 需要修改 Skyvern 内部代码（`api_app.py` 路由注册），submodule 模式下的修改会造成不必要的维护负担
 
-配套产出：`.env.example`（全量配置模板）、`pyproject.toml`（依赖管理，新增 minio、passlib、redis、python-jose）、`Makefile`（dev/test/lint/migrate/seed 等常用命令）、`.gitignore`、tests 目录结构及 conftest.py。
+2. **Enterprise 扩展目录**：创建 `enterprise/` 包结构，预留 7 个子模块——auth（认证）、tenant（租户隔离）、approval（审批引擎）、audit（审计日志）、dashboard（运营统计）、llm（LLM 容错）、workflows（工作流模板）。每个子模块包含 `__init__.py` 占位文件
+
+3. **Docker 多服务环境**：`docker-compose.yml` 编排 5 个服务——PostgreSQL 14（主数据库，开启 healthcheck）、Redis 7（审批 Pub/Sub + 缓存，开启 AOF 持久化）、MinIO（审计截图私有存储，`mc ready` 健康检查）、Skyvern API（AI 引擎后端，8000 端口）、Skyvern UI（前端，8080 端口）。服务间通过 `depends_on` 和 `healthcheck` 控制启动顺序
+
+4. **项目基础设施**：`pyproject.toml` 定义项目元数据和依赖（扩展 minio/passlib/redis）；`Makefile` 提供 dev/health/test/migrate/seed/clean 等常用命令；`.env.example` 覆盖全部配置项；`.gitignore` 排除标准开发产物；`tests/` 目录含 conftest.py 和 unit/integration 子包
 
 ## 设计决策
 
-### Skyvern 集成方式：直接拷贝 vs Git Submodule
-
-最终选择直接拷贝源码。对比考虑如下：
-
-- **clone 门槛**：submodule 要求使用者 clone 时附加 `--recurse-submodules`，遗漏则缺少文件，增加上手成本
-- **后续改动需求**：Day 8 需要在 Skyvern 的 action 执行链路中植入审计钩子，Day 9 需要扩展任务状态枚举——这些改动发生在 Skyvern 内部。若使用 submodule，需先 fork 上游仓库再修改，引入额外的仓库管理成本
-- **项目定位**：本项目是基于 Skyvern 的企业级二次开发，不需要持续同步上游更新，直接拷贝更为简洁
-
-### Docker 卷策略：Named Volume vs Bind Mount
-
-选择 named volume。在 Windows 开发环境下，bind mount（如 `./postgres-data`）存在文件权限不兼容的问题，PostgreSQL 容器启动时容易出现 permission denied 错误。Named volume 由 Docker 引擎管理，规避了宿主机与容器的权限模型差异，且 `docker compose down -v` 即可完成清理。
-
-### Redis 持久化配置
-
-开启 AOF 持久化（`appendonly yes`）并设置 256MB 内存上限。Day 6 的审批引擎依赖 Redis Pub/Sub 传递审批消息，若使用纯内存模式，开发过程中 Redis 容器意外重启将导致进行中的审批状态丢失。AOF 持久化在开发阶段提供了基本的数据安全保障。
-
-## 金融企业场景下的工程意义
-
-项目初始化看似基础，但在银行、保险等金融机构的技术团队中，这一阶段的决策直接影响后续数月的开发效率和系统可维护性。
-
-**环境一致性**：多人协作时，开发环境不一致是常见的效率杀手——PostgreSQL 小版本差异、Redis 配置不同步等问题往往在集成阶段才暴露。Docker Compose + `.env.example` 将完整的运行环境固化为代码，团队成员获得一致的开发环境。
-
-**模块化边界**：金融 RPA 系统涉及权限、审批、审计等多个交叉领域，若不在早期规划清晰的目录结构，代码膨胀后模块边界模糊，定位和修改特定功能的成本急剧上升。`enterprise/` 按功能域划分子模块，各模块职责明确，支持团队并行开发。
-
-**底座与扩展解耦**：在开源项目上做企业级扩展时，若将定制逻辑与原始代码混编，后续的维护和溯源成本很高。将扩展代码隔离到独立目录、对 Skyvern 核心仅做最小改动，是保持长期可维护性的基本原则。
+| 决策 | 理由 |
+|------|------|
+| 直接拷贝 Skyvern 源码而非 submodule | 后续需修改 `api_app.py` 注册企业路由，直接拷贝避免 submodule fork 维护负担 |
+| 7 个子模块预留而非按需创建 | 模块边界在设计阶段已确定，预留目录使后续开发者一目了然项目全貌 |
+| Redis 同时用于缓存和 Pub/Sub | 避免引入额外消息中间件，Redis 的 Pub/Sub 足以满足审批消息的低延迟推送需求 |
+| MinIO 而非直接文件系统 | 审计截图需要结构化存储、按月归档、预签名 URL 访问控制，MinIO S3 兼容 API 提供这些能力 |
+| docs/ 目录独立于 enterprise/ | 面试文档和技术文档不属于运行时代码，独立目录更清晰 |
 
 ## 踩坑记录
 
-1. **conda 清华镜像 403**：`.condarc` 中配置的清华 Anaconda 镜像全线返回 HTTP 403。解决方案：在 `conda create` 时指定官方源 `https://conda.anaconda.org/conda-forge` 并附加 `--override-channels` 参数，绕过本地镜像配置
-2. **`.env.*` 通配符误伤**：`.git/info/exclude` 中的 `.env.*` 规则将 `.env.example` 一并排除，导致该文件无法被 git 追踪。修复方式：追加 `!.env.example` 取消对该文件的排除
+1. **Skyvern 依赖复杂度**：Skyvern 的 `pyproject.toml` 依赖链较深（playwright/litellm/openai 等），直接复制后需要确保 `pyproject.toml` 的依赖列表完整覆盖，否则 `pip install` 会因缺失依赖失败
+2. **Docker 服务启动顺序**：MinIO 的 healthcheck 使用 `mc ready local` 命令，需要在容器内预先配置 mc alias，否则 healthcheck 永远返回 unhealthy，阻塞依赖它的服务启动
